@@ -9,7 +9,8 @@
 
 
 
-## <Käyttäjätarinat> 
+## <details> 
+<summary>Käyttäjätarinat</summary>
 - Käyttäjänä haluan pystyä kirjaamaan sovellukseen kaikki ruokakaapissa olevani ainesosat  
 
 - Käyttäjä haluan tarkastella listalta olemassa olevat ainesosat. 
@@ -39,4 +40,4 @@
 
 - Käyttäjänä haluan, että tarvikkeiden lisääminen sovellukseen olisi mahdollisimman helppoa, esim. hyödyntämällä tuotteen viivakoodia. 
 
-</käyttäjätarinat>
+</details>
