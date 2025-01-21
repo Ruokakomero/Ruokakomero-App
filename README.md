@@ -9,7 +9,7 @@
 
 
 
-## <details> Käyttäjätarinat
+## <Käyttäjätarinat> 
 - Käyttäjänä haluan pystyä kirjaamaan sovellukseen kaikki ruokakaapissa olevani ainesosat  
 
 - Käyttäjä haluan tarkastella listalta olemassa olevat ainesosat. 
