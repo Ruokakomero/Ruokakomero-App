@@ -10,9 +10,6 @@
 
 ## Käyttäjätarinat
 
-<details>
-<summary>Käyttäjätarinat</summary>
-
 ### Tarina 1
 - Käyttäjänä haluan pystyä kirjaamaan sovellukseen kaikki ruokakaapissa olevani ainesosat  
 
@@ -61,5 +58,3 @@
 ### Tarina 14
 
 - Käyttäjänä haluan, että tarvikkeiden lisääminen sovellukseen olisi mahdollisimman helppoa, esim. hyödyntämällä tuotteen viivakoodia. 
-
-</details>
