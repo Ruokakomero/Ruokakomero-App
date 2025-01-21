@@ -39,4 +39,4 @@
 
 - Käyttäjänä haluan, että tarvikkeiden lisääminen sovellukseen olisi mahdollisimman helppoa, esim. hyödyntämällä tuotteen viivakoodia. 
 
-</details>
+</käyttäjätarinat>
