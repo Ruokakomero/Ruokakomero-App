@@ -9,7 +9,7 @@
 
 
 
-## Käyttäjätarinat
+## <details> Käyttäjätarinat
 - Käyttäjänä haluan pystyä kirjaamaan sovellukseen kaikki ruokakaapissa olevani ainesosat  
 
 - Käyttäjä haluan tarkastella listalta olemassa olevat ainesosat. 
@@ -38,3 +38,5 @@
 - Käyttäjänä, joka noudattaa erityisruokavaliota (kuten gluteeniton tai vegaaninen), haluan sovelluksen ehdottavan vain ruokavaliooni sopivia reseptejä, jotta voin pysyä ruokavaliossani. 
 
 - Käyttäjänä haluan, että tarvikkeiden lisääminen sovellukseen olisi mahdollisimman helppoa, esim. hyödyntämällä tuotteen viivakoodia. 
+
+</details>
