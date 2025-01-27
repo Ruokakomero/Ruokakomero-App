@@ -27,7 +27,9 @@ Ruokakomero-sovellus on mobiilisovellus, joka auttaa käyttäjiä seuraamaan ruo
 10. [Käyttäjätarinat](#käyttäjätarinat) 🟡
 11. [Kehitystiimi ja lisenssi](#kehitystiimi-ja-lisenssi) 🟡
 
-🟢🟡🔴
+🟢 Tehty - ei tarvitse enää muokata
+🟡 Luonnos - ei vielä valmis
+🔴 Pelkkä otsikko ja template -teksti
 
 ---
 
