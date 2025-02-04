@@ -153,7 +153,7 @@ Tässä on Ruokakomero-sovelluksen tietokantarakenne. Se on suunniteltu tukemaan
 
 
 ### Tietokantakaavio ()
-[Tietokantakaavio] ()
+[Tietokantakaavio] (https://github.com/Ruokakomero/Ruokakomero-App/blob/develop/Media/Tietokantataulukko.pdf)
 
 
 
