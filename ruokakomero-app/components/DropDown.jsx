@@ -24,7 +24,7 @@ import React, { useState } from 'react';
         labelField="label"
         valueField="value"
         placeholder="Valitse säilytyspaikka"
-        searchPlaceholder="Search..."
+        searchPlaceholder="Etsi..."
         value={value}
         onChange={item => {
           setValue(item.value);
