@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FlatList, Keyboard, Text, View, TouchableWithoutFeedback, TextInput, StyleSheet } from 'react-native';
+import CheckBox from 'react-native-check-box';
 import Painike from './Painike'; 
 
 const AddProduct = () => {
@@ -25,6 +26,9 @@ const AddProduct = () => {
             value={product}
             style={styles.input}
           />
+
+          <Text> Valitse säilytyspaikka: </Text>
+        
 
           <View style={styles.buttons}>
             <Painike onPress={addPressed} title="Lisää" />
