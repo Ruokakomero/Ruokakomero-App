@@ -203,7 +203,11 @@ Tässä on Ruokakomero-sovelluksen tietokantarakenne. Se on suunniteltu tukemaan
 3. Asenna React Native riippuvuudet:
     ```bash
     npm install
-4. Asenna tietokantasovellus... (Firebase?)
+4. Asenna Firebase:
+
+   ```bash
+   npx expo install @react-native-firebase/app
+   ```
 
 ## 9. Projektisuunnitelma
 
