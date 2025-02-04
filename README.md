@@ -64,11 +64,98 @@ Ruokakomero-sovellus on suunniteltu vähentämään ruokahävikkiä ja helpottam
 
 ## 4. Tietokanta
 
+Tässä on Ruokakomero-sovelluksen tietokantarakenne. Se on suunniteltu tukemaan sovelluksen toiminnallisuuksia, kuten ruokavaraston hallintaa, viivakoodiskannausta ja reseptiehdotuksia.
+
+<details>
+<summary> Avaa tietokantataulut </summary>
+
+### **Users**
+| Kenttä        | Tietotyyppi  | Kuvaus |
+|--------------|------------|--------|
+| userId       | string (PK) | Käyttäjän uniikki tunniste |
+| name         | string      | Käyttäjän nimi |
+| email        | string (unique) | Käyttäjän sähköposti |
+| householdId  | string (FK) | Viittaus ruokakuntaan |
+
+### **Households**
+| Kenttä        | Tietotyyppi  | Kuvaus |
+|--------------|------------|--------|
+| householdId  | string (PK) | Ruokakunnan tunniste |
+| name         | string      | Ruokakunnan nimi |
+
+### **StorageLocations**
+| Kenttä        | Tietotyyppi  | Kuvaus |
+|--------------|------------|--------|
+| storageId    | string (PK) | Säilytyspaikan tunniste |
+| householdId  | string (FK) | Viittaus ruokakuntaan |
+| name         | string      | Säilytyspaikan nimi |
+
+### **Items**
+| Kenttä         | Tietotyyppi  | Kuvaus |
+|--------------|------------|--------|
+| itemId        | string (PK) | Tuotteen tunniste |
+| householdId   | string (FK) | Viittaus ruokakuntaan |
+| storageId     | string (FK) | Viittaus säilytyspaikkaan |
+| name          | string      | Tuotteen nimi |
+| eanCode       | string (FK) | Viivakoodin tunniste |
+| quantity      | int         | Määrä |
+| unit          | string      | Yksikkö |
+| expirationDate | timestamp  | Viimeinen käyttöpäivä |
+| addedBy       | string (FK) | Käyttäjä, joka lisäsi tuotteen |
+
+### **Products**
+| Kenttä          | Tietotyyppi  | Kuvaus |
+|--------------|------------|--------|
+| eanCode       | string (PK) | Viivakoodin tunniste |
+| name          | string      | Tuotteen nimi |
+| brand         | string      | Tuotemerkin nimi |
+| defaultUnit   | string      | Oletusyksikkö |
+| defaultQuantity | int       | Oletusmäärä |
+| imageUrl      | string      | Kuva tuotteen etiketistä |
+| nutritionalInfo | json      | Ravintotiedot |
+
+### **Recipes**
+| Kenttä         | Tietotyyppi  | Kuvaus |
+|--------------|------------|--------|
+| recipeId      | string (PK) | Reseptin tunniste |
+| name          | string      | Reseptin nimi |
+| ingredients   | json        | Ainesosaluettelo |
+| instructions  | json        | Valmistusohjeet |
+| createdBy     | string (FK) | Käyttäjä, joka loi reseptin |
+
+### **ShoppingLists**
+| Kenttä        | Tietotyyppi  | Kuvaus |
+|--------------|------------|--------|
+| listId       | string (PK) | Ostoslistan tunniste |
+| householdId  | string (FK) | Viittaus ruokakuntaan |
+| items        | json        | Ostoslistan tuotteet |
+
+### **ChatbotInteractions**
+| Kenttä        | Tietotyyppi  | Kuvaus |
+|--------------|------------|--------|
+| interactionId | string (PK) | Keskustelun tunniste |
+| userId       | string (FK) | Viittaus käyttäjään |
+| query        | string      | Käyttäjän kysymys |
+| response     | string      | Chatbotin vastaus |
+
+</details>
+
+## 📌 Taulujen kuvaus
+
+- **users**: Käyttäjät, jotka kuuluvat tiettyyn ruokakuntaan.
+- **households**: Ruokakunnat, joihin käyttäjät ja säilytyspaikat kuuluvat.
+- **storageLocations**: Säilytyspaikat, kuten jääkaappi tai kuivakaappi.
+- **items**: Tuotteet, jotka on lisätty säilytyspaikkoihin.
+- **products**: Yleistietokanta tuotteille, joiden tiedot haetaan viivakoodilla.
+- **recipes**: Käyttäjien reseptit, joissa hyödynnetään varastossa olevia tuotteita.
+- **shoppingLists**: Ruokakunnan ostoslistat.
+- **chatbotInteractions**: Chatbotin kanssa käydyt keskustelut ja ehdotukset.
+
+
 ### Tietokantakaavio ()
+[Tietokantakaavio] ()
 
 
-### Tietohakemisto
-- Dokumentaatio tietokantakyselyistä ja tietomalleista.
 
 ---
 
@@ -116,7 +203,11 @@ Ruokakomero-sovellus on suunniteltu vähentämään ruokahävikkiä ja helpottam
 3. Asenna React Native riippuvuudet:
     ```bash
     npm install
-4. Asenna tietokantasovellus... (Firebase?)
+4. Asenna Firebase:
+
+   ```bash
+   npx expo install @react-native-firebase/app
+   ```
 
 ## 9. Projektisuunnitelma
 
