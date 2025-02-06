@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { FlatList, Keyboard, Text, View, TouchableWithoutFeedback, TextInput, StyleSheet } from 'react-native';
 import Painike from './Painike'; 
 import DropDown from './DropDown'
+import  styles  from '../constants/styles';
 
 const AddProduct = () => {
   const [product, setProduct] = useState("");
@@ -45,31 +46,6 @@ const AddProduct = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    paddingTop: 300,
-    flex: 1,
-    backgroundColor: '#fff',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  textInputs: {
-    marginBottom: 20,
-  },
-  input: {
-    borderColor: '#000',
-    borderWidth: 0.5,
-    marginBottom: 10,
-    padding: 8,
-    width: 200,
-  },
-  buttons: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    width: '25%',
-  },
-});
+
 
 export default AddProduct;

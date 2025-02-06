@@ -1,5 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import  styles  from '../constants/styles';
 
 const Painike = ({ onPress, title }) => (
   <TouchableOpacity onPress={onPress} style={styles.buttonContainer}>
@@ -7,17 +8,6 @@ const Painike = ({ onPress, title }) => (
   </TouchableOpacity>
 );
 
-const styles = StyleSheet.create({
-  buttonContainer: {
-    backgroundColor: '#009688',
-    paddingHorizontal: 10,
-    paddingVertical: 10,
-    margin: 5,
-  },
-  buttonText: {
-    color: '#fff',
-    textAlign: 'center',
-  },
-});
+
 
 export default Painike;
