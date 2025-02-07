@@ -1,90 +1,141 @@
 import React, { useState } from 'react';
-import { FlatList, Keyboard, Text, View, TouchableWithoutFeedback, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
-import Painike from './Painike'; 
+import {
+  FlatList,
+  Keyboard,
+  Text,
+  View,
+  TouchableWithoutFeedback,
+  TouchableOpacity,
+  TextInput,
+  Alert,
+} from 'react-native';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import DeleteButton from './DeleteButton';
-import DropDown from './DropDown';
 import styles from '../constants/styles';
+import Painike from './Painike';
 
 const AddProduct = () => {
-  const [product, setProduct] = useState("");
-  const [storageLocation, setStorageLocation] = useState(null);
-  const [productList, setProductList] = useState({ 
+  const [productList, setProductList] = useState({
     jääkaappi: [],
     pakastin: [],
     kuivakaappi: [],
   });
 
+  const [expandedLocation, setExpandedLocation] = useState(null); 
+  const [newItem, setNewItem] = useState(""); 
+  const [addingToLocation, setAddingToLocation] = useState(null);
   const [editedItem, setEditedItem] = useState(null);
   const [editedText, setEditedText] = useState("");
+  
+  
+  const toggleAddItem = (location) => {
+    if (addingToLocation === location) {
+      setAddingToLocation(null);
+    } else {
+      setAddingToLocation(location);
+      setNewItem("");
+    }
+  };
 
-  const addPressed = () => {
-    if (!product.trim() || !storageLocation) return; 
+    const addItem = (location) => {
+    if (!newItem.trim()) return;
 
-    setProductList(prevList => ({
+    setProductList((prevList) => ({
       ...prevList,
-      [storageLocation]: [...prevList[storageLocation], { key: product, id: Date.now().toString(), location: storageLocation }]
+      [location]: [...prevList[location], { key: newItem, id: Date.now().toString(), location }],
     }));
 
-    setProduct(""); 
+    setNewItem("");
+    setAddingToLocation(null); 
   };
 
-  const clearPressed = () => {
-    setProductList({ jääkaappi: [], pakastin: [], ruokakomero: [] }); 
-  };
-
-  const editingMode = (location, id, text) => {
-    setEditedItem({location,id});
+ 
+  const startEditing = (location, id, text) => {
+    setEditedItem({ location, id });
     setEditedText(text);
-  }
+  };
 
-  const saveChanges = () => {
-    if (!editedItem || !editedText.trim()) return;
   
-    setProductList(prevList => ({
+  const saveEdit = () => {
+    if (!editedItem || !editedText.trim()) return;
+
+    setProductList((prevList) => ({
       ...prevList,
-      [editedItem.location]: prevList[editedItem.location].map(item =>
-        item.id === editedItem.id ? { ...item, key: editedText } : item 
+      [editedItem.location]: prevList[editedItem.location].map((item) =>
+        item.id === editedItem.id ? { ...item, key: editedText } : item
       ),
     }));
-  
-    setEditedItem(null); 
+
+    setEditedItem(null);
   };
 
+  
   const deleteItem = (location, id) => {
-    setProductList(prevList => ({
+    setProductList((prevList) => ({
       ...prevList,
-      [location]: prevList[location].filter(item => item.id !== id) 
+      [location]: prevList[location].filter((item) => item.id !== id),
     }));
-    
-  }
+  };
+
+ 
+  const clearLocation = (location) => {
+    Alert.alert(
+      "Vahvista tyhjennys",
+      `Haluatko varmasti poistaa kaikki tuotteet säilytyksestä ${location.toUpperCase()}?`,
+      [
+        { text: "Peruuta", style: "cancel" },
+        {
+          text: "Poista kaikki",
+          style: "destructive",
+          onPress: () => {
+            setProductList((prevList) => ({
+              ...prevList,
+              [location]: [],
+            }));
+          },
+        },
+      ]
+    );
+  };
+
+  
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <View style={styles.container}>
-        <View style={styles.textInputs}>
-          <TextInput
-            placeholder='Lisää ainesosa'
-            onChangeText={setProduct}
-            value={product}
-            style={styles.input}
-          />
+      <View style={styles.mainContainer}>
+        {Object.keys(productList).map((location) => (
+          <View key={location} style={styles.listContainer}>
+            <View style={styles.locationContainer}>
+              <Text style={styles.locationHeader}>{location.toUpperCase()}</Text>
 
-          <DropDown onSelect={setStorageLocation} />
+              <TouchableOpacity onPress={() => toggleAddItem(location)} activeOpacity={0.7}>
+                <AntDesign
+                  name={addingToLocation === location ? "minuscircleo" : "pluscircleo"}
+                  size={24}
+                  color="#009688"
+                  style={styles.addIcon}
+                />
+              </TouchableOpacity>
+            </View>
 
-          <View style={styles.buttons}>
-            <Painike onPress={addPressed} title="Lisää" />
-            <Painike onPress={clearPressed} title="Tyhjennä" />
-          </View>
-        </View>
+     
+            {addingToLocation === location && (
+              <View style={styles.inputRow}>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Lisää tuote"
+                  value={newItem}
+                  onChangeText={setNewItem}
+                />
+                <TouchableOpacity onPress={() => addItem(location)} style={styles.addButton}>
+                  <AntDesign name="check" size={20} color="white" />
+                </TouchableOpacity>
+              </View>
+            )}
 
-        <Text>Ainesosien lista:</Text>
-
-        {Object.keys(productList).map(location => (
-          <View key={location} style={styles.listSection}>
-            <Text style={styles.locationHeader}>{location.toUpperCase()}</Text>
             <FlatList
               data={productList[location]}
-              keyExtractor={item => item.id}
+              keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
                 <View style={styles.listItem}>
                   {editedItem?.id === item.id ? (
@@ -94,30 +145,33 @@ const AddProduct = () => {
                       onChangeText={setEditedText}
                     />
                   ) : (
-                    <TouchableOpacity onPress={() => editingMode(location, item.id, item.key)}>
+                    <TouchableOpacity onPress={() => startEditing(location, item.id, item.key)}>
                       <Text>{item.key}</Text>
                     </TouchableOpacity>
                   )}
 
                   {editedItem?.id === item.id ? (
-                    <Painike onPress={saveChanges} title="Tallenna" />
+                    <TouchableOpacity onPress={saveEdit} style={styles.editButton}>
+                      <AntDesign name="check" size={18} color="white" />
+                    </TouchableOpacity>
                   ) : (
-                    <DeleteButton onPress={() => deleteItem(location, item.id)} title="Poista" />
-
+                    <DeleteButton onPress={() => deleteItem(location, item.id)} />
                   )}
-
-                 
-
                 </View>
               )}
             />
+
+          
+            {productList[location].length > 0 && (
+                <Painike 
+                title={"Tyhjennä " + location.toUpperCase()}
+                onPress={() => clearLocation(location)}/>
+            )}
           </View>
         ))}
       </View>
     </TouchableWithoutFeedback>
   );
 };
-
-
 
 export default AddProduct;
