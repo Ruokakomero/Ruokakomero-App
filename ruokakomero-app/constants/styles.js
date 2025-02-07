@@ -5,29 +5,46 @@ export default StyleSheet.create({
     // MAIN
 
     container: {
-        paddingTop: 300,
-        flex: 1,
-        backgroundColor: '#fff',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-      },
-      textInputs: {
-        marginBottom: 20,
-      },
-      input: {
-        borderColor: '#000',
-        borderWidth: 0.5,
-        marginBottom: 10,
-        padding: 8,
-        width: 200,
-      },
-      buttons: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-around',
-        width: '25%',
+      flex: 1,
+      backgroundColor: '#fff',
+      alignItems: 'center',
+      paddingTop: 100,
     },
+    textInputs: {
+      marginBottom: 20,
+    },
+    input: {
+      borderColor: '#000',
+      borderWidth: 0.5,
+      marginBottom: 10,
+      padding: 10,
+      borderRadius: 5,
+      width: 200,
+    },
+    buttons: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-around',
+      width: '50%',
+    },
+    listSection: {
+      marginTop: 20,
+      width: '80%',
+    },
+    locationHeader: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      marginBottom: 5,
+    },
+    listItem: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingVertical: 10,
+      borderBottomWidth: 1,
+      width: 300,
+    },
+     
 
     // DROPDOWN
 
@@ -62,11 +79,22 @@ export default StyleSheet.create({
         paddingHorizontal: 10,
         paddingVertical: 10,
         margin: 5,
+        borderRadius: 10,
       },
       buttonText: {
         color: '#fff',
+        fontWeight: 700,
         textAlign: 'center',
       },
 
-
+    /// DELETE BUTTON
+    
+    delButtonContainer: {
+      padding: 10,
+      margin: 5,
+      borderRadius: 5,
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexDirection: 'row',
+    },
 })
