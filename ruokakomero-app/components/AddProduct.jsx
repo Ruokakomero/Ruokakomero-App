@@ -1,21 +1,62 @@
 import React, { useState } from 'react';
-import { FlatList, Keyboard, Text, View, TouchableWithoutFeedback, TextInput, StyleSheet } from 'react-native';
+import { FlatList, Keyboard, Text, View, TouchableWithoutFeedback, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
 import Painike from './Painike'; 
-import DropDown from './DropDown'
-import  styles  from '../constants/styles';
+import DeleteButton from './DeleteButton';
+import DropDown from './DropDown';
+import styles from '../constants/styles';
 
 const AddProduct = () => {
   const [product, setProduct] = useState("");
-  const [productList, setProductList] = useState([]);
+  const [storageLocation, setStorageLocation] = useState(null);
+  const [productList, setProductList] = useState({ 
+    jääkaappi: [],
+    pakastin: [],
+    kuivakaappi: [],
+  });
+
+  const [editedItem, setEditedItem] = useState(null);
+  const [editedText, setEditedText] = useState("");
 
   const addPressed = () => {
-    setProductList(prevProductList => [...prevProductList, { key: product }]);
-    setProduct(""); // Tyhjentää listan
+    if (!product.trim() || !storageLocation) return; 
+
+    setProductList(prevList => ({
+      ...prevList,
+      [storageLocation]: [...prevList[storageLocation], { key: product, id: Date.now().toString(), location: storageLocation }]
+    }));
+
+    setProduct(""); 
   };
 
   const clearPressed = () => {
-    setProductList([]);
+    setProductList({ jääkaappi: [], pakastin: [], ruokakomero: [] }); 
   };
+
+  const editingMode = (location, id, text) => {
+    setEditedItem({location,id});
+    setEditedText(text);
+  }
+
+  const saveChanges = () => {
+    if (!editedItem || !editedText.trim()) return;
+  
+    setProductList(prevList => ({
+      ...prevList,
+      [editedItem.location]: prevList[editedItem.location].map(item =>
+        item.id === editedItem.id ? { ...item, key: editedText } : item 
+      ),
+    }));
+  
+    setEditedItem(null); 
+  };
+
+  const deleteItem = (location, id) => {
+    setProductList(prevList => ({
+      ...prevList,
+      [location]: prevList[location].filter(item => item.id !== id) 
+    }));
+    
+  }
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -28,7 +69,7 @@ const AddProduct = () => {
             style={styles.input}
           />
 
-       <DropDown/>
+          <DropDown onSelect={setStorageLocation} />
 
           <View style={styles.buttons}>
             <Painike onPress={addPressed} title="Lisää" />
@@ -37,10 +78,41 @@ const AddProduct = () => {
         </View>
 
         <Text>Ainesosien lista:</Text>
-        <FlatList
-          data={productList}
-          renderItem={({ item }) => <Text>{item.key}</Text>}
-        />
+
+        {Object.keys(productList).map(location => (
+          <View key={location} style={styles.listSection}>
+            <Text style={styles.locationHeader}>{location.toUpperCase()}</Text>
+            <FlatList
+              data={productList[location]}
+              keyExtractor={item => item.id}
+              renderItem={({ item }) => (
+                <View style={styles.listItem}>
+                  {editedItem?.id === item.id ? (
+                    <TextInput
+                      style={styles.input}
+                      value={editedText}
+                      onChangeText={setEditedText}
+                    />
+                  ) : (
+                    <TouchableOpacity onPress={() => editingMode(location, item.id, item.key)}>
+                      <Text>{item.key}</Text>
+                    </TouchableOpacity>
+                  )}
+
+                  {editedItem?.id === item.id ? (
+                    <Painike onPress={saveChanges} title="Tallenna" />
+                  ) : (
+                    <DeleteButton onPress={() => deleteItem(location, item.id)} title="Poista" />
+
+                  )}
+
+                 
+
+                </View>
+              )}
+            />
+          </View>
+        ))}
       </View>
     </TouchableWithoutFeedback>
   );
