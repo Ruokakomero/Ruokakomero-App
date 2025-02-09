@@ -1,9 +1,10 @@
 import { StyleSheet, Text, View } from 'react-native';
+import AddProduct from './AddProduct'
 
-export default function HomeScreen() {
+export default function AddProductsPage() {
   return (
     <View style={styles.container}>
-      <Text> Tervetuloa Ruokakomeroon!</Text>
+      <AddProduct/>
     </View>
   );
 }
