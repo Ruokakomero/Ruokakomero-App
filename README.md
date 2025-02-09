@@ -212,6 +212,7 @@ Tässä on Ruokakomero-sovelluksen tietokantarakenne. Se on suunniteltu tukemaan
 5. Asenna React Navigation:
    npm install @react-navigation/native
    npx expo install react-native-screens react-native-safe-area-context
+   npm install @react-navigation/bottom-tabs
 
 ## 9. Projektisuunnitelma
 
