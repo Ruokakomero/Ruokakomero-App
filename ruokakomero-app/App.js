@@ -1,11 +1,15 @@
-import React from 'react';
-import { View } from 'react-native';
-import AddProduct from './components/AddProduct';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import HomePage from './components/HomePage';
 
-export default function App() {
-  return (
-    <View style={{ flex: 1 }}>
-      <AddProduct />
-    </View>
+const Tab = createBottomTabNavigator();
+  
+export default function App() {
+  return (
+    <NavigationContainer>
+        <Tab.Navigator>
+        <Tab.Screen name="Home" component={HomePage} />
+      </Tab.Navigator>
+    </NavigationContainer>
   );
 }
