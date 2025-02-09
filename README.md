@@ -209,6 +209,10 @@ Tässä on Ruokakomero-sovelluksen tietokantarakenne. Se on suunniteltu tukemaan
    npx expo install @react-native-firebase/app
    ```
 
+5. Asenna React Navigation:
+   npm install @react-navigation/native
+   npx expo install react-native-screens react-native-safe-area-context
+
 ## 9. Projektisuunnitelma
 
 - **Sprinttijako:** 3 Viikon sprintit, yhteensä 4 sprinttiä
