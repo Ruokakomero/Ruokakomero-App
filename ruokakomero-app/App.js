@@ -10,9 +10,9 @@ export default function App() {
   return (
     <NavigationContainer>
         <Tab.Navigator>
-        <Tab.Screen name="Home" component={HomePage} />
-        <Tab.Screen name="ListProducts" component={ListProducts} />
-        <Tab.Screen name="AddProducts" component={AddProductsPage} />
+        <Tab.Screen name="Etusivu" component={HomePage} />
+        <Tab.Screen name="Ainesosat" component={ListProducts} />
+        <Tab.Screen name="Lisää ainesosia" component={AddProductsPage} />
       </Tab.Navigator>
     </NavigationContainer>
   );
