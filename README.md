@@ -126,7 +126,7 @@ Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunnitel
   "brand": "Example Brand",
   "defaultQuantity": 1,
   "defaultUnit": "liters",
-  "imageUrl": "https://example.com/milk.jpg",
+  "imageUrl": "https://example.com/milk-label",
   "nutritionalInfo": { "calories": 150, "protein": 8, ...}
 }
 ```
@@ -138,8 +138,8 @@ Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunnitel
   "recipeId": "recipe123",
   "name": "Pancakes",
   "ingredients": [
-    { "name": "Flour", "quantity": 2, "unit": "cups" },
-    { "name": "Milk", "quantity": 1, "unit": "cup" }
+    { "name": "Flour", "unit": "kilograms", ... },
+    { "name": "Milk", "unit": "liters", ... }
   ],
   "instructions": [
     "Mix ingredients.",
@@ -157,7 +157,7 @@ Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunnitel
   "householdId": "household123",
   "items": [
     { "name": "Milk", "quantity": 2, "unit": "liters" },
-    { "name": "Flour", "quantity": 1, "unit": "kg" }
+    { "name": "Flour", "quantity": 1, "unit": "kilograms" }
   ]
 }
 ```
@@ -170,7 +170,6 @@ Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunnitel
   "userId": "user123",
   "query": "What can I cook with items from our pantry?",
   "response": "You can make pancakes!",
-  "timestamp": "2025-02-08T12:05:00Z"
 }
 ```
 
