@@ -4,6 +4,7 @@ import HomePage from './components/HomePage';
 import AddProductsPage from './components/AddProductsPage';
 import ListProducts from './components/ListProducts';
 import { Ionicons } from "@expo/vector-icons";
+import Recipes from './components/Recipes';
 
 const Tab = createBottomTabNavigator();
 
@@ -32,7 +33,7 @@ export default function App() {
         <Tab.Screen name="Etusivu" component={HomePage} />
         <Tab.Screen name="Ainesosat" component={ListProducts} />
         <Tab.Screen name="Lisää ainesosia" component={AddProductsPage} />
-        <Tab.Screen name="Reseptit" component={AddProductsPage} />
+        <Tab.Screen name="Reseptit" component={Recipes} />
       </Tab.Navigator>
     </NavigationContainer>
   );
