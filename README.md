@@ -64,92 +64,128 @@ Ruokakomero-sovellus on suunniteltu vähentämään ruokahävikkiä ja helpottam
 
 ## 4. Tietokanta
 
-Tässä on Ruokakomero-sovelluksen tietokantarakenne. Se on suunniteltu tukemaan sovelluksen toiminnallisuuksia, kuten ruokavaraston hallintaa, viivakoodiskannausta ja reseptiehdotuksia.
+Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunniteltu tukemaan sovelluksen toiminnallisuuksia, kuten ruokavaraston hallintaa, viivakoodiskannausta ja reseptiehdotuksia.
 
 <details>
-<summary> Avaa tietokantataulut </summary>
+<summary> Avaa tietokantarakenne </summary>
 
-### **Users**
-| Kenttä        | Tietotyyppi  | Kuvaus |
-|--------------|------------|--------|
-| userId       | string (PK) | Käyttäjän uniikki tunniste |
-| name         | string      | Käyttäjän nimi |
-| email        | string (unique) | Käyttäjän sähköposti |
-| householdId  | string (FK) | Viittaus ruokakuntaan |
+### **Users Collection (users)**
 
-### **Households**
-| Kenttä        | Tietotyyppi  | Kuvaus |
-|--------------|------------|--------|
-| householdId  | string (PK) | Ruokakunnan tunniste |
-| name         | string      | Ruokakunnan nimi |
+#### Document Schema:
+```json
+{
+  "userId": "user123",
+  "name": "Example User",
+  "email": "example@email.com",
+  "householdId": "household123",
+}
+```
 
-### **StorageLocations**
-| Kenttä        | Tietotyyppi  | Kuvaus |
-|--------------|------------|--------|
-| storageId    | string (PK) | Säilytyspaikan tunniste |
-| householdId  | string (FK) | Viittaus ruokakuntaan |
-| name         | string      | Säilytyspaikan nimi |
+### Households Collection (`households`)
+#### Document Schema:
+```json
+{
+  "householdId": "household123",
+  "name": "Example Family",
+  "users": ["userId1", "userId2"]
+}
+```
 
-### **Items**
-| Kenttä         | Tietotyyppi  | Kuvaus |
-|--------------|------------|--------|
-| itemId        | string (PK) | Tuotteen tunniste |
-| householdId   | string (FK) | Viittaus ruokakuntaan |
-| storageId     | string (FK) | Viittaus säilytyspaikkaan |
-| name          | string      | Tuotteen nimi |
-| eanCode       | string (FK) | Viivakoodin tunniste |
-| quantity      | int         | Määrä |
-| unit          | string      | Yksikkö |
-| expirationDate | timestamp  | Viimeinen käyttöpäivä |
-| addedBy       | string (FK) | Käyttäjä, joka lisäsi tuotteen |
+### Storage Locations Collection (`households/<householdId>/storageLocations`)
+#### Document Schema:
+```json
+{
+  "storageId": "storage123",
+  "householdId": "household123",
+  "name": "Pantry"
+}
+```
 
-### **Products**
-| Kenttä          | Tietotyyppi  | Kuvaus |
-|--------------|------------|--------|
-| eanCode       | string (PK) | Viivakoodin tunniste |
-| name          | string      | Tuotteen nimi |
-| brand         | string      | Tuotemerkin nimi |
-| defaultUnit   | string      | Oletusyksikkö |
-| defaultQuantity | int       | Oletusmäärä |
-| imageUrl      | string      | Kuva tuotteen etiketistä |
-| nutritionalInfo | json      | Ravintotiedot |
+### Items Collection (`households/<householdId>/items`)
+#### Document Schema:
+```json
+{
+  "itemId": "item123",
+  "householdId": "household123",
+  "storageId": "storage123",
+  "name": "Milk",
+  "eanCode": "1234567890",
+  "quantity": 2,
+  "unit": "liters",
+  "expirationDate": "2025-02-15T12:00:00Z",
+  "addedBy": "userId1"
+}
+```
 
-### **Recipes**
-| Kenttä         | Tietotyyppi  | Kuvaus |
-|--------------|------------|--------|
-| recipeId      | string (PK) | Reseptin tunniste |
-| name          | string      | Reseptin nimi |
-| ingredients   | json        | Ainesosaluettelo |
-| instructions  | json        | Valmistusohjeet |
-| createdBy     | string (FK) | Käyttäjä, joka loi reseptin |
+### Products Collection (`products`)
+#### Document Schema:
+```json
+{
+  "eanCode": "1234567890",
+  "name": "Milk",
+  "brand": "Example Brand",
+  "defaultQuantity": 1,
+  "defaultUnit": "liters",
+  "imageUrl": "https://example.com/milk.jpg",
+  "nutritionalInfo": { "calories": 150, "protein": 8, ...}
+}
+```
 
-### **ShoppingLists**
-| Kenttä        | Tietotyyppi  | Kuvaus |
-|--------------|------------|--------|
-| listId       | string (PK) | Ostoslistan tunniste |
-| householdId  | string (FK) | Viittaus ruokakuntaan |
-| items        | json        | Ostoslistan tuotteet |
+### Recipes Collection (`recipes`)
+#### Document Schema:
+```json
+{
+  "recipeId": "recipe123",
+  "name": "Pancakes",
+  "ingredients": [
+    { "name": "Flour", "quantity": 2, "unit": "cups" },
+    { "name": "Milk", "quantity": 1, "unit": "cup" }
+  ],
+  "instructions": [
+    "Mix ingredients.",
+    "Cook on medium heat."
+  ],
+  "createdBy": "userId1"
+}
+```
 
-### **ChatbotInteractions**
-| Kenttä        | Tietotyyppi  | Kuvaus |
-|--------------|------------|--------|
-| interactionId | string (PK) | Keskustelun tunniste |
-| userId       | string (FK) | Viittaus käyttäjään |
-| query        | string      | Käyttäjän kysymys |
-| response     | string      | Chatbotin vastaus |
+### Shopping Lists Collection (`households/<householdId>/shoppingLists`)
+#### Document Schema:
+```json
+{
+  "listId": "list123",
+  "householdId": "household123",
+  "items": [
+    { "name": "Milk", "quantity": 2, "unit": "liters" },
+    { "name": "Flour", "quantity": 1, "unit": "kg" }
+  ]
+}
+```
+
+### Chatbot Interactions Collection (`users/<userId>/chatbotInteractions`)
+#### Document Schema:
+```json
+{
+  "interactionId": "interaction123",
+  "userId": "user123",
+  "query": "What can I cook with items from our pantry?",
+  "response": "You can make pancakes!",
+  "timestamp": "2025-02-08T12:05:00Z"
+}
+```
 
 </details>
 
-## 📌 Taulujen kuvaus
+## 📌 Kokoelmien kuvaus
 
-- **users**: Käyttäjät, jotka kuuluvat tiettyyn ruokakuntaan.
-- **households**: Ruokakunnat, joihin käyttäjät ja säilytyspaikat kuuluvat.
-- **storageLocations**: Säilytyspaikat, kuten jääkaappi tai kuivakaappi.
-- **items**: Tuotteet, jotka on lisätty säilytyspaikkoihin.
-- **products**: Yleistietokanta tuotteille, joiden tiedot haetaan viivakoodilla.
-- **recipes**: Käyttäjien reseptit, joissa hyödynnetään varastossa olevia tuotteita.
-- **shoppingLists**: Ruokakunnan ostoslistat.
-- **chatbotInteractions**: Chatbotin kanssa käydyt keskustelut ja ehdotukset.
+- **users collection**: Käyttäjät, jotka kuuluvat tiettyyn ruokakuntaan.
+- **households collection**: Ruokakunnat, joihin käyttäjät ja säilytyspaikat kuuluvat.
+- **storage locations collection**: Säilytyspaikat, kuten jääkaappi tai kuivakaappi.
+- **items collection**: Tuotteet, jotka on lisätty säilytyspaikkoihin.
+- **products collection**: Yleistietokanta tuotteille, joiden tiedot haetaan viivakoodilla.
+- **recipes colection**: Käyttäjien reseptit, joissa hyödynnetään varastossa olevia tuotteita.
+- **shopping lists collection**: Ruokakunnan ostoslistat.
+- **chatbot interactions collection**: Chatbotin kanssa käydyt keskustelut ja ehdotukset.
 
 
 ### Tietokantakaavio ()
