@@ -5,6 +5,8 @@ import AddProductsPage from './components/AddProductsPage';
 import ListProducts from './components/ListProducts';
 import { Ionicons } from "@expo/vector-icons";
 import Recipes from './components/Recipes';
+import Login from './components/Login';
+import ShoppingList from './components/ShoppingList';
 
 const Tab = createBottomTabNavigator();
 
@@ -24,6 +26,10 @@ export default function App() {
               iconName = "add-circle";
             } else if (route.name === "Reseptit") {
               iconName = "book";
+            } else if (route.name === "Kirjaudu") {
+              iconName = "log-in";
+            } else if (route.name === "Ostoslista") {
+              iconName = "cart";
             }
 
             return <Ionicons name={iconName} size={size} color={color} />;
@@ -34,6 +40,8 @@ export default function App() {
         <Tab.Screen name="Ainesosat" component={ListProducts} />
         <Tab.Screen name="Lisää ainesosia" component={AddProductsPage} />
         <Tab.Screen name="Reseptit" component={Recipes} />
+        <Tab.Screen name="Kirjaudu" component={Login} /> 
+        <Tab.Screen name="Ostoslista" component={ShoppingList} /> 
       </Tab.Navigator>
     </NavigationContainer>
   );
