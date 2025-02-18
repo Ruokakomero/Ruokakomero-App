@@ -64,7 +64,7 @@ Ruokakomero-sovellus on suunniteltu vähentämään ruokahävikkiä ja helpottam
 
 ## 4. Tietokanta
 
-Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunniteltu tukemaan sovelluksen toiminnallisuuksia, kuten ruokavaraston hallintaa, viivakoodiskannausta ja reseptiehdotuksia.
+Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunniteltu tukemaan sovelluksen toiminnallisuuksia, kuten ostostlistojen tekemistä sekä reseptiehdotuksia.
 
 <details>
 <summary> Avaa tietokantarakenne </summary>
@@ -77,61 +77,10 @@ Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunnitel
   "userId": "user123",
   "name": "Example User",
   "email": "example@email.com",
-  "householdId": "household123",
 }
 ```
 
-### Households Collection (`households`)
-#### Document Schema:
-```json
-{
-  "householdId": "household123",
-  "name": "Example Family",
-  "users": ["userId1", "userId2"]
-}
-```
-
-### Storage Locations Collection (`households/<householdId>/storageLocations`)
-#### Document Schema:
-```json
-{
-  "storageId": "storage123",
-  "householdId": "household123",
-  "name": "Pantry"
-}
-```
-
-### Items Collection (`households/<householdId>/items`)
-#### Document Schema:
-```json
-{
-  "itemId": "item123",
-  "householdId": "household123",
-  "storageId": "storage123",
-  "name": "Milk",
-  "eanCode": "1234567890",
-  "quantity": 2,
-  "unit": "liters",
-  "expirationDate": "2025-02-15T12:00:00Z",
-  "addedBy": "userId1"
-}
-```
-
-### Products Collection (`products`)
-#### Document Schema:
-```json
-{
-  "eanCode": "1234567890",
-  "name": "Milk",
-  "brand": "Example Brand",
-  "defaultQuantity": 1,
-  "defaultUnit": "liters",
-  "imageUrl": "https://example.com/milk-label",
-  "nutritionalInfo": { "calories": 150, "protein": 8, ...}
-}
-```
-
-### Recipes Collection (`recipes`)
+### Recipes Collection (`users/<userId>/recipes`)
 #### Document Schema:
 ```json
 {
@@ -145,16 +94,14 @@ Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunnitel
     "Mix ingredients.",
     "Cook on medium heat."
   ],
-  "createdBy": "userId1"
 }
 ```
 
-### Shopping Lists Collection (`households/<householdId>/shoppingLists`)
+### Shopping Lists Collection (`users/<userId>/shoppingLists`)
 #### Document Schema:
 ```json
 {
   "listId": "list123",
-  "householdId": "household123",
   "items": [
     { "name": "Milk", "quantity": 2, "unit": "liters" },
     { "name": "Flour", "quantity": 1, "unit": "kilograms" }
@@ -177,13 +124,9 @@ Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunnitel
 
 ## 📌 Kokoelmien kuvaus
 
-- **users collection**: Käyttäjät, jotka kuuluvat tiettyyn ruokakuntaan.
-- **households collection**: Ruokakunnat, joihin käyttäjät ja säilytyspaikat kuuluvat.
-- **storage locations collection**: Säilytyspaikat, kuten jääkaappi tai kuivakaappi.
-- **items collection**: Tuotteet, jotka on lisätty säilytyspaikkoihin.
-- **products collection**: Yleistietokanta tuotteille, joiden tiedot haetaan viivakoodilla.
-- **recipes colection**: Käyttäjien reseptit, joissa hyödynnetään varastossa olevia tuotteita.
-- **shopping lists collection**: Ruokakunnan ostoslistat.
+- **users collection**: Käyttäjät ja niiden tiedot.
+- **recipes collection**: Käyttäjien reseptit.
+- **shopping lists collection**: Käyttäjien ostoslistat.
 - **chatbot interactions collection**: Chatbotin kanssa käydyt keskustelut ja ehdotukset.
 
 
