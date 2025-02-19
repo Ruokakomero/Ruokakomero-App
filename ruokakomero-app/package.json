@@ -11,9 +11,13 @@
   "dependencies": {
     "@react-native-firebase/app": "^21.7.2",
     "@react-native-firebase/firestore": "^21.7.2",
+    "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/native": "^7.0.14",
     "expo": "~52.0.28",
     "expo-status-bar": "~2.0.1",
+    "install": "^0.13.0",
+    "npm": "^11.1.0",
+    "npx": "^10.2.2",
     "react": "18.3.1",
     "react-native": "0.76.6",
     "react-native-check-box": "^2.1.7",
