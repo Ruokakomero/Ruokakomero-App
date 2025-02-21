@@ -35,7 +35,11 @@ Ruokakomero-sovellus on mobiilisovellus, joka auttaa käyttäjiä seuraamaan ruo
 
 ## 1. Johdanto
 
-Ruokakomero-sovellus on suunniteltu vähentämään ruokahävikkiä ja helpottamaan arjen ruokasuunnittelua. Sovellus mahdollistaa jääkaapin, kuivakaapin ja pakastimen sisällön hallinnan, tiedon jakamisen ruokakunnan kesken sekä reseptiehdotukset tekoälyä hyödyntäen.
+Ruokakomero-sovellus on suunniteltu helpottamaan reseptien löytämistä ja ostoslistan luomista käyttäjäystävällisellä ja pelillistetyllä lähestymistavalla. Sen tavoitteena on tarjota yksilöllisiä reseptisuosituksia käyttäjän mieltymysten ja ravitsemuksellisten tarpeiden mukaisesti.
+
+Sovellus ohjaa käyttäjää reseptin valinnassa interaktiivisen käyttöliittymän avulla. Käyttäjä voi valita haluamansa hiilihydraatin, proteiinin ja annoskoon flashcard-tyylisellä valinnalla sekä säätää ruoan ravitsemuspitoisuutta liukusäätimellä. Näiden valintojen perusteella chatbot ehdottaa sopivia reseptejä. Mikäli saatavilla, resepteissä esitetään myös ravintoarvotiedot.
+
+Kun käyttäjä valitsee reseptin, sovellus luo siitä automaattisesti ostoslistan. Käyttäjä voi merkitä jo olemassa olevat ainesosat, jolloin ne poistuvat listalta. Lisäksi sovellus sisältää reseptien arviointitoiminnon, jonka avulla käyttäjä voi vaikuttaa suosituksiin. Pidetyistä resepteistä muodostuu henkilökohtainen reseptilista, kun taas epämieluisat reseptit suodattuvat pois, eikä chatbot ehdota niitä uudelleen.
 
 ---
 
@@ -43,7 +47,6 @@ Ruokakomero-sovellus on suunniteltu vähentämään ruokahävikkiä ja helpottam
 
 ### Käyttäjäryhmät
 - **Yksittäiset käyttäjät:** Sovelluksen käyttäminen henkilökohtaiseen tarpeeseen.
-- **Ruokakunnat:** Useamman käyttäjän datan synkronointi saman ruokakunnan kesken.
 
 ### Käyttötapaukset ja käyttäjätarinat
 - Käyttäjätarinat löytyvät [täältä](#käyttäjätarinat).
@@ -56,9 +59,10 @@ Ruokakomero-sovellus on suunniteltu vähentämään ruokahävikkiä ja helpottam
 - Visuaaliset kaaviot löytyvät Figmasta tai [UI-suunnitelmadokumentista](linkki).
 
 ### Käyttöliittymän näkymät
-- Päävalikko
-- Jääkaapin, kuivakaapin ja pakastimen sisällön hallinta
+- Etusivu
+- Ruokatoiveiden kysely
 - Chatbotin reseptiehdotukset
+- Reseptilistaus
 
 ---
 
