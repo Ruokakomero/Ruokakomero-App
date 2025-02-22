@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,10 +8,13 @@ import {
   FlatList,
   Alert,
   TouchableOpacity,
+  Modal,
+  ScrollView,
+  TouchableWithoutFeedback,
 } from "react-native";
-import { Dropdown } from "react-native-element-dropdown";
-import { useState } from "react";
-import RecipeCollection from "./RecipeCollection";
+import { Picker } from "@react-native-picker/picker";
+import Slider from "@react-native-community/slider";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function Recipes() {
   const [error, setError] = useState(null);
@@ -21,60 +25,115 @@ export default function Recipes() {
     instructions: [],
     image: "",
   });
+  const [ingredientName, setIngredientName] = useState("");
+  const [ingredientQuantity, setIngredientQuantity] = useState(0); 
+  const [ingredientUnit, setIngredientUnit] = useState("kg");
+  const [instructionStep, setInstructionStep] = useState("");
+  const [savedRecipes, setSavedRecipes] = useState([
+    {
+      id: "1",
+      name: "Paprika-kana-pita",
+      ingredients: [
+        { name: "Paprika", quantity: "2", unit: "kg", type: "vegetable" },
+        { name: "Kana", quantity: "1", unit: "kg", type: "meat" },
+        { name: "Pita", quantity: "2", unit: "kg", type: "grain" },
+      ],
+      instructions: [
+        "Paprika ja kana levitävät.",
+        "Pita ja paprika keskittyvät.",
+        "Pita ja paprika jäseniä kuitenkin kasvatetaan.",
+      ],
+      image: "https://example.com/paprika-kana-pita.jpg",
+    },
+    {
+      id: "2",
+      name: "Kermainen lohikeitto",
+      ingredients: [
+        { name: "Lohi", quantity: "1", unit: "kg", type: "fish" },
+        { name: "Peruna", quantity: "1", unit: "kg", type: "vegetable" },
+        { name: "Sipuli", quantity: "1", unit: "kg", type: "vegetable" },
+      ],
+      instructions: [
+        "Lohi ja peruna leikataan.",
+        "Sipuli ja lohi sekoitetaan.",
+        "Peruna ja sipuli jäseniä kuitenkin kasvatetaan.",
+      ],
+      image: "https://example.com/kermainen-lohikeitto.jpg",
+    },
+    {
+      id: "3",
+      name: "Makaronilaatikko",
+      ingredients: [
+        { name: "Makaroni", quantity: "1", unit: "kg", type: "grain" },
+        { name: "Jauheliha", quantity: "1", unit: "kg", type: "meat" },
+        { name: "Maito", quantity: "1", unit: "l", type: "dairy" },
+      ],
+      instructions: [
+        "Makaroni ja jauheliha leikataan.",
+        "Maito ja makaroni sekoitetaan.",
+        "Jauheliha ja maito jäseniä kuitenkin kasvatetaan.",
+      ],
+      image: "https://example.com/makaronilaatikko.jpg",
+    },
+  ]);
+  const [isAddModalVisible, setIsAddModalVisible] = useState(false);
+  const [isRecipeDetailVisible, setIsRecipeDetailVisible] = useState(false);
+  const [selectedRecipe, setSelectedRecipe] = useState(null);
+  const [isSearchActive, setIsSearchActive] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [menuVisible, setMenuVisible] = useState(null);
+  const [activeTab, setActiveTab] = useState("reseptit");
 
-  const [name, setName] = useState("");
-  const [quantity, setQuantity] = useState("");
-  const [unit, setUnit] = useState("");
-  const [value, setValue] = useState(null);
-  const [view, setView] = useState("create"); 
-  const [savedRecipes, setSavedRecipes] = useState([]); 
-
-  const data = [
-    { label: "kg", value: "1" },
-    { label: "g", value: "2" },
-    { label: "l", value: "3" },
-    { label: "ml", value: "4" },
-    { label: "kpl", value: "5" },
-  ];
-
-  const createItem = (name, quantity, unit) => {
-    if (!name || !quantity || !unit) {
-      setError("Kaikki kentät ovat pakollisia");
-      Alert.alert("Error", error);
-      return null;
-    }
-    setError(null);
-    return {
-      name: name,
-      quantity: quantity,
-      unit: unit,
-      type: "",
-    };
+  // Define unit ranges and increments
+  const unitSettings = {
+    kg: { min: 0, max: 5, step: 0.1 },
+    g: { min: 0, max: 1000, step: 50 },
+    l: { min: 0, max: 5, step: 0.1 },
+    ml: { min: 0, max: 1000, step: 50 },
+    kpl: { min: 0, max: 20, step: 1 },
   };
 
-  const handleAddItem = () => {
-    const newItem = createItem(name, quantity, unit);
-
-    if (newItem) {
-      setRecipe((prevRecipe) => ({
-        ...prevRecipe,
-        ingredients: [...prevRecipe.ingredients, newItem],
-      }));
-
-      setName("");
-      setQuantity("");
-      setValue(null);
-    }
-    console.log(recipe);
-  };
-
-  const saveRecipe = () => {
-    if (!recipe.name || recipe.ingredients.length === 0) {
-      Alert.alert("Error", "Syötä reseptille nimi ja lisää yksi ainesosa ennen tallentamista!");
+  const handleAddIngredient = () => {
+    if (!ingredientName || ingredientQuantity <= 0) {
+      Alert.alert("Virhe", "Täytä kaikki ainesosan kentät!");
       return;
     }
+    setRecipe((prevRecipe) => ({
+      ...prevRecipe,
+      ingredients: [
+        ...prevRecipe.ingredients,
+        {
+          name: ingredientName,
+          quantity: ingredientQuantity.toString(),
+          unit: ingredientUnit,
+        },
+      ],
+    }));
+    setIngredientName("");
+    setIngredientQuantity(0); // ✅ Reset slider
+  };
 
-    setSavedRecipes([...savedRecipes, recipe]);
+  const handleAddInstruction = () => {
+    if (!instructionStep) {
+      Alert.alert("Virhe", "Lisää ohje!");
+      return;
+    }
+    setRecipe((prevRecipe) => ({
+      ...prevRecipe,
+      instructions: [...prevRecipe.instructions, instructionStep],
+    }));
+    setInstructionStep("");
+  };
+
+  const handleAddRecipe = () => {
+    if (!recipe.name || recipe.ingredients.length === 0) {
+      Alert.alert("Virhe", "Lisää reseptin nimi ja vähintään yksi ainesosa!");
+      return;
+    }
+    setSavedRecipes([
+      ...savedRecipes,
+      { ...recipe, id: Date.now().toString() },
+    ]);
     setRecipe({
       id: "",
       name: "",
@@ -82,81 +141,221 @@ export default function Recipes() {
       instructions: [],
       image: "",
     });
-    Alert.alert("Success", "Resepti tallennettu!");
+    setIsAddModalVisible(false);
   };
 
-  const addToCollection = (collection, collectionIndex) => {
-    if (savedRecipes.length === 0) {
-      Alert.alert("Error", "Ei reseptejä lisättävänä");
-      return;
+  const handleDeleteRecipe = (id) => {
+    const updatedRecipes = savedRecipes.filter((rec) => rec.id !== id);
+    setSavedRecipes(updatedRecipes);
+  };
+
+  const handleEditRecipe = (id) => {
+    const recipeToEdit = savedRecipes.find((rec) => rec.id === id);
+    if (recipeToEdit) {
+      setRecipe(recipeToEdit);
+      setIsAddModalVisible(true);
     }
-
- 
-    collection.recipes.push(savedRecipes[0]);
-    Alert.alert("Success", `Testi -resepti lisätty ${collection.name}`);
   };
+
+  const handleViewRecipe = (recipe) => {
+    setSelectedRecipe(recipe);
+    setIsRecipeDetailVisible(true);
+  };
+
+  const filteredRecipes = savedRecipes.filter((rec) =>
+    rec.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <View style={styles.container}>
-      <View style={styles.navBar}>
-        <Button title="Luo resepti" onPress={() => setView("create")} />
-        <Button title="Näytä Reseptiryhmät" onPress={() => setView("collection")} />
+      <View style={styles.topButtonsContainer}>
+        <TouchableOpacity
+          style={styles.circleButton}
+          onPress={() => setIsAddModalVisible(true)}
+        >
+          <Ionicons name="add" size={24} color="white" />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.circleButton}
+          onPress={() => setIsSearchActive(!isSearchActive)}
+        >
+          <Ionicons name="search" size={24} color="white" />
+        </TouchableOpacity>
       </View>
 
-      {view === "create" ? (
-        <View style={styles.createRecipe}>
-          <Text style={styles.header}>Luo resepti</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Reseptin nimi"
-            value={recipe.name}
-            onChangeText={(text) => setRecipe({ ...recipe, name: text })}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Ainesosa"
-            value={name}
-            onChangeText={setName}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Määrä"
-            value={quantity}
-            onChangeText={setQuantity}
-            keyboardType="numeric"
-          />
-          <Dropdown
-            style={styles.input}
-            placeholderStyle={styles.placeholderStyle}
-            selectedTextStyle={styles.selectedTextStyle}
-            data={data}
-            labelField="label"
-            valueField="value"
-            placeholder="Yksikkö"
-            value={value}
-            onChange={(item) => {
-              setValue(item.value);
-              setUnit(item.label);
-            }}
-          />
-          <Button title="Lisää ainesosa" onPress={handleAddItem} />
-          <FlatList
-            data={recipe.ingredients}
-            keyExtractor={(item, index) => `${item.name}-${index}`}
-            renderItem={({ item }) => (
-              <View style={styles.item}>
-                <Text>{item.name}</Text>
-                <Text>
-                  {item.quantity} {item.unit}
-                </Text>
-              </View>
-            )}
-          />
-          <Button title="Tallenna resepti" onPress={saveRecipe} />
-        </View>
-      ) : (
-        <RecipeCollection recipes={savedRecipes} onAddToCollection={addToCollection} />
+      {isSearchActive && (
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Hae reseptejä"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
       )}
+
+      <Text style={styles.header}>Tallennetut Reseptit</Text>
+      <FlatList
+        data={filteredRecipes}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <TouchableOpacity onPress={() => handleViewRecipe(item)}>
+            <View style={styles.recipeCard}>
+              <View style={styles.recipeHeader}>
+                <Text style={styles.recipeName}>{item.name}</Text>
+                <TouchableOpacity
+                  onPress={() =>
+                    setMenuVisible(menuVisible === item.id ? null : item.id)
+                  }
+                >
+                  <Ionicons name="ellipsis-vertical" size={24} color="black" />
+                </TouchableOpacity>
+              </View>
+
+              {menuVisible === item.id && (
+                <View style={styles.menuOptions}>
+                  <Button
+                    title="Muokkaa"
+                    onPress={() => handleEditRecipe(item.id)}
+                  />
+                  <Button
+                    title="Poista"
+                    color="red"
+                    onPress={() => handleDeleteRecipe(item.id)}
+                  />
+                </View>
+              )}
+            </View>
+          </TouchableOpacity>
+        )}
+      />
+
+      <Modal
+        visible={isAddModalVisible}
+        animationType="slide"
+        transparent={true}
+      >
+        <TouchableWithoutFeedback onPress={() => setIsAddModalVisible(false)}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContentCreate}>
+              <Text style={styles.header}>Luo Resepti</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Reseptin nimi"
+                value={recipe.name}
+                onChangeText={(text) => setRecipe({ ...recipe, name: text })}
+              />
+
+              <Text style={styles.subHeader}>Lisää Ainesosa</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Ainesosan nimi"
+                value={ingredientName}
+                onChangeText={setIngredientName}
+              />
+              <Text style={styles.subHeader}>
+                Määrä: {ingredientQuantity} {ingredientUnit}
+              </Text>
+              <Slider
+                style={{ width: "100%", height: 40 }}
+                minimumValue={unitSettings[ingredientUnit].min}
+                maximumValue={unitSettings[ingredientUnit].max}
+                step={unitSettings[ingredientUnit].step}
+                value={ingredientQuantity}
+                onValueChange={setIngredientQuantity}
+                minimumTrackTintColor="#007BFF"
+                maximumTrackTintColor="#ccc"
+              />
+
+              <Picker
+                selectedValue={ingredientUnit}
+                style={styles.input}
+                onValueChange={(itemValue) => setIngredientUnit(itemValue)}
+              >
+                <Picker.Item label="kg" value="kg" />
+                <Picker.Item label="g" value="g" />
+                <Picker.Item label="l" value="l" />
+                <Picker.Item label="ml" value="ml" />
+                <Picker.Item label="kpl" value="kpl" />
+              </Picker>
+              <Button title="Lisää Ainesosa" onPress={handleAddIngredient} />
+
+              <FlatList
+                data={recipe.ingredients}
+                keyExtractor={(item, index) => `${item.name}-${index}`}
+                contentContainerStyle={{ paddingBottom: 20 }}
+                renderItem={({ item, index }) => (
+                  <Text style={styles.ingredientItem}>
+                    {index + 1}. {item.name} - {item.quantity} {item.unit}
+                  </Text>
+                )}
+              />
+
+              <Text style={styles.subHeader}>Lisää Ohjeet</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Kirjoita ohje"
+                value={instructionStep}
+                onChangeText={setInstructionStep}
+              />
+              <Button title="Lisää Ohje" onPress={handleAddInstruction} />
+
+              <FlatList
+                data={recipe.instructions}
+                keyExtractor={(item, index) => `${item}-${index}`}
+                contentContainerStyle={{ paddingBottom: 20 }}
+                renderItem={({ item, index }) => (
+                  <Text>{`${index + 1}. ${item}`}</Text>
+                )}
+              />
+              <TouchableOpacity
+                style={styles.saveButton}
+                onPress={handleAddRecipe}
+              >
+                <Text style={styles.saveButtonText}>Tallenna</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setIsAddModalVisible(false)}
+              >
+                <Text style={styles.closeButtonText}>Sulje</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
+
+      <Modal
+        visible={isRecipeDetailVisible}
+        animationType="slide"
+        transparent={true}
+      >
+        <TouchableWithoutFeedback
+          onPress={() => setIsRecipeDetailVisible(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <ScrollView style={styles.modalContentRecipe}>
+              <Text style={styles.header}>{selectedRecipe?.name}</Text>
+              <Text style={styles.subHeader}>Ainesosat</Text>
+              {selectedRecipe?.ingredients.map((ing, idx) => (
+                <Text
+                  key={idx}
+                >{`${ing.name}: ${ing.quantity} ${ing.unit}`}</Text>
+              ))}
+
+              <Text style={styles.subHeader}>Ohjeet</Text>
+              {selectedRecipe?.instructions.map((step, idx) => (
+                <Text key={idx}>{`${idx + 1}. ${step}`}</Text>
+              ))}
+
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setIsRecipeDetailVisible(false)}
+              >
+                <Text style={styles.closeButtonText}>Sulje</Text>
+              </TouchableOpacity>
+            </ScrollView>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </View>
   );
 }
@@ -167,35 +366,119 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 20,
   },
-  navBar: {
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.85)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContentCreate: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    marginTop: 50,
+    width: "90%",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalContentRecipe: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    marginTop: 50,
+    shadowColor: "#000",
+    width: "90%",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    maxHeight: "40%",
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "gray",
+    padding: 10,
+    marginBottom: 10,
+  },
+  topButtonsContainer: {
     flexDirection: "row",
-    justifyContent: "space-around",
+    justifyContent: "flex-start",
     marginBottom: 20,
   },
-  createRecipe: {
-    flex: 1,
+  circleButton: {
+    backgroundColor: "#007BFF",
+    borderRadius: 25,
+    width: 50,
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    marginHorizontal: 5,
+  },
+  searchInput: {
+    borderWidth: 1,
+    borderColor: "gray",
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 10,
   },
   header: {
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 10,
   },
-  input: {
-    height: 40,
-    borderColor: "gray",
+  subHeader: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginTop: 10,
+  },
+  recipeCard: {
+    padding: 15,
     borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
     marginBottom: 10,
-    padding: 10,
   },
-  item: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
+  recipeHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
-  placeholderStyle: {
+  recipeName: {
     fontSize: 16,
+    fontWeight: "bold",
   },
-  selectedTextStyle: {
+  menuOptions: {
+    marginTop: 10,
+    backgroundColor: "#f0f0f0",
+    padding: 5,
+    borderRadius: 5,
+  },
+  closeButton: {
+    padding: 10,
+    backgroundColor: "#8a3633",
+    borderRadius: 5,
+    marginTop: 10,
+  },
+
+  closeButtonText: {
     fontSize: 16,
+    color: "#ffffff",
+    textAlign: "center",
+  },
+
+  saveButton: {
+    padding: 10,
+    backgroundColor: "#007BFF",
+    borderRadius: 5,
+    marginTop: 10,
+  },
+
+  saveButtonText: {
+    fontSize: 16,
+    color: "#ffffff",
+    textAlign: "center",
   },
 });
