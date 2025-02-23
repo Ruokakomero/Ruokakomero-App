@@ -1,87 +1,87 @@
-import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
-import { FlatList, TouchableOpacity, StyleSheet, Keyboard, Text, View, TouchableWithoutFeedback, TextInput } from 'react-native';
+import { StyleSheet, Text, TextInput, Button, View, Alert, FlatList } from 'react-native';
+import { app } from '../constants/firebaseConfig';
+import { getDatabase, ref, push, onValue, remove } from "firebase/database";
+import { useState, useEffect } from 'react';
 
 export default function App() {
 
-  const [product, setProduct] = useState("");
-  const [historys, setHistorys] = useState([]);
+  const [product, setProduct] = useState({
+    title: '',
+    amount: ''
+  });
+  const [items, setItems] = useState([]);
 
+  const database = getDatabase(app);
 
-  const Painike = ({ onPress, title }) => (
-    <TouchableOpacity onPress={onPress} style={styles.buttonContainer}>
-      <Text style={styles.buttonText}>{title}</Text>
-    </TouchableOpacity>
-  );
+  const handleSave = () => {
+    if (product.amount && product.title) {
+      // Tallennetaan tuote ja saadaan yksilöivä avain (key)
+      push(ref(database, 'items/'), product);
+    } else {
+      Alert.alert('Error', 'Type product and amount first');
+    }
+  }
 
-  const addPressed = () => {
-    setHistorys(prevHistorys => [...prevHistorys, { key: product }]);
+  // Poistotoiminto
+  const deleteItem = (id) => {
+    const itemRef = ref(database, `items/${id}`);
+    remove(itemRef)
+      .then(() => {
+        Alert.alert('Item removed successfully');
+      })
+      .catch(error => {
+        Alert.alert('Error', 'Failed to remove item');
+      });
   };
 
-  const clearPressed = () => {
-    setHistorys([]);
-  };
+  // Haetaan tiedot tietokannasta
+  useEffect(() => {
+    const itemsRef = ref(database, 'items/');
+    onValue(itemsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        // Muutetaan data objektiksi, joka sisältää sekä key:n että tuotteen tiedot
+        const loadedItems = Object.keys(data).map(key => ({
+          id: key,
+          ...data[key]
+        }));
+        setItems(loadedItems);
+      } else {
+        setItems([]); // Jos ei ole kohteita
+      }
+    });
+  }, []);
 
   return (
-    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <View style={styles.container}>
+    <View style={styles.container}>
+      <TextInput
+        placeholder='Product title'
+        onChangeText={text => setProduct({ ...product, title: text })}
+        value={product.title} />
+      <TextInput
+        placeholder='Amount'
+        onChangeText={text => setProduct({ ...product, amount: text })}
+        value={product.amount} />
+      <Button onPress={handleSave} title="Save" />
 
-        <View style={styles.textInputs}>
-          <TextInput
-            placeholder='Lisää tuote'
-            onChangeText={setProduct}
-            value={product}
-            style={styles.input}
-          />
-
-          <View style={styles.buttons}>
-            <Painike onPress={addPressed} title="Lisää" />
-            <Painike onPress={clearPressed} title="Tyhjennä" />
-          </View>
-        </View>
-
-<Text> Ostoslista: </Text>
-        <FlatList
-          data={historys}
-          renderItem={({ item }) => <Text>{item.key}</Text>}
-        />
-
-      </View>
-    </TouchableWithoutFeedback>
+      <FlatList
+        keyExtractor={item => item.id} // Käytetään id:tä avaimena
+        renderItem={({ item }) =>
+          <View style={styles.listcontainer}>
+            <Text style={{ fontSize: 18 }}>{item.title}, {item.amount}</Text>
+            <Text style={{ color: '#0000ff' }} onPress={() => deleteItem(item.id)}>delete</Text>
+          </View>}
+        data={items} />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 300,
     flex: 1,
     backgroundColor: '#fff',
-    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  textInputs: {
-    marginBottom: 20,
-  },
-  input: {
-    borderColor: '#000',
-    borderWidth: 0.5,
-    marginBottom: 10,
-    padding: 8,
-    width: 200,
-  },
-  buttons: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    width: '25%',
-  },
-  buttonContainer: {
-    backgroundColor: '#009688',
-    paddingHorizontal: 10,
-    paddingVertical: 10,
-  },
-  buttonText: {
-    color: '#fff',
+    marginTop: 150
   },
 });
