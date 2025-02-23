@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FlatList, TextInput, Text, View, TouchableOpacity, StyleSheet } from 'react-native';
-
+/*POISTETAANKO?*/
 const ListProducts = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("jääkaappi");

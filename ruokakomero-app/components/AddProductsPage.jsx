@@ -1,6 +1,8 @@
 import { StyleSheet, Text, View } from 'react-native';
 import AddProduct from './AddProduct'
 
+
+/*POISTETAANKO?*/
 export default function AddProductsPage() {
   return (
     <View style={styles.container}>
