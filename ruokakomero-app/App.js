@@ -20,10 +20,6 @@ export default function App() {
 
             if (route.name === "Etusivu") {
               iconName = "home";
-            } else if (route.name === "Ainesosat") {
-              iconName = "list";
-            } else if (route.name === "Lisää ainesosia") {
-              iconName = "add-circle";
             } else if (route.name === "Reseptit") {
               iconName = "book";
             } else if (route.name === "Kirjaudu") {
@@ -37,8 +33,7 @@ export default function App() {
         })}
       >
         <Tab.Screen name="Etusivu" component={HomePage} />
-        <Tab.Screen name="Ainesosat" component={ListProducts} />
-        <Tab.Screen name="Lisää ainesosia" component={AddProductsPage} />
+     
         <Tab.Screen name="Reseptit" component={Recipes} />
         <Tab.Screen name="Kirjaudu" component={Login} /> 
         <Tab.Screen name="Ostoslista" component={ShoppingList} /> 
