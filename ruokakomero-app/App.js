@@ -6,6 +6,7 @@ import ListProducts from './components/ListProducts';
 import { Ionicons } from "@expo/vector-icons";
 import Recipes from './components/Recipes';
 import Login from './components/Login';
+import Register from './components/Register';
 import ShoppingList from './components/ShoppingList';
 
 const Tab = createBottomTabNavigator();
@@ -24,6 +25,8 @@ export default function App() {
               iconName = "book";
             } else if (route.name === "Kirjaudu") {
               iconName = "log-in";
+            } else if (route.name === "Rekisteröidy") {
+              iconName = "person-add";
             } else if (route.name === "Ostoslista") {
               iconName = "cart";
             }
@@ -33,9 +36,9 @@ export default function App() {
         })}
       >
         <Tab.Screen name="Etusivu" component={HomePage} />
-     
         <Tab.Screen name="Reseptit" component={Recipes} />
         <Tab.Screen name="Kirjaudu" component={Login} /> 
+        <Tab.Screen name="Rekisteröidy" component={Register} />
         <Tab.Screen name="Ostoslista" component={ShoppingList} /> 
       </Tab.Navigator>
     </NavigationContainer>
