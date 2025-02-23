@@ -12,21 +12,26 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-export default function RecipeCollection({ recipes = [], onAddToCollection }) {
+export default function RecipeCollection({
+  recipes = [{}],
+  onAddToCollection,
+}) {
   const [collectionName, setCollectionName] = useState("");
   const [collections, setCollections] = useState([
     {
       name: "Suosikit",
       recipes: [
         {
+          id: "",
           name: "Pasta",
           ingredients: ["Spaghetti", "Tomato Sauce"],
-          instructions: "Boil pasta and add sauce.",
+          instructions: ["Boil pasta and add sauce."],
         },
         {
+          id: "",
           name: "Pizza",
           ingredients: ["Dough", "Cheese", "Tomato Sauce"],
-          instructions: "Bake at 200°C for 15 min.",
+          instructions: ["Bake at 200°C for 15 min."],
         },
       ],
     },
@@ -34,9 +39,10 @@ export default function RecipeCollection({ recipes = [], onAddToCollection }) {
       name: "Nopeat Ruoat",
       recipes: [
         {
+          id: "",
           name: "Salaatti",
           ingredients: ["Lettuce", "Tomato", "Cucumber"],
-          instructions: "Mix all ingredients.",
+          instructions: ["Mix all ingredients.", "Add dressing."],
         },
       ],
     },
@@ -136,7 +142,6 @@ export default function RecipeCollection({ recipes = [], onAddToCollection }) {
         renderItem={({ item, index }) => (
           <View style={styles.collectionItem}>
             <View style={styles.collectionHeader}>
-              
               <TouchableOpacity
                 onPress={() =>
                   setMenuVisible(menuVisible === index ? null : index)
@@ -188,7 +193,6 @@ export default function RecipeCollection({ recipes = [], onAddToCollection }) {
         )}
       />
 
-     
       <Modal
         visible={addRecipeModalVisible}
         animationType="slide"
@@ -215,7 +219,7 @@ export default function RecipeCollection({ recipes = [], onAddToCollection }) {
         </View>
       </Modal>
 
-      {/* Modal for Recipe Details */}
+     
       {recipeDetail && (
         <Modal
           visible={true}
@@ -228,14 +232,14 @@ export default function RecipeCollection({ recipes = [], onAddToCollection }) {
               <Text style={styles.header}>{recipeDetail.name}</Text>
               <Text style={styles.subHeader}>Ainesosat:</Text>
               {recipeDetail.ingredients.map((ing, idx) => (
-                <Text key={idx}>- {ing}</Text>
+                <Text key={idx}>
+                  - {ing.name}: {ing.quantity} {ing.unit}
+                </Text>
               ))}
+
               <Text style={styles.subHeader}>Ohjeet:</Text>
               <Text>{recipeDetail.instructions}</Text>
-              <Button
-                title="Sulje"
-                onPress={() => setRecipeDetail(null)}
-              />
+              <Button title="Sulje" onPress={() => setRecipeDetail(null)} />
             </View>
           </View>
         </Modal>

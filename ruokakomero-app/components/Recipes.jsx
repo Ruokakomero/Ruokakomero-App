@@ -15,6 +15,7 @@ import {
 import { Picker } from "@react-native-picker/picker";
 import Slider from "@react-native-community/slider";
 import { Ionicons } from "@expo/vector-icons";
+import RecipeCollection from "./RecipeCollection";
 
 export default function Recipes() {
   const [error, setError] = useState(null);
@@ -84,7 +85,7 @@ export default function Recipes() {
   const [menuVisible, setMenuVisible] = useState(null);
   const [activeTab, setActiveTab] = useState("reseptit");
 
-  // Define unit ranges and increments
+ 
   const unitSettings = {
     kg: { min: 0, max: 5, step: 0.1 },
     g: { min: 0, max: 1000, step: 50 },
@@ -110,7 +111,7 @@ export default function Recipes() {
       ],
     }));
     setIngredientName("");
-    setIngredientQuantity(0); // ✅ Reset slider
+    setIngredientQuantity(0); 
   };
 
   const handleAddInstruction = () => {
@@ -168,161 +169,181 @@ export default function Recipes() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.topButtonsContainer}>
+      <View style={styles.tabContainer}>
         <TouchableOpacity
-          style={styles.circleButton}
-          onPress={() => setIsAddModalVisible(true)}
+          style={[styles.tabButton, activeTab === "reseptit" && styles.activeTab]}
+          onPress={() => setActiveTab("reseptit")}
         >
-          <Ionicons name="add" size={24} color="white" />
+          <Text style={styles.tabText}>Reseptit</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.circleButton}
-          onPress={() => setIsSearchActive(!isSearchActive)}
+          style={[styles.tabButton, activeTab === "kokoelmat" && styles.activeTab]}
+          onPress={() => setActiveTab("kokoelmat")}
         >
-          <Ionicons name="search" size={24} color="white" />
+          <Text style={styles.tabText}>Kokoelmat</Text>
         </TouchableOpacity>
       </View>
 
-      {isSearchActive && (
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Hae reseptejä"
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
-      )}
-
-      <Text style={styles.header}>Tallennetut Reseptit</Text>
-      <FlatList
-        data={filteredRecipes}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => handleViewRecipe(item)}>
-            <View style={styles.recipeCard}>
-              <View style={styles.recipeHeader}>
-                <Text style={styles.recipeName}>{item.name}</Text>
-                <TouchableOpacity
-                  onPress={() =>
-                    setMenuVisible(menuVisible === item.id ? null : item.id)
-                  }
-                >
-                  <Ionicons name="ellipsis-vertical" size={24} color="black" />
-                </TouchableOpacity>
-              </View>
-
-              {menuVisible === item.id && (
-                <View style={styles.menuOptions}>
-                  <Button
-                    title="Muokkaa"
-                    onPress={() => handleEditRecipe(item.id)}
-                  />
-                  <Button
-                    title="Poista"
-                    color="red"
-                    onPress={() => handleDeleteRecipe(item.id)}
-                  />
-                </View>
-              )}
-            </View>
-          </TouchableOpacity>
-        )}
-      />
-
-      <Modal
-        visible={isAddModalVisible}
-        animationType="slide"
-        transparent={true}
-      >
-        <TouchableWithoutFeedback onPress={() => setIsAddModalVisible(false)}>
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContentCreate}>
-              <Text style={styles.header}>Luo Resepti</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Reseptin nimi"
-                value={recipe.name}
-                onChangeText={(text) => setRecipe({ ...recipe, name: text })}
-              />
-
-              <Text style={styles.subHeader}>Lisää Ainesosa</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Ainesosan nimi"
-                value={ingredientName}
-                onChangeText={setIngredientName}
-              />
-              <Text style={styles.subHeader}>
-                Määrä: {ingredientQuantity} {ingredientUnit}
-              </Text>
-              <Slider
-                style={{ width: "100%", height: 40 }}
-                minimumValue={unitSettings[ingredientUnit].min}
-                maximumValue={unitSettings[ingredientUnit].max}
-                step={unitSettings[ingredientUnit].step}
-                value={ingredientQuantity}
-                onValueChange={setIngredientQuantity}
-                minimumTrackTintColor="#007BFF"
-                maximumTrackTintColor="#ccc"
-              />
-
-              <Picker
-                selectedValue={ingredientUnit}
-                style={styles.input}
-                onValueChange={(itemValue) => setIngredientUnit(itemValue)}
-              >
-                <Picker.Item label="kg" value="kg" />
-                <Picker.Item label="g" value="g" />
-                <Picker.Item label="l" value="l" />
-                <Picker.Item label="ml" value="ml" />
-                <Picker.Item label="kpl" value="kpl" />
-              </Picker>
-              <Button title="Lisää Ainesosa" onPress={handleAddIngredient} />
-
-              <FlatList
-                data={recipe.ingredients}
-                keyExtractor={(item, index) => `${item.name}-${index}`}
-                contentContainerStyle={{ paddingBottom: 20 }}
-                renderItem={({ item, index }) => (
-                  <Text style={styles.ingredientItem}>
-                    {index + 1}. {item.name} - {item.quantity} {item.unit}
-                  </Text>
-                )}
-              />
-
-              <Text style={styles.subHeader}>Lisää Ohjeet</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Kirjoita ohje"
-                value={instructionStep}
-                onChangeText={setInstructionStep}
-              />
-              <Button title="Lisää Ohje" onPress={handleAddInstruction} />
-
-              <FlatList
-                data={recipe.instructions}
-                keyExtractor={(item, index) => `${item}-${index}`}
-                contentContainerStyle={{ paddingBottom: 20 }}
-                renderItem={({ item, index }) => (
-                  <Text>{`${index + 1}. ${item}`}</Text>
-                )}
-              />
-              <TouchableOpacity
-                style={styles.saveButton}
-                onPress={handleAddRecipe}
-              >
-                <Text style={styles.saveButtonText}>Tallenna</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.closeButton}
-                onPress={() => setIsAddModalVisible(false)}
-              >
-                <Text style={styles.closeButtonText}>Sulje</Text>
-              </TouchableOpacity>
-            </View>
+      {activeTab === "reseptit" ? (
+        <>
+          <View style={styles.topButtonsContainer}>
+            <TouchableOpacity
+              style={styles.circleButton}
+              onPress={() => setIsAddModalVisible(true)}
+            >
+              <Ionicons name="add" size={24} color="white" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.circleButton}
+              onPress={() => setIsSearchActive(!isSearchActive)}
+            >
+              <Ionicons name="search" size={24} color="white" />
+            </TouchableOpacity>
           </View>
-        </TouchableWithoutFeedback>
-      </Modal>
 
+          {isSearchActive && (
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Hae reseptejä"
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+          )}
+
+          <Text style={styles.header}>Tallennetut Reseptit</Text>
+          <FlatList
+            data={filteredRecipes}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <TouchableOpacity onPress={() => handleViewRecipe(item)}>
+                <View style={styles.recipeCard}>
+                  <View style={styles.recipeHeader}>
+                    <Text style={styles.recipeName}>{item.name}</Text>
+                    <TouchableOpacity
+                      onPress={() =>
+                        setMenuVisible(menuVisible === item.id ? null : item.id)
+                      }
+                    >
+                      <Ionicons name="ellipsis-vertical" size={24} color="black" />
+                    </TouchableOpacity>
+                  </View>
+
+                  {menuVisible === item.id && (
+                    <View style={styles.menuOptions}>
+                      <Button
+                        title="Muokkaa"
+                        onPress={() => handleEditRecipe(item.id)}
+                      />
+                      <Button
+                        title="Poista"
+                        color="red"
+                        onPress={() => handleDeleteRecipe(item.id)}
+                      />
+                    </View>
+                  )}
+                </View>
+              </TouchableOpacity>
+            )}
+          />
+
+          <Modal
+            visible={isAddModalVisible}
+            animationType="slide"
+            transparent={true}
+          >
+            <TouchableWithoutFeedback onPress={() => setIsAddModalVisible(false)}>
+              <View style={styles.modalOverlay}>
+                <View style={styles.modalContentCreate}>
+                  <Text style={styles.header}>Luo Resepti</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Reseptin nimi"
+                    value={recipe.name}
+                    onChangeText={(text) => setRecipe({ ...recipe, name: text })}
+                  />
+
+                  <Text style={styles.subHeader}>Lisää Ainesosa</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Ainesosan nimi"
+                    value={ingredientName}
+                    onChangeText={setIngredientName}
+                  />
+                  <Text style={styles.subHeader}>
+                    Määrä: {ingredientQuantity} {ingredientUnit}
+                  </Text>
+                  <Slider
+                    style={{ width: "100%", height: 40 }}
+                    minimumValue={unitSettings[ingredientUnit].min}
+                    maximumValue={unitSettings[ingredientUnit].max}
+                    step={unitSettings[ingredientUnit].step}
+                    value={ingredientQuantity}
+                    onValueChange={setIngredientQuantity}
+                    minimumTrackTintColor="#007BFF"
+                    maximumTrackTintColor="#ccc"
+                  />
+
+                  <Picker
+                    selectedValue={ingredientUnit}
+                    style={styles.input}
+                    onValueChange={(itemValue) => setIngredientUnit(itemValue)}
+                  >
+                    <Picker.Item label="kg" value="kg" />
+                    <Picker.Item label="g" value="g" />
+                    <Picker.Item label="l" value="l" />
+                    <Picker.Item label="ml" value="ml" />
+                    <Picker.Item label="kpl" value="kpl" />
+                  </Picker>
+                  <Button title="Lisää Ainesosa" onPress={handleAddIngredient} />
+
+                  <FlatList
+                    data={recipe.ingredients}
+                    keyExtractor={(item, index) => `${item.name}-${index}`}
+                    contentContainerStyle={{ paddingBottom: 20 }}
+                    renderItem={({ item, index }) => (
+                      <Text style={styles.ingredientItem}>
+                        {index + 1}. {item.name} - {item.quantity} {item.unit}
+                      </Text>
+                    )}
+                  />
+
+                  <Text style={styles.subHeader}>Lisää Ohjeet</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Kirjoita ohje"
+                    value={instructionStep}
+                    onChangeText={setInstructionStep}
+                  />
+                  <Button title="Lisää Ohje" onPress={handleAddInstruction} />
+
+                  <FlatList
+                    data={recipe.instructions}
+                    keyExtractor={(item, index) => `${item}-${index}`}
+                    contentContainerStyle={{ paddingBottom: 20 }}
+                    renderItem={({ item, index }) => (
+                      <Text>{`${index + 1}. ${item}`}</Text>
+                    )}
+                  />
+                  <TouchableOpacity
+                    style={styles.saveButton}
+                    onPress={handleAddRecipe}
+                  >
+                    <Text style={styles.saveButtonText}>Tallenna</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.closeButton}
+                    onPress={() => setIsAddModalVisible(false)}
+                  >
+                    <Text style={styles.closeButtonText}>Sulje</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
+          </Modal>
+        </>
+      ) : (
+        <RecipeCollection recipes={savedRecipes} />
+      )}
       <Modal
         visible={isRecipeDetailVisible}
         animationType="slide"
@@ -336,9 +357,7 @@ export default function Recipes() {
               <Text style={styles.header}>{selectedRecipe?.name}</Text>
               <Text style={styles.subHeader}>Ainesosat</Text>
               {selectedRecipe?.ingredients.map((ing, idx) => (
-                <Text
-                  key={idx}
-                >{`${ing.name}: ${ing.quantity} ${ing.unit}`}</Text>
+                <Text key={idx}>{`${ing.name}: ${ing.quantity} ${ing.unit}`}</Text>
               ))}
 
               <Text style={styles.subHeader}>Ohjeet</Text>
@@ -358,7 +377,7 @@ export default function Recipes() {
       </Modal>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -402,11 +421,6 @@ const styles = StyleSheet.create({
     borderColor: "gray",
     padding: 10,
     marginBottom: 10,
-  },
-  topButtonsContainer: {
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    marginBottom: 20,
   },
   circleButton: {
     backgroundColor: "#007BFF",
@@ -462,23 +476,43 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginTop: 10,
   },
-
   closeButtonText: {
     fontSize: 16,
     color: "#ffffff",
     textAlign: "center",
   },
-
   saveButton: {
     padding: 10,
     backgroundColor: "#007BFF",
     borderRadius: 5,
     marginTop: 10,
   },
-
   saveButtonText: {
     fontSize: 16,
     color: "#ffffff",
     textAlign: "center",
+  },
+  tabContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginBottom: 20,
+  },
+  tabButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    backgroundColor: "#f0f0f0",
+  },
+  activeTab: {
+    backgroundColor: "#007BFF",
+  },
+  tabText: {
+    color: "#000",
+    fontWeight: "bold",
+  },
+  topButtonsContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    marginBottom: 20,
   },
 });
