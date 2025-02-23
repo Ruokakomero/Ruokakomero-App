@@ -3,7 +3,7 @@ import { app } from '../constants/firebaseConfig';
 import { getDatabase, ref, push, onValue, remove } from "firebase/database";
 import { useState, useEffect } from 'react';
 
-export default function App() {
+export default function ShoppingList() {
 
   const [product, setProduct] = useState({
     title: '',
