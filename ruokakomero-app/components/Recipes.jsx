@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -16,6 +16,8 @@ import { Picker } from "@react-native-picker/picker";
 import Slider from "@react-native-community/slider";
 import { Ionicons } from "@expo/vector-icons";
 import RecipeCollection from "./RecipeCollection";
+import { firestore } from "../constants/firebaseConfig";
+
 
 export default function Recipes() {
   const [error, setError] = useState(null);
@@ -132,23 +134,28 @@ export default function Recipes() {
     setInstructionStep("");
   };
 
-  const handleAddRecipe = () => {
+  const handleAddRecipe = async (newRecipe) => {
     if (!recipe.name || recipe.ingredients.length === 0) {
       Alert.alert("Virhe", "Lisää reseptin nimi ja vähintään yksi ainesosa!");
       return;
     }
-    setSavedRecipes([
-      ...savedRecipes,
-      { ...recipe, id: Date.now().toString() },
-    ]);
-    setRecipe({
-      id: "",
-      name: "",
-      ingredients: [],
-      instructions: [],
-      image: "",
-    });
-    setIsAddModalVisible(false);
+    try {
+      await firestore.collection("recipes").add(newRecipe);
+      Alert.alert("Resepti " + recipe.name + " lisätty!");
+
+      setSavedRecipes([...savedRecipes, { ...recipe, id: Date.now().toString() }]);
+      setRecipe({
+        id: "",
+        name: "",
+        ingredients: [],
+        instructions: [],
+        image: "",
+      });
+      setIsAddModalVisible(false);
+    } catch (error) {
+      console.error("Error adding recipe:", error);
+      Alert.alert("Error", "Reseptin lisääminen epäonnistui.");
+    }
   };
 
   const handleDeleteRecipe = (id) => {
@@ -172,6 +179,24 @@ export default function Recipes() {
   const filteredRecipes = savedRecipes.filter((rec) =>
     rec.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  useEffect(() => {
+    const unsubscribe = firestore.collection("recipes").onSnapshot(
+      (snapshot) => {
+        const list = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        // Update state with data from Firestore
+        setSavedRecipes(list);
+      },
+      (error) => {
+        console.error("Error fetching recipes:", error);
+        Alert.alert("Error", "There was an error fetching recipes.");
+      }
+    );
+    return () => unsubscribe();
+  }, []);
 
   return (
     <View style={styles.container}>

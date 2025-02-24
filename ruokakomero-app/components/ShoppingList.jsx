@@ -1,6 +1,6 @@
 import { StyleSheet, Text, TextInput, Button, View, Alert, FlatList } from 'react-native';
-import { app } from '../constants/firebaseConfig';
-import { getDatabase, ref, push, onValue, remove } from "firebase/database";
+//import { app } from '../constants/firebaseConfig';
+//import { getDatabase, ref, push, onValue, remove } from "firebase/database";
 import { useState, useEffect } from 'react';
 
 export default function ShoppingList() {
