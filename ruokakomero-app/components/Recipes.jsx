@@ -27,9 +27,11 @@ export default function Recipes() {
     image: "",
   });
   const [ingredientName, setIngredientName] = useState("");
-  const [ingredientQuantity, setIngredientQuantity] = useState(0); 
+  const [ingredientQuantity, setIngredientQuantity] = useState(0);
   const [ingredientUnit, setIngredientUnit] = useState("kg");
   const [instructionStep, setInstructionStep] = useState("");
+
+  // DEMODATAA 
   const [savedRecipes, setSavedRecipes] = useState([
     {
       id: "1",
@@ -40,9 +42,9 @@ export default function Recipes() {
         { name: "Pita", quantity: "2", unit: "kg", type: "grain" },
       ],
       instructions: [
-        "Paprika ja kana levitävät.",
-        "Pita ja paprika keskittyvät.",
-        "Pita ja paprika jäseniä kuitenkin kasvatetaan.",
+        "Paista paprika ja kana.",
+        "Pistä Pitaleipä uuniin.",
+        "Laita parika ja kana pitaleipään.",
       ],
       image: "https://example.com/paprika-kana-pita.jpg",
     },
@@ -53,11 +55,14 @@ export default function Recipes() {
         { name: "Lohi", quantity: "1", unit: "kg", type: "fish" },
         { name: "Peruna", quantity: "1", unit: "kg", type: "vegetable" },
         { name: "Sipuli", quantity: "1", unit: "kg", type: "vegetable" },
+        { name: "Kerma", quantity: "1", unit: "kg", type: "protein" },
+        { name: "Purjo", quantity: "400", unit: "g", type: "vegetable" },
+        { name: "Porkkana", quantity: "400", unit: "g", type: "vegetable" },
       ],
       instructions: [
-        "Lohi ja peruna leikataan.",
-        "Sipuli ja lohi sekoitetaan.",
-        "Peruna ja sipuli jäseniä kuitenkin kasvatetaan.",
+        "Leikkaa ainesosat.",
+        "Keitä ainekset n. 1l vedessä.",
+        "Lisää halutessasi kermaa ja tilliä.",
       ],
       image: "https://example.com/kermainen-lohikeitto.jpg",
     },
@@ -70,9 +75,9 @@ export default function Recipes() {
         { name: "Maito", quantity: "1", unit: "l", type: "dairy" },
       ],
       instructions: [
-        "Makaroni ja jauheliha leikataan.",
-        "Maito ja makaroni sekoitetaan.",
-        "Jauheliha ja maito jäseniä kuitenkin kasvatetaan.",
+        "Kypsennä makaroni ja jauheliha.",
+        "Seikoita ainekset uunivuokaan keskenään.",
+        "Paista uunissa 200 asteessa 30 minuuttia.",
       ],
       image: "https://example.com/makaronilaatikko.jpg",
     },
@@ -85,7 +90,8 @@ export default function Recipes() {
   const [menuVisible, setMenuVisible] = useState(null);
   const [activeTab, setActiveTab] = useState("reseptit");
 
- 
+
+  // Yksikkö-sliderin asetukset
   const unitSettings = {
     kg: { min: 0, max: 5, step: 0.1 },
     g: { min: 0, max: 1000, step: 50 },
@@ -111,7 +117,7 @@ export default function Recipes() {
       ],
     }));
     setIngredientName("");
-    setIngredientQuantity(0); 
+    setIngredientQuantity(0);
   };
 
   const handleAddInstruction = () => {
@@ -169,15 +175,24 @@ export default function Recipes() {
 
   return (
     <View style={styles.container}>
+
+
+      {/* Tabit */}
       <View style={styles.tabContainer}>
         <TouchableOpacity
-          style={[styles.tabButton, activeTab === "reseptit" && styles.activeTab]}
+          style={[
+            styles.tabButton,
+            activeTab === "reseptit" && styles.activeTab,
+          ]}
           onPress={() => setActiveTab("reseptit")}
         >
           <Text style={styles.tabText}>Reseptit</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.tabButton, activeTab === "kokoelmat" && styles.activeTab]}
+          style={[
+            styles.tabButton,
+            activeTab === "kokoelmat" && styles.activeTab,
+          ]}
           onPress={() => setActiveTab("kokoelmat")}
         >
           <Text style={styles.tabText}>Kokoelmat</Text>
@@ -224,7 +239,11 @@ export default function Recipes() {
                         setMenuVisible(menuVisible === item.id ? null : item.id)
                       }
                     >
-                      <Ionicons name="ellipsis-vertical" size={24} color="black" />
+                      <Ionicons
+                        name="ellipsis-vertical"
+                        size={24}
+                        color="black"
+                      />
                     </TouchableOpacity>
                   </View>
 
@@ -251,7 +270,9 @@ export default function Recipes() {
             animationType="slide"
             transparent={true}
           >
-            <TouchableWithoutFeedback onPress={() => setIsAddModalVisible(false)}>
+            <TouchableWithoutFeedback
+              onPress={() => setIsAddModalVisible(false)}
+            >
               <View style={styles.modalOverlay}>
                 <View style={styles.modalContentCreate}>
                   <Text style={styles.header}>Luo Resepti</Text>
@@ -259,7 +280,9 @@ export default function Recipes() {
                     style={styles.input}
                     placeholder="Reseptin nimi"
                     value={recipe.name}
-                    onChangeText={(text) => setRecipe({ ...recipe, name: text })}
+                    onChangeText={(text) =>
+                      setRecipe({ ...recipe, name: text })
+                    }
                   />
 
                   <Text style={styles.subHeader}>Lisää Ainesosa</Text>
@@ -294,7 +317,10 @@ export default function Recipes() {
                     <Picker.Item label="ml" value="ml" />
                     <Picker.Item label="kpl" value="kpl" />
                   </Picker>
-                  <Button title="Lisää Ainesosa" onPress={handleAddIngredient} />
+                  <Button
+                    title="Lisää Ainesosa"
+                    onPress={handleAddIngredient}
+                  />
 
                   <FlatList
                     data={recipe.ingredients}
@@ -357,7 +383,9 @@ export default function Recipes() {
               <Text style={styles.header}>{selectedRecipe?.name}</Text>
               <Text style={styles.subHeader}>Ainesosat</Text>
               {selectedRecipe?.ingredients.map((ing, idx) => (
-                <Text key={idx}>{`${ing.name}: ${ing.quantity} ${ing.unit}`}</Text>
+                <Text
+                  key={idx}
+                >{`${ing.name}: ${ing.quantity} ${ing.unit}`}</Text>
               ))}
 
               <Text style={styles.subHeader}>Ohjeet</Text>
@@ -377,7 +405,7 @@ export default function Recipes() {
       </Modal>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {

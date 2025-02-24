@@ -17,6 +17,8 @@ export default function RecipeCollection({
   onAddToCollection,
 }) {
   const [collectionName, setCollectionName] = useState("");
+
+  // DEMODATAA
   const [collections, setCollections] = useState([
     {
       name: "Suosikit",
@@ -219,7 +221,6 @@ export default function RecipeCollection({
         </View>
       </Modal>
 
-     
       {recipeDetail && (
         <Modal
           visible={true}
