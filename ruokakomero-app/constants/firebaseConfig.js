@@ -19,6 +19,6 @@ if (!firebase.apps.length) {
 }
 
 const firestore = firebase.firestore();
-const database = firebase.database(); // Ota käyttöön Realtime Database
+const database = firebase.database(); // Real timen käyttöön otto
 
 export { firebase, firestore, database };
