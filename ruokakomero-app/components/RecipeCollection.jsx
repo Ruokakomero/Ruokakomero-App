@@ -239,7 +239,9 @@ export default function RecipeCollection({
               ))}
 
               <Text style={styles.subHeader}>Ohjeet:</Text>
-              <Text>{recipeDetail.instructions}</Text>
+              {recipeDetail.instructions.map((instruction, idx) => (
+                <Text style={styles.paragraph} key={idx}>{idx + 1}. {instruction}</Text>
+              ))}
               <Button title="Sulje" onPress={() => setRecipeDetail(null)} />
             </View>
           </View>
@@ -301,12 +303,12 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: "rgba(0,0,0,0.85)",
     justifyContent: "center",
     alignItems: "center",
   },
   modalContentTransparent: {
-    backgroundColor: "rgba(255,255,255,0.9)",
+    backgroundColor: "rgba(255,255,255,1)",
     padding: 20,
     borderRadius: 10,
     width: "80%",
@@ -368,5 +370,9 @@ const styles = StyleSheet.create({
   },
   deleteText: {
     color: "red",
+  },
+  paragraph: {
+    fontSize: 14,
+    marginBottom: 10,
   },
 });

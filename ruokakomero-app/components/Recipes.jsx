@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -16,6 +16,8 @@ import { Picker } from "@react-native-picker/picker";
 import Slider from "@react-native-community/slider";
 import { Ionicons } from "@expo/vector-icons";
 import RecipeCollection from "./RecipeCollection";
+
+
 
 export default function Recipes() {
   const [error, setError] = useState(null);
@@ -137,18 +139,16 @@ export default function Recipes() {
       Alert.alert("Virhe", "Lisää reseptin nimi ja vähintään yksi ainesosa!");
       return;
     }
-    setSavedRecipes([
-      ...savedRecipes,
-      { ...recipe, id: Date.now().toString() },
-    ]);
-    setRecipe({
-      id: "",
-      name: "",
-      ingredients: [],
-      instructions: [],
-      image: "",
-    });
-    setIsAddModalVisible(false);
+
+      setSavedRecipes([...savedRecipes, { ...recipe, id: Date.now().toString() }]);
+      setRecipe({
+        id: "",
+        name: "",
+        ingredients: [],
+        instructions: [],
+        image: "",
+      });
+      setIsAddModalVisible(false);
   };
 
   const handleDeleteRecipe = (id) => {
@@ -173,6 +173,7 @@ export default function Recipes() {
     rec.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  
   return (
     <View style={styles.container}>
 
@@ -390,7 +391,7 @@ export default function Recipes() {
 
               <Text style={styles.subHeader}>Ohjeet</Text>
               {selectedRecipe?.instructions.map((step, idx) => (
-                <Text key={idx}>{`${idx + 1}. ${step}`}</Text>
+                <Text style={styles.paragraph} key={idx}>{`${idx + 1}. ${step}`}</Text>
               ))}
 
               <TouchableOpacity
@@ -542,5 +543,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-start",
     marginBottom: 20,
+  },
+  paragraph: {
+    fontSize: 14,
+    marginBottom: 10,
   },
 });
