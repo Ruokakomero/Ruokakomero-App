@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TextInput, Button, View, Alert, FlatList } from 'react-native';
+import { StyleSheet, Text, TextInput, Button, View, Alert, FlatList, TouchableOpacity } from 'react-native';
 import { useState, useEffect } from 'react';
 import { database } from '../constants/firebaseConfig'; // Käytä omaa Firebase-konfiguraatiota
 import { ref, push, onValue, remove, update } from "firebase/database";
@@ -83,22 +83,34 @@ export default function ShoppingList() {
   return (
     <View style={styles.container}>
       <TextInput
+        style={styles.input}
         placeholder='Product title'
         onChangeText={text => setProduct({ ...product, title: text })}
         value={product.title} />
       <TextInput
+        style={styles.input}
         placeholder='Amount'
         onChangeText={text => setProduct({ ...product, amount: text })}
         value={product.amount} />
-      <Button onPress={handleSave} title={editMode ? "Update" : "Save"} />
+      <Button 
+        onPress={handleSave} 
+        title={editMode ? "Update" : "Save"} 
+        color="#4CAF50" 
+      />
 
       <FlatList
         keyExtractor={item => item.id} // Käytetään id:tä avaimena
         renderItem={({ item }) =>
           <View style={styles.listcontainer}>
-            <Text style={{ fontSize: 18 }}>{item.title}, {item.amount}</Text>
-            <Text style={{ color: '#0000ff' }} onPress={() => deleteItem(item.id)}>delete</Text>
-            <Text style={{ color: '#ff0000' }} onPress={() => handleEdit(item)}>edit</Text> {/* Lisää muokkauspainike */}
+            <Text style={styles.itemText}>{item.title}, {item.amount}</Text>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity onPress={() => handleEdit(item)} style={styles.editButton}>
+                <Text style={styles.editText}>Edit</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => deleteItem(item.id)} style={styles.deleteButton}>
+                <Text style={styles.deleteText}>Delete</Text>
+              </TouchableOpacity>
+            </View>
           </View>}
         data={items} />
     </View>
@@ -108,17 +120,61 @@ export default function ShoppingList() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#f8f8f8',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 150
+    justifyContent: 'flex-start',
+    marginTop: 50,
+    paddingHorizontal: 20
+  },
+  input: {
+    height: 40,
+    width: '100%',
+    borderColor: '#ccc',
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingLeft: 10,
+    borderRadius: 5,
+    backgroundColor: '#fff',
   },
   listcontainer: {
-    marginBottom: 15,
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    width: '80%',
-    alignItems: 'flex-start'
-  }
+    marginBottom: 20,
+    padding: 15,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
+    width: '100%',
+  },
+  itemText: {
+    fontSize: 18,
+    color: '#333',
+    marginBottom: 10,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10
+  },
+  editButton: {
+    backgroundColor: '#FFA500',
+    paddingVertical: 5,
+    paddingHorizontal: 15,
+    borderRadius: 5,
+  },
+  editText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  deleteButton: {
+    backgroundColor: '#ff6347',
+    paddingVertical: 5,
+    paddingHorizontal: 15,
+    borderRadius: 5,
+  },
+  deleteText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
 });
