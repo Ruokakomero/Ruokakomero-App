@@ -1,5 +1,6 @@
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
+import 'firebase/compat/database'; // Lisää tämä!
 
 const firebaseConfig = {
   apiKey: "AIzaSyDH2IaYLc-P0md-cmZvovz7jtXfsVrHw08",
@@ -12,10 +13,12 @@ const firebaseConfig = {
   measurementId: "G-79P6W4NWGZ"
 };
 
+// Alustetaan Firebase vain, jos sitä ei ole vielä alustettu
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
 const firestore = firebase.firestore();
+const database = firebase.database(); // Ota käyttöön Realtime Database
 
-export { firebase, firestore };
+export { firebase, firestore, database };
