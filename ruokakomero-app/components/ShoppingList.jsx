@@ -1,10 +1,7 @@
 import { StyleSheet, Text, TextInput, Button, View, Alert, FlatList } from 'react-native';
-//import { app } from '../constants/firebaseConfig';
-//import { getDatabase, ref, push, onValue, remove } from "firebase/database";
 import { useState, useEffect } from 'react';
 import { database } from '../constants/firebaseConfig'; // Käytä omaa Firebase-konfiguraatiota
-import { ref, push, onValue, remove } from "firebase/database";
-
+import { ref, push, onValue, remove, update } from "firebase/database";
 
 export default function ShoppingList() {
 
@@ -13,11 +10,19 @@ export default function ShoppingList() {
     amount: ''
   });
   const [items, setItems] = useState([]);
+  const [editMode, setEditMode] = useState(false); // Tarkistaa, onko muokkaustilassa
+  const [editId, setEditId] = useState(null); // Tallenna muokattavan tuotteen id
 
   const handleSave = () => {
     if (product.amount && product.title) {
       // Tallennetaan tuote ja saadaan yksilöivä avain (key)
-      push(ref(database, 'items/'), product);
+      if (editMode) {
+        // Jos ollaan muokkaustilassa, päivitetään tuote
+        updateItem(editId, product);
+      } else {
+        // Jos ei olla muokkaustilassa, tallennetaan uusi tuote
+        push(ref(database, 'items/'), product);
+      }
     } else {
       Alert.alert('Error', 'Type product and amount first');
     }
@@ -32,6 +37,21 @@ export default function ShoppingList() {
       })
       .catch(error => {
         Alert.alert('Error', 'Failed to remove item');
+      });
+  };
+
+  // Päivitä tuote tietokannassa
+  const updateItem = (id, newProduct) => {
+    const itemRef = ref(database, `items/${id}`);
+    update(itemRef, newProduct)
+      .then(() => {
+        Alert.alert('Item updated successfully');
+        setEditMode(false); // Poistetaan muokkaustila
+        setEditId(null); // Nollataan muokattavan tuotteen id
+        setProduct({ title: '', amount: '' }); // Tyhjennetään syöttökentät
+      })
+      .catch(error => {
+        Alert.alert('Error', 'Failed to update item');
       });
   };
 
@@ -53,6 +73,13 @@ export default function ShoppingList() {
     });
   }, []);
 
+  // Käytetään muokattavalle tuotteelle
+  const handleEdit = (item) => {
+    setEditMode(true);
+    setEditId(item.id);
+    setProduct({ title: item.title, amount: item.amount }); // Ladataan tuotteen tiedot kenttiin
+  };
+
   return (
     <View style={styles.container}>
       <TextInput
@@ -63,7 +90,7 @@ export default function ShoppingList() {
         placeholder='Amount'
         onChangeText={text => setProduct({ ...product, amount: text })}
         value={product.amount} />
-      <Button onPress={handleSave} title="Save" />
+      <Button onPress={handleSave} title={editMode ? "Update" : "Save"} />
 
       <FlatList
         keyExtractor={item => item.id} // Käytetään id:tä avaimena
@@ -71,6 +98,7 @@ export default function ShoppingList() {
           <View style={styles.listcontainer}>
             <Text style={{ fontSize: 18 }}>{item.title}, {item.amount}</Text>
             <Text style={{ color: '#0000ff' }} onPress={() => deleteItem(item.id)}>delete</Text>
+            <Text style={{ color: '#ff0000' }} onPress={() => handleEdit(item)}>edit</Text> {/* Lisää muokkauspainike */}
           </View>}
         data={items} />
     </View>
@@ -85,4 +113,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 150
   },
+  listcontainer: {
+    marginBottom: 15,
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    width: '80%',
+    alignItems: 'flex-start'
+  }
 });
