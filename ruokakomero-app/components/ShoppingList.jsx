@@ -2,6 +2,9 @@ import { StyleSheet, Text, TextInput, Button, View, Alert, FlatList } from 'reac
 //import { app } from '../constants/firebaseConfig';
 //import { getDatabase, ref, push, onValue, remove } from "firebase/database";
 import { useState, useEffect } from 'react';
+import { database } from '../constants/firebaseConfig'; // Käytä omaa Firebase-konfiguraatiota
+import { ref, push, onValue, remove } from "firebase/database";
+
 
 export default function ShoppingList() {
 
@@ -10,8 +13,6 @@ export default function ShoppingList() {
     amount: ''
   });
   const [items, setItems] = useState([]);
-
-  const database = getDatabase(app);
 
   const handleSave = () => {
     if (product.amount && product.title) {
