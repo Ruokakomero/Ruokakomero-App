@@ -16,6 +16,10 @@ import { Picker } from "@react-native-picker/picker";
 import Slider from "@react-native-community/slider";
 import { Ionicons } from "@expo/vector-icons";
 import RecipeCollection from "./RecipeCollection";
+import { database } from "../constants/firebaseConfig";
+import { ref, push, onValue, remove, update } from "firebase/database";
+
+
 
 
 
@@ -134,13 +138,23 @@ export default function Recipes() {
     setInstructionStep("");
   };
 
-  const handleAddRecipe = () => {
+  const handleAddRecipe = async () => {
     if (!recipe.name || recipe.ingredients.length === 0) {
       Alert.alert("Virhe", "Lisää reseptin nimi ja vähintään yksi ainesosa!");
       return;
     }
-
-      setSavedRecipes([...savedRecipes, { ...recipe, id: Date.now().toString() }]);
+  
+    try {
+      const newRecipeRef = push(ref(database, "recipes/")); // Generates a new key
+      const newRecipeKey = newRecipeRef.key; // Extract the generated ID
+  
+      const newRecipe = { ...recipe, id: newRecipeKey }; // Assign ID to the recipe
+  
+      await update(ref(database, `recipes/${newRecipeKey}`), newRecipe); // Save recipe with ID
+  
+      setSavedRecipes([...savedRecipes, newRecipe]); // Update local state
+  
+      // Reset recipe form
       setRecipe({
         id: "",
         name: "",
@@ -148,13 +162,43 @@ export default function Recipes() {
         instructions: [],
         image: "",
       });
+  
       setIsAddModalVisible(false);
+    } catch (error) {
+      setError("Virhe", "Tallennus epäonnistui!");
+      Alert.alert(error.message);
+    }
   };
 
-  const handleDeleteRecipe = (id) => {
-    const updatedRecipes = savedRecipes.filter((rec) => rec.id !== id);
-    setSavedRecipes(updatedRecipes);
+  
+  
+
+  const handleDeleteRecipe = async (id) => {
+    Alert.alert(
+      "Varoitus",
+      "Haluatko varmasti poistaa tämän reseptin?",
+      [
+        {
+          text: "Peruuta",
+          style: "cancel",
+        },
+        {
+          text: "Kyllä",
+          onPress: async () => {
+            try {
+              await remove(ref(database, `recipes/${id}`)); // Remove from Firebase
+              setSavedRecipes(savedRecipes.filter((rec) => rec.id !== id)); // Update local state
+            } catch (error) {
+              setError("Virhe", "Poisto epäonnistui!");
+              Alert.alert(error.message);
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
   };
+  
 
   const handleEditRecipe = (id) => {
     const recipeToEdit = savedRecipes.find((rec) => rec.id === id);
@@ -173,6 +217,21 @@ export default function Recipes() {
     rec.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  useEffect(() => {
+    const recipeRef = ref(database, "recipes/");
+    onValue(recipeRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const loadedRecipes = Object.keys(data).map((key) => ({
+          id: key,
+          ...data[key],
+        }));
+        setSavedRecipes(loadedRecipes);
+      } else {
+        setSavedRecipes([]);
+      }
+    });
+  }, []);
   
   return (
     <View style={styles.container}>
