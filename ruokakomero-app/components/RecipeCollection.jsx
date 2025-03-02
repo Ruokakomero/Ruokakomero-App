@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -11,117 +11,121 @@ import {
   Modal,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { database } from "../constants/firebaseConfig"; // ✅ Ensure this is from Realtime Database
+import { ref, push, onValue, remove, update, get } from "firebase/database";
 
-export default function RecipeCollection({
-  recipes = [{}],
-  onAddToCollection,
-}) {
+export default function RecipeCollection({ recipes = [] }) {
   const [collectionName, setCollectionName] = useState("");
-
-  // DEMODATAA
-  const [collections, setCollections] = useState([
-    {
-      name: "Suosikit",
-      recipes: [
-        {
-          id: "",
-          name: "Pasta",
-          ingredients: ["Spaghetti", "Tomato Sauce"],
-          instructions: ["Boil pasta and add sauce."],
-        },
-        {
-          id: "",
-          name: "Pizza",
-          ingredients: ["Dough", "Cheese", "Tomato Sauce"],
-          instructions: ["Bake at 200°C for 15 min."],
-        },
-      ],
-    },
-    {
-      name: "Nopeat Ruoat",
-      recipes: [
-        {
-          id: "",
-          name: "Salaatti",
-          ingredients: ["Lettuce", "Tomato", "Cucumber"],
-          instructions: ["Mix all ingredients.", "Add dressing."],
-        },
-      ],
-    },
-  ]);
+  const [collections, setCollections] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [menuVisible, setMenuVisible] = useState(null);
-  const [editingIndex, setEditingIndex] = useState(null);
-  const [newCollectionName, setNewCollectionName] = useState("");
+  const [selectedCollectionId, setSelectedCollectionId] = useState(null);
   const [addRecipeModalVisible, setAddRecipeModalVisible] = useState(false);
-  const [selectedCollectionIndex, setSelectedCollectionIndex] = useState(null);
-  const [recipeDetail, setRecipeDetail] = useState(null);
+  const [recipeDetails, setRecipeDetails] = useState({}); // ✅ Stores fetched recipe names
 
-  const toggleOpen = () => {
-    setIsOpen(!isOpen);
-  };
+  /** 🔹 Fetch collections from Firebase */
+  useEffect(() => {
+    const collectionRef = ref(database, "recipeCollections/");
+    onValue(collectionRef, async (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const loadedCollections = Object.keys(data).map((key) => ({
+          id: key,
+          ...data[key],
+        }));
+        setCollections(loadedCollections);
+        await fetchRecipeDetails(loadedCollections); // ✅ Fetch recipe names
+      } else {
+        setCollections([]);
+      }
+    });
+  }, []);
 
-  const createCollection = () => {
-    if (collectionName.trim() !== "") {
-      setCollections([...collections, { name: collectionName, recipes: [] }]);
-      setCollectionName("");
-      setIsOpen(false);
-    } else {
-      Alert.alert("Virhe", "Kokoelman nimi ei voi olla tyhjä");
+  /** 🔹 Fetch the recipe names for stored recipe IDs */
+  const fetchRecipeDetails = async (collections) => {
+    let recipeData = { ...recipeDetails };
+
+    for (const collection of collections) {
+      for (const recipeId of collection.recipes) {
+        if (!recipeData[recipeId]) {
+          const recipeRef = ref(database, `recipes/${recipeId}`);
+          const recipeSnapshot = await get(recipeRef);
+          if (recipeSnapshot.exists()) {
+            recipeData[recipeId] = recipeSnapshot.val().name; // ✅ Store only name
+          }
+        }
+      }
     }
+    setRecipeDetails(recipeData);
   };
 
-  const addToCollection = (recipe, collectionIndex) => {
-    const updatedCollections = [...collections];
-    updatedCollections[collectionIndex].recipes.push(recipe);
-    setCollections(updatedCollections);
-  };
-
-  const deleteCollection = (index) => {
-    const updatedCollections = collections.filter((_, i) => i !== index);
-    setCollections(updatedCollections);
-  };
-
-  const editCollection = (index) => {
-    setEditingIndex(index);
-    setNewCollectionName(collections[index].name);
-  };
-
-  const saveEditedCollection = () => {
-    if (newCollectionName.trim() === "") {
-      Alert.alert("Virhe", "Kokoelman nimi ei voi olla tyhjä");
+  /** 🔹 Add a recipe to a collection */
+  const addRecipeToCollection = async (recipeId) => {
+    if (!selectedCollectionId) {
+      Alert.alert("Virhe", "Valitse kokoelma ensin!");
       return;
     }
-    const updatedCollections = [...collections];
-    updatedCollections[editingIndex].name = newCollectionName;
-    setCollections(updatedCollections);
-    setEditingIndex(null);
-    setNewCollectionName("");
+
+    try {
+      const collectionRef = ref(database, `recipeCollections/${selectedCollectionId}`);
+      const collectionSnapshot = await get(collectionRef);
+
+      if (collectionSnapshot.exists()) {
+        const collection = collectionSnapshot.val();
+        const updatedRecipes = collection.recipes ? [...collection.recipes, recipeId] : [recipeId];
+
+        await update(collectionRef, { recipes: updatedRecipes });
+
+        setAddRecipeModalVisible(false);
+        Alert.alert("Resepti lisätty", "Resepti lisättiin kokoelmaan onnistuneesti.");
+      }
+    } catch (error) {
+      console.error("Error adding recipe: ", error);
+    }
   };
 
-  const deleteRecipeFromCollection = (collectionIndex, recipeIndex) => {
-    const updatedCollections = [...collections];
-    updatedCollections[collectionIndex].recipes.splice(recipeIndex, 1);
-    setCollections(updatedCollections);
+  /** 🔹 Remove a recipe from a collection */
+  const removeRecipeFromCollection = async (collectionId, recipeId) => {
+    try {
+      const collectionRef = ref(database, `recipeCollections/${collectionId}`);
+      const collectionSnapshot = await get(collectionRef);
+
+      if (collectionSnapshot.exists()) {
+        const collection = collectionSnapshot.val();
+        const updatedRecipes = collection.recipes.filter((id) => id !== recipeId);
+
+        await update(collectionRef, { recipes: updatedRecipes });
+
+        // Update state
+        setRecipeDetails((prevDetails) => {
+          const updatedDetails = { ...prevDetails };
+          delete updatedDetails[recipeId];
+          return updatedDetails;
+        });
+      }
+    } catch (error) {
+      console.error("Error removing recipe: ", error);
+    }
   };
 
-  const openAddRecipeModal = (index) => {
-    setSelectedCollectionIndex(index);
+  /** 🔹 Delete an entire collection */
+  const deleteCollection = async (collectionId) => {
+    try {
+      await remove(ref(database, `recipeCollections/${collectionId}`));
+    } catch (error) {
+      console.error("Error deleting collection: ", error);
+    }
+  };
+
+  /** 🔹 Open add recipe modal */
+  const openAddRecipeModal = (collectionId) => {
+    setSelectedCollectionId(collectionId);
     setAddRecipeModalVisible(true);
-  };
-
-  const selectRecipeToAdd = (recipe) => {
-    addToCollection(recipe, selectedCollectionIndex);
-    setAddRecipeModalVisible(false);
-  };
-
-  const viewRecipeDetails = (recipe) => {
-    setRecipeDetail(recipe);
   };
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={toggleOpen} style={styles.plusButton}>
+      <TouchableOpacity onPress={() => setIsOpen(!isOpen)} style={styles.plusButton}>
         <Ionicons name="add" size={30} color="white" />
       </TouchableOpacity>
 
@@ -140,52 +144,32 @@ export default function RecipeCollection({
 
       <FlatList
         data={collections}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item, index }) => (
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
           <View style={styles.collectionItem}>
-            <View style={styles.collectionHeader}>
-              <TouchableOpacity
-                onPress={() =>
-                  setMenuVisible(menuVisible === index ? null : index)
-                }
-              >
-                <Text style={styles.collectionName}>{item.name}</Text>
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity onPress={() => setMenuVisible(menuVisible === item.id ? null : item.id)}>
+              <Text style={styles.collectionName}>{item.name}</Text>
+            </TouchableOpacity>
 
-            {menuVisible === index && (
+            {menuVisible === item.id && (
               <View style={styles.menuOptions}>
-                <Button title="Muokkaa" onPress={() => editCollection(index)} />
-                <Button
-                  title="Poista"
-                  color="red"
-                  onPress={() => deleteCollection(index)}
-                />
+                <Button title="Poista" color="red" onPress={() => deleteCollection(item.id)} />
               </View>
             )}
 
             <FlatList
               data={item.recipes}
-              keyExtractor={(recipe, idx) => idx.toString()}
-              renderItem={({ item: recipe, index: recipeIndex }) => (
-                <TouchableOpacity onPress={() => viewRecipeDetails(recipe)}>
-                  <View style={styles.recipeItem}>
-                    <Text style={styles.recipeName}>{recipe.name}</Text>
-                    <TouchableOpacity
-                      onPress={() =>
-                        deleteRecipeFromCollection(index, recipeIndex)
-                      }
-                    >
-                      <Text style={styles.deleteText}>Poista</Text>
-                    </TouchableOpacity>
-                  </View>
-                </TouchableOpacity>
+              keyExtractor={(recipeId) => recipeId}
+              renderItem={({ item: recipeId }) => (
+                <View style={styles.recipeItem}>
+                  <Text style={styles.recipeName}>{recipeDetails[recipeId] || "Ladataan..."}</Text>
+                  <TouchableOpacity onPress={() => removeRecipeFromCollection(item.id, recipeId)}>
+                    <Text style={styles.deleteText}>Poista</Text>
+                  </TouchableOpacity>
+                </View>
               )}
               ListFooterComponent={
-                <TouchableOpacity
-                  style={styles.addRecipeButton}
-                  onPress={() => openAddRecipeModal(index)}
-                >
+                <TouchableOpacity style={styles.addRecipeButton} onPress={() => openAddRecipeModal(item.id)}>
                   <Ionicons name="add-circle" size={24} color="green" />
                   <Text style={styles.addRecipeText}>Lisää resepti</Text>
                 </TouchableOpacity>
@@ -195,92 +179,31 @@ export default function RecipeCollection({
         )}
       />
 
-      <Modal
-        visible={addRecipeModalVisible}
-        animationType="slide"
-        transparent={true}
-      >
+      {/* 🔹 Modal for adding a recipe */}
+      <Modal visible={addRecipeModalVisible} animationType="slide" transparent={true}>
         <View style={styles.modalOverlay}>
-          <View style={styles.modalContentTransparent}>
+          <View style={styles.modalContent}>
             <Text style={styles.header}>Valitse resepti lisättäväksi</Text>
             <FlatList
               data={recipes}
-              keyExtractor={(item, index) => index.toString()}
+              keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
-                <TouchableOpacity onPress={() => selectRecipeToAdd(item)}>
+                <TouchableOpacity style={styles.recipeList} onPress={() => addRecipeToCollection(item.id)}>
                   <Text style={styles.recipeName}>{item.name}</Text>
                 </TouchableOpacity>
               )}
             />
-            <Button
-              title="Sulje"
-              color="red"
-              onPress={() => setAddRecipeModalVisible(false)}
-            />
+            <Button title="Sulje" color="red" onPress={() => setAddRecipeModalVisible(false)} />
           </View>
         </View>
       </Modal>
-
-      {recipeDetail && (
-        <Modal
-          visible={true}
-          animationType="slide"
-          transparent={true}
-          onRequestClose={() => setRecipeDetail(null)}
-        >
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContentTransparent}>
-              <Text style={styles.header}>{recipeDetail.name}</Text>
-              <Text style={styles.subHeader}>Ainesosat:</Text>
-              {recipeDetail.ingredients.map((ing, idx) => (
-                <Text key={idx}>
-                  - {ing.name}: {ing.quantity} {ing.unit}
-                </Text>
-              ))}
-
-              <Text style={styles.subHeader}>Ohjeet:</Text>
-              {recipeDetail.instructions.map((instruction, idx) => (
-                <Text style={styles.paragraph} key={idx}>{idx + 1}. {instruction}</Text>
-              ))}
-              <Button title="Sulje" onPress={() => setRecipeDetail(null)} />
-            </View>
-          </View>
-        </Modal>
-      )}
-
-      {editingIndex !== null && (
-        <Modal
-          transparent={true}
-          animationType="slide"
-          visible={true}
-          onRequestClose={() => setEditingIndex(null)}
-        >
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContentTransparent}>
-              <Text style={styles.header}>Muokkaa Kokoelmaa</Text>
-              <TextInput
-                style={styles.input}
-                value={newCollectionName}
-                onChangeText={setNewCollectionName}
-              />
-              <Button title="Tallenna" onPress={saveEditedCollection} />
-              <Button
-                title="Peruuta"
-                color="red"
-                onPress={() => setEditingIndex(null)}
-              />
-            </View>
-          </View>
-        </Modal>
-      )}
     </View>
   );
 }
 
+
 const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-  },
+  container: { padding: 20 },
   plusButton: {
     backgroundColor: "#007BFF",
     borderRadius: 50,
@@ -290,89 +213,48 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginBottom: 10,
   },
-  addRecipeButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 10,
-    justifyContent: "center",
-  },
-  addRecipeText: {
-    marginLeft: 5,
-    color: "green",
-    fontWeight: "bold",
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.85)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContentTransparent: {
-    backgroundColor: "rgba(255,255,255,1)",
-    padding: 20,
-    borderRadius: 10,
-    width: "80%",
-  },
-  modalContent: {
-    backgroundColor: "#f9f9f9",
-    padding: 20,
-    borderRadius: 10,
-    marginBottom: 20,
-    marginHorizontal: 20,
-  },
-  header: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  subHeader: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginTop: 10,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "gray",
-    padding: 10,
-    marginBottom: 10,
-  },
   collectionItem: {
-    marginBottom: 20,
     padding: 10,
     borderWidth: 1,
-    borderColor: "#ccc",
     borderRadius: 5,
+    marginBottom: 10,
   },
-  collectionHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 5,
-  },
-  collectionName: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  menuOptions: {
-    backgroundColor: "#f0f0f0",
-    padding: 5,
-    borderRadius: 5,
-    marginTop: 5,
-  },
+  collectionName: { fontSize: 16, fontWeight: "bold" },
   recipeItem: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginLeft: 10,
     paddingVertical: 5,
   },
-  recipeName: {
-    fontSize: 14,
+  deleteText: { color: "red" },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.85)",
+    justifyContent: "center",
+    alignItems: "center",
   },
-  deleteText: {
-    color: "red",
+  modalContent: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    marginTop: 50,
+    width: "90%",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
-  paragraph: {
-    fontSize: 14,
-    marginBottom: 10,
+  recipeList: {
+    marginBottom: 20,
+    marginTop: 10,
+    padding: 15,
   },
+  recipeName: { fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 5,
+
+   },
+
+  header: { fontSize: 20, marginBottom: 10 },
+
 });
