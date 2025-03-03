@@ -8,6 +8,7 @@ import Recipes from './components/Recipes';
 import Login from './components/Login';
 import Register from './components/Register';
 import ShoppingList from './components/ShoppingList';
+import Profile from './components/Profile';
 
 const Tab = createBottomTabNavigator();
 
@@ -29,6 +30,8 @@ export default function App() {
               iconName = "person-add";
             } else if (route.name === "Ostoslista") {
               iconName = "cart";
+            } else if (route.name === "Profiili") { // Määritä ikoni Profiilille
+              iconName = "person";
             }
 
             return <Ionicons name={iconName} size={size} color={color} />;
@@ -40,6 +43,7 @@ export default function App() {
         <Tab.Screen name="Kirjaudu" component={Login} /> 
         <Tab.Screen name="Rekisteröidy" component={Register} />
         <Tab.Screen name="Ostoslista" component={ShoppingList} /> 
+        <Tab.Screen name="Profiili" component={Profile} />
       </Tab.Navigator>
     </NavigationContainer>
   );
