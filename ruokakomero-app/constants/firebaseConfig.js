@@ -1,6 +1,8 @@
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 import 'firebase/compat/database'; // Lisää tämä!
+import 'firebase/compat/auth';
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyDH2IaYLc-P0md-cmZvovz7jtXfsVrHw08",
@@ -20,5 +22,6 @@ if (!firebase.apps.length) {
 
 const firestore = firebase.firestore();
 const database = firebase.database(); // Real timen käyttöön otto
+const auth = firebase.auth(); // Authentication käyttöönotto
 
-export { firebase, firestore, database };
+export { firebase, firestore, database, auth };
