@@ -1,13 +1,45 @@
-import { StyleSheet, Text, View, TextInput, Button, TouchableWithoutFeedback, Keyboard } from 'react-native';
-import { useState } from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  Button,
+  TouchableWithoutFeedback,
+  Keyboard,
+  Alert,
+} from "react-native";
+import { useState } from "react";
+import AuthScreen from "./AuthScreen";
 
-export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+export default function Login({ navigation }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
-    console.log('Email:', email);
-    console.log('Password:', password);
+  const handleLogin = async () => {
+    
+    if (!email || !password) {
+      Alert.alert("Virhe", "Syötä sähköposti ja salasana");
+      return;
+    }
+
+    setLoading(true);
+
+    // Käyttää AuthScreen handleLogin 
+    const result = await AuthScreen.handleLogin(email, password);
+
+    setLoading(false);
+
+    if (result.success) {
+      
+      setEmail("");
+      setPassword("");
+
+      Alert.alert("Kirjautuminen onnistui!");
+   
+    } else {
+      Alert.alert("Kirjautuminen epäonnistui!", result.error);
+    }
   };
 
   return (
@@ -19,6 +51,9 @@ export default function Login() {
           placeholder="Sähköposti"
           value={email}
           onChangeText={setEmail}
+          autoCapitalize="none"
+          keyboardType="email-address"
+          editable={!loading}
         />
         <TextInput
           style={styles.input}
@@ -26,10 +61,16 @@ export default function Login() {
           value={password}
           onChangeText={setPassword}
           secureTextEntry
+          editable={!loading}
         />
-        <Button title="Kirjaudu" onPress={handleLogin} />
+        <Button
+          title={loading ? "Kirjaudutaan..." : "Kirjaudu"}
+          onPress={handleLogin}
+          disabled={loading}
+        />
         <Text
           style={styles.link}
+          onPress={() => navigation && navigation.navigate("Register")}
         >
           Eikö sinulla ole tiliä? Rekisteröidy tästä
         </Text>
@@ -37,7 +78,6 @@ export default function Login() {
     </TouchableWithoutFeedback>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
