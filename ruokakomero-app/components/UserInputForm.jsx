@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import { View, Text, Button, FlatList, TouchableOpacity} from "react-native";
+import { View, Text, Button, TouchableOpacity } from "react-native";
 import Slider from "@react-native-community/slider";
 
-
-const UserInputForm = ({ onSubmit }) => {
+const UserInputForm = ({ navigation }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedProteins, setSelectedProteins] = useState([]);
   const [selectedCarbs, setSelectedCarbs] = useState([]);
@@ -16,8 +15,15 @@ const UserInputForm = ({ onSubmit }) => {
 
   const handleNext = () => setCurrentStep((prev) => prev + 1);
   const handleBack = () => setCurrentStep((prev) => prev - 1);
+
   const handleSubmit = () => {
-    onSubmit({ selectedProteins, selectedCarbs, servingSize, selectedDiets });
+    // Siirry ShowRecipes-näkymään ja välitä valitut tiedot
+    navigation.navigate("ShowRecipes", {
+      selectedProteins,
+      selectedCarbs,
+      servingSize,
+      selectedDiets,
+    });
   };
 
   return (
@@ -36,7 +42,9 @@ const UserInputForm = ({ onSubmit }) => {
                 )
               }
             >
-              <Text style={{ color: selectedProteins.includes(protein) ? "blue" : "black" }}>{protein}</Text>
+              <Text style={{ color: selectedProteins.includes(protein) ? "blue" : "black" }}>
+                {protein}
+              </Text>
             </TouchableOpacity>
           ))}
           <Button title="Seuraava" onPress={handleNext} />
@@ -90,7 +98,9 @@ const UserInputForm = ({ onSubmit }) => {
                 )
               }
             >
-              <Text style={{ color: selectedDiets.includes(diet) ? "blue" : "black" }}>{diet}</Text>
+              <Text style={{ color: selectedDiets.includes(diet) ? "blue" : "black" }}>
+                {diet}
+              </Text>
             </TouchableOpacity>
           ))}
           <Button title="Edellinen" onPress={handleBack} />
