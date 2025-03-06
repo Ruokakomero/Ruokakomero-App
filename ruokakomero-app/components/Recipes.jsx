@@ -20,6 +20,10 @@ import RecipeCollection from "./RecipeCollection";
 import { database } from "../constants/firebaseConfig";
 import { ref, push, onValue, remove, update } from "firebase/database";
 
+{
+  /* Code review osuus alkaa*/
+}
+
 export default function Recipes() {
   const [error, setError] = useState(null);
   const [currentStep, setCurrentStep] = useState(1);
@@ -40,7 +44,6 @@ export default function Recipes() {
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [menuVisible, setMenuVisible] = useState(null);
   const [activeTab, setActiveTab] = useState("reseptit");
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [originalRecipe, setOriginalRecipe] = useState(null);
@@ -116,6 +119,7 @@ export default function Recipes() {
       setIsAddModalVisible(false);
       setCurrentStep(1);
     } catch (error) {
+      console.log(error);
       setError("Virhe", "Tallennus epäonnistui!");
       Alert.alert(error.message);
     }
@@ -154,7 +158,23 @@ export default function Recipes() {
     }
 
     try {
-      await update(ref(database, `recipes/${recipe.id}`), recipe);
+      // Varmistetaan, että ingredients ei ole undefined
+      const updatedRecipe = {
+        ...recipe,
+        ingredients: recipe.ingredients ? recipe.ingredients : [],
+        instructions: recipe.instructions ? recipe.instructions : [],
+      };
+
+      await update(ref(database, `recipes/${recipe.id}`), {
+        ...updatedRecipe,
+        ingredients:
+          updatedRecipe.ingredients.length > 0 ? updatedRecipe.ingredients : [],
+      });
+
+      // Päivitetään lista käyttöliittymässä
+      setSavedRecipes((prevRecipes) =>
+        prevRecipes.map((rec) => (rec.id === recipe.id ? updatedRecipe : rec))
+      );
 
       setIsEditModalVisible(false);
       setRecipe({
@@ -164,14 +184,12 @@ export default function Recipes() {
         instructions: [],
         image: "",
       });
+
+      Alert.alert("Tallennettu", "Resepti päivitettiin onnistuneesti!");
     } catch (error) {
       Alert.alert("Virhe", "Muokkaus epäonnistui!");
+      console.error("Error updating recipe: ", error);
     }
-  };
-
-  const handleViewRecipe = (recipe) => {
-    setSelectedRecipe(recipe);
-    setIsRecipeDetailVisible(true);
   };
 
   const filteredRecipes = savedRecipes.filter((rec) =>
@@ -193,11 +211,11 @@ export default function Recipes() {
         "Haluatko poistua tallentamatta muutokset?",
         [
           {
-            text: "Ei",
+            text: "Peruuta",
             style: "cancel",
           },
           {
-            text: "Kyllä",
+            text: "Sulje tallentamatta",
             onPress: () => setIsEditModalVisible(false),
           },
         ],
@@ -207,6 +225,10 @@ export default function Recipes() {
       setIsEditModalVisible(false);
     }
   };
+
+  {
+    /* Code review osuus päättyy*/
+  }
 
   useEffect(() => {
     const recipeRef = ref(database, "recipes/");
@@ -744,6 +766,7 @@ export default function Recipes() {
             <ScrollView style={styles.modalContentRecipe}>
               <Text style={styles.header}>{selectedRecipe?.name}</Text>
               <Text style={styles.subHeader}>Ainesosat</Text>
+
               {selectedRecipe?.ingredients.map((ing, idx) => (
                 <Text
                   key={idx}
@@ -786,8 +809,6 @@ export default function Recipes() {
   );
 }
 
-
-
 const styles = StyleSheet.create({
   /* Yleinen container-tyyli */
   container: {
@@ -795,7 +816,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 20,
   },
-  
+
   /* Modaalien asettelut */
   modalOverlay: {
     flex: 1,
@@ -826,9 +847,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-    maxHeight: "40%",
+    maxHeight: "60%",
   },
-  
+
   /* Tekstit ja otsikot */
   header: {
     fontSize: 20,
@@ -844,7 +865,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 10,
   },
-  
+
   /* Napit ja niiden tyylit */
   closeButton: {
     padding: 10,
@@ -888,7 +909,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginHorizontal: 5,
   },
-  
+
   /* Navigointinapit */
   navButtons: {
     flexDirection: "row",
@@ -915,7 +936,7 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     textAlign: "center",
   },
-  
+
   /* Tab- ja hakunapit */
   tabContainer: {
     flexDirection: "row",
@@ -946,9 +967,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginBottom: 20,
     gap: 10,
-
   },
-  
+
   /* Yleiset syöttökentät */
   input: {
     borderWidth: 1,
@@ -964,7 +984,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: "white",
   },
-  
+
   /* Ainesosa- ja ohjekentät */
   ingredientRow: {
     flexDirection: "row",
@@ -1009,7 +1029,7 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
   },
-  
+
   /* Muu ulkoasu ja listaukset */
   recipeCard: {
     padding: 15,
