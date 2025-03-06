@@ -1,14 +1,13 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomePage from './components/HomePage';
-import AddProductsPage from './components/AddProductsPage';
-import ListProducts from './components/ListProducts';
 import { Ionicons } from "@expo/vector-icons";
 import Recipes from './components/Recipes';
 import Login from './components/Login';
 import Register from './components/Register';
 import ShoppingList from './components/ShoppingList';
 import Profile from './components/Profile';
+import UserInputForm from './components/UserInputForm';
 
 const Tab = createBottomTabNavigator();
 
@@ -30,8 +29,10 @@ export default function App() {
               iconName = "person-add";
             } else if (route.name === "Ostoslista") {
               iconName = "cart";
-            } else if (route.name === "Profiili") { // Määritä ikoni Profiilille
+            } else if (route.name === "Profiili") {
               iconName = "person";
+            } else if (route.name === "Löydä resepti") {
+              iconName = "search";
             }
 
             return <Ionicons name={iconName} size={size} color={color} />;
@@ -44,6 +45,7 @@ export default function App() {
         <Tab.Screen name="Rekisteröidy" component={Register} />
         <Tab.Screen name="Ostoslista" component={ShoppingList} /> 
         <Tab.Screen name="Profiili" component={Profile} />
+        <Tab.Screen name="Löydä resepti" component={UserInputForm} />
       </Tab.Navigator>
     </NavigationContainer>
   );
