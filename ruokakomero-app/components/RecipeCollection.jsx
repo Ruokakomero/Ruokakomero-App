@@ -24,22 +24,7 @@ export default function RecipeCollection({ recipes = [] }) {
   const [recipeDetails, setRecipeDetails] = useState({}); // ✅ Stores fetched recipe names
 
   /** 🔹 Fetch collections from Firebase */
-  useEffect(() => {
-    const collectionRef = ref(database, "recipeCollections/");
-    onValue(collectionRef, async (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const loadedCollections = Object.keys(data).map((key) => ({
-          id: key,
-          ...data[key],
-        }));
-        setCollections(loadedCollections);
-        await fetchRecipeDetails(loadedCollections); // ✅ Fetch recipe names
-      } else {
-        setCollections([]);
-      }
-    });
-  }, []);
+  
 
   /** 🔹 Fetch the recipe names for stored recipe IDs */
   const fetchRecipeDetails = async (collections) => {
@@ -122,6 +107,23 @@ export default function RecipeCollection({ recipes = [] }) {
     setSelectedCollectionId(collectionId);
     setAddRecipeModalVisible(true);
   };
+
+  useEffect(() => {
+    const collectionRef = ref(database, "recipeCollections/");
+    onValue(collectionRef, async (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const loadedCollections = Object.keys(data).map((key) => ({
+          id: key,
+          ...data[key],
+        }));
+        setCollections(loadedCollections);
+        await fetchRecipeDetails(loadedCollections); // ✅ Fetch recipe names
+      } else {
+        setCollections([]);
+      }
+    });
+  }, []);
 
   return (
     <View style={styles.container}>
