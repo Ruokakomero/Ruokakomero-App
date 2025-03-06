@@ -40,12 +40,12 @@ export default function App() {
         })}
       >
         <Tab.Screen name="Etusivu" component={HomePage} />
+        <Tab.Screen name="Löydä resepti" component={UserInputForm} />
         <Tab.Screen name="Reseptit" component={Recipes} />
         <Tab.Screen name="Kirjaudu" component={Login} /> 
         <Tab.Screen name="Rekisteröidy" component={Register} />
         <Tab.Screen name="Ostoslista" component={ShoppingList} /> 
         <Tab.Screen name="Profiili" component={Profile} />
-        <Tab.Screen name="Löydä resepti" component={UserInputForm} />
       </Tab.Navigator>
     </NavigationContainer>
   );

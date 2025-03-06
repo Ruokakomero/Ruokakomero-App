@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { View, Text, Button, FlatList, TouchableOpacity, Slider } from "react-native";
+import { View, Text, Button, FlatList, TouchableOpacity} from "react-native";
+import Slider from "@react-native-community/slider";
+
 
 const UserInputForm = ({ onSubmit }) => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -43,7 +45,7 @@ const UserInputForm = ({ onSubmit }) => {
 
       {currentStep === 2 && (
         <View>
-          <Text>Valitse hiilarit:</Text>
+          <Text>Valitse hiilihydraatit:</Text>
           {carbs.map((carb) => (
             <TouchableOpacity
               key={carb}
