@@ -17,7 +17,6 @@ const UserInputForm = ({ navigation }) => {
   const handleBack = () => setCurrentStep((prev) => prev - 1);
 
   const handleSubmit = () => {
-    // Siirry ShowRecipes-näkymään ja välitä valitut tiedot
     navigation.navigate("ShowRecipes", {
       selectedProteins,
       selectedCarbs,
