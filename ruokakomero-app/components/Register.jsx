@@ -15,30 +15,65 @@ export default function Register({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleRegister = async () => {
+  // Salasanan vaatimukset
+  const validatePassword = (password) => {
+    if (password.length < 8) {
+      return "Salasanan pitää olla vähintään 8 merkkiä pitkä!";
+    }
 
+    // Iso kirjain
+    if (!/[A-Z]/.test(password)) {
+      return "Salasanan pitää sisältää vähintään yksi iso kirjain!";
+    }
+
+    // Numero
+    if (!/[0-9]/.test(password)) {
+      return "Salasanan pitää sisältää vähintään yksi numero!";
+    }
+
+    // Erikoismerkki
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+      return "Salasanan pitää sisältää vähintään yksi erikoismerkki!";
+    }
+
+    return "";
+  };
+
+  // Päivitys ja validointi
+  const handlePasswordChange = (text) => {
+    setPassword(text);
+    setPasswordError(validatePassword(text));
+  };
+
+  const handleRegister = async () => {
     if (!email || !password || !username) {
       Alert.alert("Virhe", "Täytä kaikki kentät!");
       return;
     }
 
+    // Salasanan tarkistus ennen rekisteröintiä
+    const passwordValidationError = validatePassword(password);
+    if (passwordValidationError) {
+      setPasswordError(passwordValidationError);
+      Alert.alert("Virhe", passwordValidationError);
+      return;
+    }
+
     setLoading(true);
 
-    // Käyttää AuthScreen handleRegister 
+    // Käyttää AuthScreen handleRegister
     const result = await AuthScreen.handleRegister(email, password, username);
-
     setLoading(false);
 
     if (result.success) {
-
       setEmail("");
       setPassword("");
       setUsername("");
-
+      setPasswordError("");
       Alert.alert("Rekisteröityminen onnistui!");
-
     } else {
       Alert.alert("Rekisteröityminen epäonnistui!", result.error);
     }
@@ -68,10 +103,17 @@ export default function Register({ navigation }) {
           style={styles.input}
           placeholder="Salasana"
           value={password}
-          onChangeText={setPassword}
+          onChangeText={handlePasswordChange}
           secureTextEntry
           editable={!loading}
         />
+        {passwordError ? (
+          <Text style={styles.errorText}>{passwordError}</Text>
+        ) : null}
+        <Text style={styles.passwordHint}>
+          Salasanan pitää sisältää vähintään 8 merkkiä, yksi iso kirjain, yksi
+          numero ja yksi erikoismerkki.
+        </Text>
         <Button
           title={loading ? "Rekisteröidään..." : "Rekisteröidy"}
           onPress={handleRegister}
@@ -100,15 +142,29 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   input: {
-    width: 200,
+    width: 300,
     height: 40,
     borderColor: "gray",
     borderWidth: 1,
     marginBottom: 10,
     padding: 10,
+    borderRadius: 5,
+  },
+  errorText: {
+    color: "red",
+    marginBottom: 10,
+    textAlign: "center",
+    width: 300,
+  },
+  passwordHint: {
+    fontSize: 12,
+    color: "gray",
+    marginBottom: 15,
+    textAlign: "center",
+    width: 300,
   },
   link: {
-    marginTop: 10,
+    marginTop: 20,
     color: "blue",
   },
 });
