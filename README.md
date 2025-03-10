@@ -53,6 +53,7 @@ Kun käyttäjä valitsee reseptin, sovellus luo siitä automaattisesti ostoslist
 
 ### Prosessikaavio ###
 [Prosessikaavio](https://github.com/Ruokakomero/Ruokakomero-App/blob/develop/Media/Ruokakomero%20-%20prosessikaavio.pdf)
+[Visio-linkki](https://haagahelia.sharepoint.com/:u:/r/teams/Ruokakomero-app/Jaetut%20asiakirjat/General/Ruokakomero%20-%20prosessikaavio.vsdx?d=wfd6c54846e4d46f2a6eec9b496f97940&csf=1&web=1&e=w1INfS)
 
 ---
 
