@@ -51,6 +51,9 @@ Kun käyttäjä valitsee reseptin, sovellus luo siitä automaattisesti ostoslist
 ### Käyttötapaukset ja käyttäjätarinat
 - Käyttäjätarinat löytyvät [täältä](#käyttäjätarinat).
 
+### Prosessikaavio ###
+[Prosessikaavio](https://github.com/Ruokakomero/Ruokakomero-App/blob/develop/Media/Ruokakomero%20-%20prosessikaavio.pdf)
+
 ---
 
 ## 3. Käyttöliittymä
