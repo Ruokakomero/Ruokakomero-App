@@ -6,18 +6,42 @@ import {
   Button,
   TouchableWithoutFeedback,
   Keyboard,
+  Alert,
 } from "react-native";
 import { useState } from "react";
+import AuthScreen from "./AuthScreen";
 
-export default function Register() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [username, setUsername] = useState('');
+export default function Register({ navigation }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleRegister = () => {
-    console.log('Username:', username);
-    console.log('Email:', email);
-    console.log('Password', password);
+  const handleRegister = async () => {
+
+    if (!email || !password || !username) {
+      Alert.alert("Virhe", "Täytä kaikki kentät!");
+      return;
+    }
+
+    setLoading(true);
+
+    // Käyttää AuthScreen handleRegister 
+    const result = await AuthScreen.handleRegister(email, password, username);
+
+    setLoading(false);
+
+    if (result.success) {
+
+      setEmail("");
+      setPassword("");
+      setUsername("");
+
+      Alert.alert("Rekisteröityminen onnistui!");
+
+    } else {
+      Alert.alert("Rekisteröityminen epäonnistui!", result.error);
+    }
   };
 
   return (
@@ -29,12 +53,16 @@ export default function Register() {
           placeholder="Käyttäjätunnus"
           value={username}
           onChangeText={setUsername}
+          editable={!loading}
         />
         <TextInput
           style={styles.input}
           placeholder="Sähköposti"
           value={email}
           onChangeText={setEmail}
+          autoCapitalize="none"
+          keyboardType="email-address"
+          editable={!loading}
         />
         <TextInput
           style={styles.input}
@@ -42,9 +70,17 @@ export default function Register() {
           value={password}
           onChangeText={setPassword}
           secureTextEntry
+          editable={!loading}
         />
-        <Button title="Rekisteröidy" onPress={handleRegister} />
-        <Text style={styles.link}>
+        <Button
+          title={loading ? "Rekisteröidään..." : "Rekisteröidy"}
+          onPress={handleRegister}
+          disabled={loading}
+        />
+        <Text
+          style={styles.link}
+          onPress={() => navigation && navigation.navigate("Login")}
+        >
           Oletko jo käyttäjä? Kirjaudu sisään täältä
         </Text>
       </View>
