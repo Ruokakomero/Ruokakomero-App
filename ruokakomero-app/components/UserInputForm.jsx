@@ -9,9 +9,13 @@ const UserInputForm = ({ navigation }) => {
   const [servingSize, setServingSize] = useState(2);
   const [selectedDiets, setSelectedDiets] = useState([]);
 
-  const proteins = ["Kana", "Kala", "Naudanliha", "Tofu", "Papu"];
-  const carbs = ["Riisi", "Peruna", "Pasta", "Kvinoa", "Leipä"];
-  const diets = ["Vegaani", "Gluteeniton", "Laktoositon", "Keto", "Kasvis"];
+  const proteins = ["Kana", "Kala", "Naudanliha", "Tofu", "Papu"]; // Kasviproteiini yläkategoriana? Yleisimmät eläinproteiinit?
+                                                                  // Vaihtoehtona "muu". jolloin käyttäjä voi kirjoittaa itse mitä haluaa.
+  const carbs = ["Riisi", "Peruna", "Pasta", "Kvinoa", "Leipä"]; // Muita hiilareita? Onko lisuke parempi nimi?
+                                                                // Vaihtoehtona "muu", jolloin käyttäjä voi kirjoittaa itse mitä haluaa.
+  const diets = ["Vegaani", "Gluteeniton", "Laktoositon", "Keto", "Kasvis"]; // Oletuksena rekisteröitymisen yhteydessä valittu.
+                                                                            // Tarvitseeko tässä kohdassa enää kysyä ruokavaliota?
+  // Lisäksi ruokalaji? Esim. haluaako keiton vai salaatin.
 
   const handleNext = () => setCurrentStep((prev) => prev + 1);
   const handleBack = () => setCurrentStep((prev) => prev - 1);
