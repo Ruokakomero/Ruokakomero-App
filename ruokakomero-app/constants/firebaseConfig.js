@@ -1,27 +1,27 @@
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/firestore';
-import 'firebase/compat/database'; // Lisää tämä!
-import 'firebase/compat/auth';
+import { initializeApp } from "firebase/app";
+import { getAuth, initializeAuth, getReactNativePersistence } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
+import { getDatabase } from "firebase/database";
+import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
-
+// Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDH2IaYLc-P0md-cmZvovz7jtXfsVrHw08",
-  authDomain: "ruokakomero-3022b.firebaseapp.com",
-  databaseURL: "https://ruokakomero-3022b-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "ruokakomero-3022b",
-  storageBucket: "ruokakomero-3022b.firebasestorage.app",
-  messagingSenderId: "934777900518",
-  appId: "1:934777900518:web:aa05684a40149706701a27",
-  measurementId: "G-79P6W4NWGZ"
+  apiKey: "AIzaSyA8i7IC3oNymnciRi3UVr38C6R-8a9cAZg",
+  authDomain: "fir-83c92.firebaseapp.com",
+  databaseURL: "https://fir-83c92-default-rtdb.firebaseio.com",
+  projectId: "fir-83c92",
+  storageBucket: "fir-83c92.firebasestorage.app",
+  messagingSenderId: "23715993697",
+  appId: "1:23715993697:web:60ee4fcdb9a84fba66f220"
 };
 
-// Alustetaan Firebase vain, jos sitä ei ole vielä alustettu
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = initializeAuth(app, {
+  persistence: getReactNativePersistence(ReactNativeAsyncStorage),
+});
+const firestore = getFirestore(app);
+const database = getDatabase(app);
 
-const firestore = firebase.firestore();
-const database = firebase.database(); // Real timen käyttöön otto
-const auth = firebase.auth(); // Authentication käyttöönotto
-
-export { firebase, firestore, database, auth };
+// Export initialized services
+export { app, auth, firestore, database };
