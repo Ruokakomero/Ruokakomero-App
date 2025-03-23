@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, Button, TouchableOpacity } from "react-native";
+import { View, Text, Button, TouchableOpacity, StyleSheet } from "react-native";
 import Slider from "@react-native-community/slider";
 
 const UserInputForm = ({ navigation }) => {
@@ -9,13 +9,9 @@ const UserInputForm = ({ navigation }) => {
   const [servingSize, setServingSize] = useState(2);
   const [selectedDiets, setSelectedDiets] = useState([]);
 
-  const proteins = ["Kana", "Kala", "Naudanliha", "Tofu", "Papu"]; // Kasviproteiini yläkategoriana? Yleisimmät eläinproteiinit?
-                                                                  // Vaihtoehtona "muu". jolloin käyttäjä voi kirjoittaa itse mitä haluaa.
-  const carbs = ["Riisi", "Peruna", "Pasta", "Kvinoa", "Leipä"]; // Muita hiilareita? Onko lisuke parempi nimi?
-                                                                // Vaihtoehtona "muu", jolloin käyttäjä voi kirjoittaa itse mitä haluaa.
-  const diets = ["Vegaani", "Gluteeniton", "Laktoositon", "Keto", "Kasvis"]; // Oletuksena rekisteröitymisen yhteydessä valittu.
-                                                                            // Tarvitseeko tässä kohdassa enää kysyä ruokavaliota?
-  // Lisäksi ruokalaji? Esim. haluaako keiton vai salaatin.
+  const proteins = ["Kana", "Kala", "Naudanliha", "Possu", "Kasviproteiini"];
+  const carbs = ["Riisi", "Peruna", "Pasta"];
+  const diets = ["Vegaani", "Gluteeniton", "Laktoositon", "Keto", "Kasvis"];
 
   const handleNext = () => setCurrentStep((prev) => prev + 1);
   const handleBack = () => setCurrentStep((prev) => prev - 1);
@@ -30,10 +26,10 @@ const UserInputForm = ({ navigation }) => {
   };
 
   return (
-    <View>
+    <View style={styles.container}>
       {currentStep === 1 && (
-        <View>
-          <Text>Valitse proteiinit:</Text>
+        <View style={styles.stepContainer}>
+          <Text style={styles.header}>Valitse proteiini:</Text>
           {proteins.map((protein) => (
             <TouchableOpacity
               key={protein}
@@ -44,19 +40,29 @@ const UserInputForm = ({ navigation }) => {
                     : [...prev, protein]
                 )
               }
+              style={[
+                styles.optionButton,
+                selectedProteins.includes(protein) && styles.selectedOption,
+              ]}
             >
-              <Text style={{ color: selectedProteins.includes(protein) ? "blue" : "black" }}>
+              <Text
+                style={{
+                  color: selectedProteins.includes(protein) ? "white" : "black",
+                }}
+              >
                 {protein}
               </Text>
             </TouchableOpacity>
           ))}
-          <Button title="Seuraava" onPress={handleNext} />
+          <TouchableOpacity style={styles.button} onPress={handleNext}>
+            <Text style={styles.buttonText}>Seuraava</Text>
+          </TouchableOpacity>
         </View>
       )}
 
       {currentStep === 2 && (
-        <View>
-          <Text>Valitse hiilihydraatit:</Text>
+        <View style={styles.stepContainer}>
+          <Text style={styles.header}>Valitse hiilihydraatti:</Text>
           {carbs.map((carb) => (
             <TouchableOpacity
               key={carb}
@@ -65,33 +71,52 @@ const UserInputForm = ({ navigation }) => {
                   prev.includes(carb) ? prev.filter((c) => c !== carb) : [...prev, carb]
                 )
               }
+              style={[
+                styles.optionButton,
+                selectedCarbs.includes(carb) && styles.selectedOption,
+              ]}
             >
-              <Text style={{ color: selectedCarbs.includes(carb) ? "blue" : "black" }}>{carb}</Text>
+              <Text
+                style={{
+                  color: selectedCarbs.includes(carb) ? "white" : "black",
+                }}
+              >
+                {carb}
+              </Text>
             </TouchableOpacity>
           ))}
-          <Button title="Edellinen" onPress={handleBack} />
-          <Button title="Seuraava" onPress={handleNext} />
+          <TouchableOpacity style={styles.button} onPress={handleBack}>
+            <Text style={styles.buttonText}>Edellinen</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleNext}>
+            <Text style={styles.buttonText}>Seuraava</Text>
+          </TouchableOpacity>
         </View>
       )}
 
       {currentStep === 3 && (
-        <View>
-          <Text>Annoskoko: {servingSize} annosta</Text>
+        <View style={styles.stepContainer}>
+          <Text style={styles.header}>Annoskoko: {servingSize} annosta</Text>
           <Slider
             minimumValue={1}
             maximumValue={10}
             step={1}
             value={servingSize}
             onValueChange={setServingSize}
+            style={styles.slider}
           />
-          <Button title="Edellinen" onPress={handleBack} />
-          <Button title="Seuraava" onPress={handleNext} />
+          <TouchableOpacity style={styles.button} onPress={handleBack}>
+            <Text style={styles.buttonText}>Edellinen</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleNext}>
+            <Text style={styles.buttonText}>Seuraava</Text>
+          </TouchableOpacity>
         </View>
       )}
 
       {currentStep === 4 && (
-        <View>
-          <Text>Erityisruokavaliot:</Text>
+        <View style={styles.stepContainer}>
+          <Text style={styles.header}>Erityisruokavaliot:</Text>
           {diets.map((diet) => (
             <TouchableOpacity
               key={diet}
@@ -100,18 +125,90 @@ const UserInputForm = ({ navigation }) => {
                   prev.includes(diet) ? prev.filter((d) => d !== diet) : [...prev, diet]
                 )
               }
+              style={[
+                styles.optionButton,
+                selectedDiets.includes(diet) && styles.selectedOption,
+              ]}
             >
-              <Text style={{ color: selectedDiets.includes(diet) ? "blue" : "black" }}>
+              <Text
+                style={{
+                  color: selectedDiets.includes(diet) ? "white" : "black",
+                }}
+              >
                 {diet}
               </Text>
             </TouchableOpacity>
           ))}
-          <Button title="Edellinen" onPress={handleBack} />
-          <Button title="Näytä reseptit" onPress={handleSubmit} />
+          <TouchableOpacity style={styles.button} onPress={handleBack}>
+            <Text style={styles.buttonText}>Edellinen</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+            <Text style={styles.buttonText}>Näytä reseptit</Text>
+          </TouchableOpacity>
         </View>
       )}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    padding: 20,
+  },
+  stepContainer: {
+    width: "100%",
+    alignItems: "center",
+    paddingBottom: 20,
+  },
+  header: {
+    fontSize: 24,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 15,
+    color: "#333",
+  },
+  optionButton: {
+    backgroundColor: "#f8f8f8",
+    padding: 15,
+    marginVertical: 10,
+    borderRadius: 10,
+    width: "80%",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
+  },
+  selectedOption: {
+    backgroundColor: "#4CAF50",
+  },
+  slider: {
+    width: "80%",
+    marginVertical: 30,
+  },
+  button: {
+    backgroundColor: "#4CAF50",
+    padding: 15,
+    marginTop: 20,
+    borderRadius: 10,
+    width: "80%",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 3,
+  },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+});
 
 export default UserInputForm;
