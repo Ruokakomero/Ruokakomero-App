@@ -11,32 +11,29 @@ import {
 import { useState } from "react";
 import AuthScreen from "./AuthScreen";
 
-export default function Login({ navigation }) {
+export default function Login({ navigation, setIsLoggedIn }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-    
     if (!email || !password) {
       Alert.alert("Virhe", "Syötä sähköposti ja salasana");
       return;
     }
 
     setLoading(true);
-
-    // Käyttää AuthScreen handleLogin 
     const result = await AuthScreen.handleLogin(email, password);
-
     setLoading(false);
 
     if (result.success) {
-      
       setEmail("");
       setPassword("");
-
       Alert.alert("Kirjautuminen onnistui!");
-   
+
+      // Update state to switch to MainTabs
+      setIsLoggedIn(true);
+
     } else {
       Alert.alert("Kirjautuminen epäonnistui!", result.error);
     }
@@ -70,7 +67,7 @@ export default function Login({ navigation }) {
         />
         <Text
           style={styles.link}
-          onPress={() => navigation && navigation.navigate("Register")}
+          onPress={() => navigation.navigate("Rekisteröidy")}
         >
           Eikö sinulla ole tiliä? Rekisteröidy tästä
         </Text>

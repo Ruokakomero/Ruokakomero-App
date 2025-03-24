@@ -12,11 +12,10 @@ import Profile from './components/Profile';
 import UserInputForm from './components/UserInputForm';
 import ShowRecipes from './components/ShowRecipes';
 
-// Stack -navigoinnin luominen
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// Recipe -stack
+// Recipe Stack
 function RecipeStack() {
   return (
     <Stack.Navigator>
@@ -26,34 +25,30 @@ function RecipeStack() {
   );
 }
 
-// Authentication stack (Login + Register)
-function AuthStack() {
+// Authentication Stack
+function AuthStack({ setIsLoggedIn }) {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Kirjaudu" component={Login} />
+      <Stack.Screen name="Kirjaudu">
+        {(props) => <Login {...props} setIsLoggedIn={setIsLoggedIn} />}
+      </Stack.Screen>
       <Stack.Screen name="Rekisteröidy" component={Register} />
     </Stack.Navigator>
   );
 }
 
-// Päävalikko
+// Main Tab Navigator
 function MainTabs() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size }) => {
           let iconName;
-          if (route.name === 'Etusivu') {
-            iconName = 'home';
-          } else if (route.name === 'Reseptit') {
-            iconName = 'book';
-          } else if (route.name === 'Ostoslista') {
-            iconName = 'cart';
-          } else if (route.name === 'Profiili') {
-            iconName = 'person';
-          } else if (route.name === 'Löydä resepti') {
-            iconName = 'search';
-          }
+          if (route.name === 'Etusivu') iconName = 'home';
+          else if (route.name === 'Reseptit') iconName = 'book';
+          else if (route.name === 'Ostoslista') iconName = 'cart';
+          else if (route.name === 'Profiili') iconName = 'person';
+          else if (route.name === 'Löydä resepti') iconName = 'search';
           return <Ionicons name={iconName} size={size} color={color} />;
         },
       })}
@@ -67,13 +62,13 @@ function MainTabs() {
   );
 }
 
-// Varsinainen App komponentti
+// App Component
 export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Riippuen auth statetista, tämä muuttuu dynaamisesti
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   return (
     <NavigationContainer>
-      {isLoggedIn ? <MainTabs /> : <AuthStack />}
+      {isLoggedIn ? <MainTabs /> : <AuthStack setIsLoggedIn={setIsLoggedIn} />}
     </NavigationContainer>
   );
 }
