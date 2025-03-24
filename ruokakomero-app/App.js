@@ -12,11 +12,11 @@ import Profile from './components/Profile';
 import UserInputForm from './components/UserInputForm';
 import ShowRecipes from './components/ShowRecipes';
 
-// Create Stack Navigators
+// Stack -navigoinnin luominen
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// Recipe Stack
+// Recipe -stack
 function RecipeStack() {
   return (
     <Stack.Navigator>
@@ -26,7 +26,7 @@ function RecipeStack() {
   );
 }
 
-// Authentication Stack (Login + Register)
+// Authentication stack (Login + Register)
 function AuthStack() {
   return (
     <Stack.Navigator>
@@ -36,7 +36,7 @@ function AuthStack() {
   );
 }
 
-// Main Tab Navigator
+// Päävalikko
 function MainTabs() {
   return (
     <Tab.Navigator
@@ -67,9 +67,9 @@ function MainTabs() {
   );
 }
 
-// App Component
+// Varsinainen App komponentti
 export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Change this dynamically based on auth state
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Riippuen auth statetista, tämä muuttuu dynaamisesti
 
   return (
     <NavigationContainer>
