@@ -1,46 +1,86 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { getAuth, deleteUser } from 'firebase/auth';
+import { getDatabase, ref, get, set, remove } from 'firebase/database';
 
-// Mockup-tiedot käyttäjästä
-const initialUserData = {
-  firstName: 'Maija',
-  lastName: 'Mehiläinen',
-  email: 'maijameh@testi.fi',
-  phone: '0441231234',
-  address: {
-    street: 'Katu 1',
-    postalCode: '00100',
-    city: 'Helsinki',
-  },
-  password: '',
-  diet: {
-    vege: false,
-    glutenFree: false,
-    lactoseFree: false,
-  },
-};
+
+const auth = getAuth();
+const database = getDatabase();
 
 export default function Profile() {
-  const [user, setUser] = useState(initialUserData);
+  const [user, setUser] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    diet: {
+      vege: false,
+      glutenFree: false,
+      lactoseFree: false,
+    },
+  });
 
-  const handleSave = () => {
-    console.log('Tallennetut tiedot:', user);
+  // Haetaan käyttäjän tiedot Realtime Database:sta
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        const userRef = ref(database, `users/${currentUser.uid}`);
+        const snapshot = await get(userRef);
+        if (snapshot.exists()) {
+          setUser(snapshot.val());
+        } else {
+          console.log("Käyttäjän tietoja ei löydy.");
+        }
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  const handleSave = async () => {
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      try {
+        const userRef = ref(database, `users/${currentUser.uid}`);
+        await set(userRef, user);
+        Alert.alert('Tiedot tallennettu onnistuneesti!');
+      } catch (error) {
+        Alert.alert('Virhe tallennuksessa', error.message);
+      }
+    }
   };
+
+  // Poista käyttäjän tiedot Realtime Database:sta ja Firebase Authenticationista
+  const handleDeleteAccount = async () => {
+    const auth = getAuth();
+    const currentUser = auth.currentUser;
+
+    if (!currentUser) {
+      Alert.alert("Virhe", "Käyttäjää ei löytynyt.");
+      return;
+    }
+
+    try {
+      // Poistetaan tiedot Firebase Realtime Databasesta
+      const database = getDatabase();
+      const userRef = ref(database, `users/${currentUser.uid}`);
+
+      await remove(userRef); // Poistetaan käyttäjän tiedot tietokannasta
+      await deleteUser(currentUser); // Poistetaan käyttäjä Firebase Authenticationista
+
+      Alert.alert("Poisto onnistui", "Profiilisi on poistettu onnistuneesti.");
+      navigation.navigate("Login"); // Palaa kirjautumissivulle poiston jälkeen
+    } catch (error) {
+      Alert.alert("Virhe", "Profiilin poistaminen epäonnistui: " + error.message);
+    }
+  };
+
 
   const handleInputChange = (field, value) => {
     setUser((prevUser) => ({
       ...prevUser,
       [field]: value,
-    }));
-  };
-
-  const handleAddressChange = (field, value) => {
-    setUser((prevUser) => ({
-      ...prevUser,
-      address: {
-        ...prevUser.address,
-        [field]: value,
-      },
     }));
   };
 
@@ -69,32 +109,6 @@ export default function Profile() {
         placeholder="Sukunimi"
         value={user.lastName}
         onChangeText={(text) => handleInputChange('lastName', text)}
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Katuosoite"
-        value={user.address.street}
-        onChangeText={(text) => handleAddressChange('street', text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Postinumero"
-        value={user.address.postalCode}
-        onChangeText={(text) => handleAddressChange('postalCode', text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Kaupunki"
-        value={user.address.city}
-        onChangeText={(text) => handleAddressChange('city', text)}
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Puhelinnumero"
-        value={user.phone}
-        onChangeText={(text) => handleInputChange('phone', text)}
       />
       <TextInput
         style={styles.input}
@@ -143,6 +157,7 @@ export default function Profile() {
       </View>
 
       <Button title="Tallenna tiedot" onPress={handleSave} />
+      <Button title="Poista profiili" color="red" onPress={handleDeleteAccount} />
     </View>
   );
 }
