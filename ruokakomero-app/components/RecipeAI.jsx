@@ -9,8 +9,7 @@ export async function getRecipe(query) {
   {
     "name": "Ruokalajin nimi",
     "ingredients": [
-      "Ainesosan 1 nimi - määrä ja yksikkö",
-      "Ainesosan 2 nimi - määrä ja yksikkö"
+      { "name": "Ainesosan nimi", "quantity": "määrä", "unit": "yksikkö" }
     ],
     "instructions": [
       "Vaihe 1",
@@ -27,5 +26,10 @@ export async function getRecipe(query) {
     response_format: "json",
   });
 
-  return response.choices[0].message.content;
+  try {
+    return JSON.parse(response.choices[0].message.content);
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
 }
