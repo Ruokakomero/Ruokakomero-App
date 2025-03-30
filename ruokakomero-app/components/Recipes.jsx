@@ -62,6 +62,19 @@ export default function Recipes() {
     kpl: { min: 0, max: 20, step: 1 },
   };
 
+  const resetForm = () => {
+    setRecipe({
+      id: "",
+      name: "",
+      ingredients: [],
+      instructions: [],
+      image: "",
+    });
+    setIngredientName("");
+    setIngredientQuantity(0);
+    setInstructionStep("");
+  };
+
   const handleAddIngredient = () => {
     if (!ingredientName || ingredientQuantity <= 0) {
       Alert.alert("Virhe", "Täytä kaikki ainesosan kentät!");
@@ -143,6 +156,7 @@ export default function Recipes() {
             } catch (error) {
               setError("Virhe", "Poisto epäonnistui!");
               Alert.alert(error.message);
+              console.log(error);
             }
           },
         },
@@ -216,7 +230,8 @@ export default function Recipes() {
           },
           {
             text: "Sulje tallentamatta",
-            onPress: () => setIsEditModalVisible(false),
+            onPress: () => {setIsEditModalVisible(false); resetForm();}
+            
           },
         ],
         { cancelable: true }
@@ -275,7 +290,7 @@ export default function Recipes() {
           <View style={styles.circleButtonContainer}>
             <TouchableOpacity
               style={styles.circleButton}
-              onPress={() => setIsAddModalVisible(true)}
+              onPress={() => {setIsAddModalVisible(true); resetForm();}}
             >
               <Ionicons name="add" size={24} color="white" />
             </TouchableOpacity>
@@ -332,7 +347,7 @@ export default function Recipes() {
                   <View style={styles.modalContentCreate}>
                     <Text style={styles.header}>{recipe.name}</Text>
 
-                    <View style={styles.stepContainer}>
+                    <View >
                       {currentStep === 1 && (
                         <>
                           <Text style={styles.header}>Perustiedot</Text>
@@ -452,7 +467,10 @@ export default function Recipes() {
                         ) : (
                           <TouchableOpacity
                             style={styles.saveButton}
-                            onPress={handleAddRecipe}
+                            onPress={()=> {
+                              handleAddRecipe();
+                              resetForm();
+                            }}
                           >
                             <Text style={styles.saveButtonText}>Tallenna</Text>
                           </TouchableOpacity>
@@ -662,7 +680,7 @@ export default function Recipes() {
                       {recipe.instructions.map((item, index) => (
                         <View key={index} style={styles.ingredientRow}>
                           <TextInput
-                            style={styles.ingredientInput}
+                            style={styles.input}
                             value={item}
                             placeholder="Muokkaa ohjetta"
                             onChangeText={(text) => {
@@ -698,7 +716,7 @@ export default function Recipes() {
                       {/* Add New Instruction */}
                       <View style={styles.ingredientRow}>
                         <TextInput
-                          style={styles.ingredientInput}
+                          style={styles.input}
                           placeholder="Lisää uusi ohje"
                           value={instructionStep}
                           onChangeText={setInstructionStep}
@@ -865,6 +883,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 10,
   },
+
 
   /* Napit ja niiden tyylit */
   closeButton: {
