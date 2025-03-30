@@ -15,28 +15,22 @@ import { database } from "../constants/firebaseConfig";
 import { ref, push, onValue, remove, update, get } from "firebase/database";
 
 export default function RecipeCollection({ recipes = [] }) {
-  // States for creating a new collection
-  const [collectionName, setCollectionName] = useState("");
-  const [selectedRecipesForNewCollection, setSelectedRecipesForNewCollection] = useState([]);
-  const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
 
-  // States for listing/editing collections
+  const [collectionName, setCollectionName] = useState("");
+  const [selectedRecipesForNewCollection, setSelectedRecipesForNewCollection] =
+    useState([]);
+  const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
   const [collections, setCollections] = useState([]);
   const [menuVisible, setMenuVisible] = useState(null);
 
   // State for add recipe modal (used for both create and edit flows)
   const [selectedCollectionId, setSelectedCollectionId] = useState(null);
   const [addRecipeModalVisible, setAddRecipeModalVisible] = useState(false);
-
-  // State to cache recipe details (names) from DB for display
   const [recipeDetails, setRecipeDetails] = useState({});
-
-  // States for editing an existing collection
-  const [isEditCollectionModalVisible, setIsEditCollectionModalVisible] = useState(false);
+  const [isEditCollectionModalVisible, setIsEditCollectionModalVisible] =
+    useState(false);
   const [collectionToEdit, setCollectionToEdit] = useState(null);
   const [editedCollectionName, setEditedCollectionName] = useState("");
-
-  // Fetch names for each recipe used in any collection
   const fetchRecipeDetails = async (collectionsData) => {
     let recipeData = { ...recipeDetails };
 
@@ -54,7 +48,7 @@ export default function RecipeCollection({ recipes = [] }) {
     setRecipeDetails(recipeData);
   };
 
-  // Create new collection including the selected recipes
+ 
   const createCollection = async () => {
     if (!collectionName.trim()) {
       Alert.alert("Virhe", "Anna kokoelmalle nimi!");
@@ -67,12 +61,15 @@ export default function RecipeCollection({ recipes = [] }) {
       const newCollection = {
         id: newCollectionKey,
         name: collectionName,
-        recipes: selectedRecipesForNewCollection, // add selected recipes
+        recipes: selectedRecipesForNewCollection, 
       };
 
-      await update(ref(database, `recipeCollections/${newCollectionKey}`), newCollection);
+      await update(
+        ref(database, `recipeCollections/${newCollectionKey}`),
+        newCollection
+      );
 
-      // Reset states
+
       setCollectionName("");
       setSelectedRecipesForNewCollection([]);
       setIsCreateModalVisible(false);
@@ -83,31 +80,38 @@ export default function RecipeCollection({ recipes = [] }) {
     }
   };
 
-  // Add a recipe to a collection. Note: the add modal filters out already added recipes.
+ 
   const addRecipeToCollection = async (recipeId) => {
     if (!selectedCollectionId) {
       Alert.alert("Virhe", "Valitse kokoelma ensin!");
       return;
     }
     try {
-      const collectionRef = ref(database, `recipeCollections/${selectedCollectionId}`);
+      const collectionRef = ref(
+        database,
+        `recipeCollections/${selectedCollectionId}`
+      );
       const collectionSnapshot = await get(collectionRef);
 
       if (collectionSnapshot.exists()) {
         const collection = collectionSnapshot.val();
-        const updatedRecipes = collection.recipes ? [...collection.recipes, recipeId] : [recipeId];
+        const updatedRecipes = collection.recipes
+          ? [...collection.recipes, recipeId]
+          : [recipeId];
 
         await update(collectionRef, { recipes: updatedRecipes });
 
         setAddRecipeModalVisible(false);
-        Alert.alert("Resepti lisätty", "Resepti lisättiin kokoelmaan onnistuneesti.");
+        Alert.alert(
+          "Resepti lisätty",
+          "Resepti lisättiin kokoelmaan onnistuneesti."
+        );
       }
     } catch (error) {
       console.error("Error adding recipe: ", error);
     }
   };
 
-  // Remove a recipe from a collection
   const removeRecipeFromCollection = async (collectionId, recipeId) => {
     try {
       const collectionRef = ref(database, `recipeCollections/${collectionId}`);
@@ -131,7 +135,6 @@ export default function RecipeCollection({ recipes = [] }) {
     }
   };
 
-  // Delete an entire collection
   const deleteCollection = async (collectionId) => {
     try {
       await remove(ref(database, `recipeCollections/${collectionId}`));
@@ -140,32 +143,38 @@ export default function RecipeCollection({ recipes = [] }) {
     }
   };
 
-  // Open the add recipe modal (for editing or later additions)
+
   const openAddRecipeModal = (collectionId) => {
     setSelectedCollectionId(collectionId);
     setAddRecipeModalVisible(true);
   };
 
-  // Update collection name when editing
+
   const updateCollection = async () => {
     if (!collectionToEdit || !editedCollectionName.trim()) {
       Alert.alert("Virhe", "Anna kokoelman nimi!");
       return;
     }
     try {
-      const collectionRef = ref(database, `recipeCollections/${collectionToEdit.id}`);
+      const collectionRef = ref(
+        database,
+        `recipeCollections/${collectionToEdit.id}`
+      );
       await update(collectionRef, { name: editedCollectionName });
       setIsEditCollectionModalVisible(false);
       setCollectionToEdit(null);
       setEditedCollectionName("");
-      Alert.alert("Kokoelma päivitetty", "Kokoelma on päivitetty onnistuneesti!");
+      Alert.alert(
+        "Kokoelma päivitetty",
+        "Kokoelma on päivitetty onnistuneesti!"
+      );
     } catch (error) {
       console.error("Error updating collection:", error);
       Alert.alert("Virhe", "Kokoelman päivitys epäonnistui!");
     }
   };
 
-  // Listen for changes in recipeCollections and update local state
+
   useEffect(() => {
     const collectionRef = ref(database, "recipeCollections/");
     onValue(collectionRef, async (snapshot) => {
@@ -174,7 +183,7 @@ export default function RecipeCollection({ recipes = [] }) {
         const loadedCollections = Object.keys(data).map((key) => ({
           id: key,
           ...data[key],
-          recipes: data[key].recipes || [], // default to empty array if undefined
+          recipes: data[key].recipes || [], 
         }));
         setCollections(loadedCollections);
         await fetchRecipeDetails(loadedCollections);
@@ -186,13 +195,19 @@ export default function RecipeCollection({ recipes = [] }) {
 
   return (
     <View style={styles.container}>
-      {/* Button to open the Create Collection Modal */}
-      <TouchableOpacity onPress={() => setIsCreateModalVisible(true)} style={styles.plusButton}>
+
+      <TouchableOpacity
+        onPress={() => setIsCreateModalVisible(true)}
+        style={styles.plusButton}
+      >
         <Ionicons name="add" size={30} color="white" />
       </TouchableOpacity>
 
-      {/* Create Collection Modal */}
-      <Modal visible={isCreateModalVisible} animationType="slide" transparent={true}>
+      <Modal
+        visible={isCreateModalVisible}
+        animationType="slide"
+        transparent={true}
+      >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.header}>Luo Kokoelma</Text>
@@ -207,15 +222,25 @@ export default function RecipeCollection({ recipes = [] }) {
               data={recipes}
               keyExtractor={(item) => item.id}
               renderItem={({ item }) => {
-                const isSelected = selectedRecipesForNewCollection.includes(item.id);
+                const isSelected = selectedRecipesForNewCollection.includes(
+                  item.id
+                );
                 return (
                   <TouchableOpacity
-                    style={[styles.recipeList, isSelected && styles.selectedRecipe]}
+                    style={[
+                      styles.recipeList,
+                      isSelected && styles.selectedRecipe,
+                    ]}
                     onPress={() => {
                       if (isSelected) {
-                        setSelectedRecipesForNewCollection((prev) => prev.filter((id) => id !== item.id));
+                        setSelectedRecipesForNewCollection((prev) =>
+                          prev.filter((id) => id !== item.id)
+                        );
                       } else {
-                        setSelectedRecipesForNewCollection((prev) => [...prev, item.id]);
+                        setSelectedRecipesForNewCollection((prev) => [
+                          ...prev,
+                          item.id,
+                        ]);
                       }
                     }}
                   >
@@ -238,6 +263,7 @@ export default function RecipeCollection({ recipes = [] }) {
         </View>
       </Modal>
 
+
       {/* List of Created Collections */}
       <FlatList
         data={collections}
@@ -245,10 +271,14 @@ export default function RecipeCollection({ recipes = [] }) {
         renderItem={({ item }) => (
           <View style={styles.collectionItem}>
             <View style={styles.collectionHeader}>
-              <TouchableOpacity onPress={() => setMenuVisible(menuVisible === item.id ? null : item.id)}>
+              <TouchableOpacity
+                onPress={() =>
+                  setMenuVisible(menuVisible === item.id ? null : item.id)
+                }
+              >
                 <Text style={styles.collectionName}>{item.name}</Text>
               </TouchableOpacity>
-              {/* Edit button */}
+
               <TouchableOpacity
                 onPress={() => {
                   setCollectionToEdit(item);
@@ -262,7 +292,11 @@ export default function RecipeCollection({ recipes = [] }) {
 
             {menuVisible === item.id && (
               <View style={styles.menuOptions}>
-                <Button title="Poista" color="red" onPress={() => deleteCollection(item.id)} />
+                <Button
+                  title="Poista"
+                  color="red"
+                  onPress={() => deleteCollection(item.id)}
+                />
               </View>
             )}
 
@@ -274,13 +308,20 @@ export default function RecipeCollection({ recipes = [] }) {
                   <Text style={styles.recipeName}>
                     {recipeDetails[recipeId] || "Ladataan..."}
                   </Text>
-                  <TouchableOpacity onPress={() => removeRecipeFromCollection(item.id, recipeId)}>
+                  <TouchableOpacity
+                    onPress={() =>
+                      removeRecipeFromCollection(item.id, recipeId)
+                    }
+                  >
                     <Text style={styles.deleteText}>Poista</Text>
                   </TouchableOpacity>
                 </View>
               )}
               ListFooterComponent={
-                <TouchableOpacity style={styles.addRecipeButton} onPress={() => openAddRecipeModal(item.id)}>
+                <TouchableOpacity
+                  style={styles.addRecipeButton}
+                  onPress={() => openAddRecipeModal(item.id)}
+                >
                   <Ionicons name="add-circle" size={24} color="green" />
                 </TouchableOpacity>
               }
@@ -289,37 +330,53 @@ export default function RecipeCollection({ recipes = [] }) {
         )}
       />
 
-      {/* Add Recipe Modal (used for both create/edit) */}
-      <Modal visible={addRecipeModalVisible} animationType="slide" transparent={true}>
+      <Modal
+        visible={addRecipeModalVisible}
+        animationType="slide"
+        transparent={true}
+      >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.header}>Valitse resepti lisättäväksi</Text>
             {(() => {
-              // Find current collection so we can filter out recipes already added
-              const currentCollection = collections.find((c) => c.id === selectedCollectionId);
+              const currentCollection = collections.find(
+                (c) => c.id === selectedCollectionId
+              );
               const availableRecipes = currentCollection
-                ? recipes.filter((r) => !((currentCollection.recipes || []).includes(r.id)))
+                ? recipes.filter(
+                    (r) => !(currentCollection.recipes || []).includes(r.id)
+                  )
                 : recipes;
               return (
                 <FlatList
                   data={availableRecipes}
                   keyExtractor={(item) => item.id}
                   renderItem={({ item }) => (
-                    <TouchableOpacity style={styles.recipeList} onPress={() => addRecipeToCollection(item.id)}>
+                    <TouchableOpacity
+                      style={styles.recipeList}
+                      onPress={() => addRecipeToCollection(item.id)}
+                    >
                       <Text style={styles.recipeName}>{item.name}</Text>
                     </TouchableOpacity>
                   )}
                 />
               );
             })()}
-            <Button title="Sulje" color="red" onPress={() => setAddRecipeModalVisible(false)} />
+            <Button
+              title="Sulje"
+              color="red"
+              onPress={() => setAddRecipeModalVisible(false)}
+            />
           </View>
         </View>
       </Modal>
 
-      {/* Edit Collection Modal */}
       {isEditCollectionModalVisible && collectionToEdit && (
-        <Modal visible={isEditCollectionModalVisible} animationType="slide" transparent={true}>
+        <Modal
+          visible={isEditCollectionModalVisible}
+          animationType="slide"
+          transparent={true}
+        >
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
               <Text style={styles.header}>Muokkaa Kokoelmaa</Text>
@@ -338,13 +395,23 @@ export default function RecipeCollection({ recipes = [] }) {
                     <Text style={styles.recipeName}>
                       {recipeDetails[recipeId] || "Ladataan..."}
                     </Text>
-                    <TouchableOpacity onPress={() => removeRecipeFromCollection(collectionToEdit.id, recipeId)}>
+                    <TouchableOpacity
+                      onPress={() =>
+                        removeRecipeFromCollection(
+                          collectionToEdit.id,
+                          recipeId
+                        )
+                      }
+                    >
                       <Text style={styles.deleteText}>Poista</Text>
                     </TouchableOpacity>
                   </View>
                 )}
               />
-              <Button title="Lisää resepti" onPress={() => openAddRecipeModal(collectionToEdit.id)} />
+              <Button
+                title="Lisää resepti"
+                onPress={() => openAddRecipeModal(collectionToEdit.id)}
+              />
               <Button title="Tallenna muutokset" onPress={updateCollection} />
               <Button
                 title="Sulje"
@@ -434,7 +501,12 @@ const styles = StyleSheet.create({
   recipeName: { fontSize: 14, fontWeight: "bold" },
   header: { fontSize: 24, fontWeight: "bold", marginBottom: 16 },
   subHeader: { fontSize: 16, marginBottom: 10, fontWeight: "bold" },
-  addRecipeButton: { marginHorizontal: 16, flexDirection: "row", alignItems: "center", marginTop: 10 },
+  addRecipeButton: {
+    marginHorizontal: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
+  },
 });
 
 
