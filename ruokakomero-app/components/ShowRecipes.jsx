@@ -1,9 +1,12 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from "react-native";
+import React from "react";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
-const ShowRecipes = () => {
-  // Mock-data, korvataan tekoälyn JSON:lla myöhemmin
-  const [recipes, setRecipes] = useState([
+const ShowRecipes = ({ route }) => {
+  // Otetaan UserInputFormista lähetetyt tiedot vastaan
+  const { selectedProteins, selectedCarbs, servingSize, selectedDiets, otherProtein, otherCarb } = route.params;
+
+  // Mock-reseptit (korvataan tekoälyllä myöhemmin)
+  const recipes = [
     {
       id: "1",
       name: "Kanaa ja riisiä",
@@ -39,41 +42,37 @@ const ShowRecipes = () => {
       ingredients: ["Munat", "Juusto", "Salaatti", "Tomaatti"],
       instructions: "Paista omeletti ja tarjoile salaattipedillä."
     }
-  ]);
+  ];
 
-  // Funktio reseptin tallentamiseen
-  const saveRecipe = (recipe) => {
-    console.log("Tallennettu:", recipe.name);
+  // **Haetaan käyttäjän valintoihin sopiva resepti**
+  const findMatchingRecipe = () => {
+    return (
+      recipes.find((recipe) =>
+        selectedProteins.some((protein) => recipe.ingredients.includes(protein)) &&
+        selectedCarbs.some((carb) => recipe.ingredients.includes(carb))
+      ) || recipes[0] // Jos sopivaa ei löydy, valitaan ensimmäinen resepti
+    );
   };
 
-  // Funktio ostoslistaan lisäämiseen
-  const addToShoppingList = (recipe) => {
-    console.log("Lisätty ostoslistaan:", recipe.ingredients.join(", "));
-  };
+  const recipe = findMatchingRecipe();
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Reseptiehdotukset</Text>
-      <FlatList
-        data={recipes}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.recipeCard}>
-            <Text style={styles.recipeTitle}>{item.name}</Text>
-            <Text>Annoksia: {item.servings}</Text>
-            <Text>Ainesosat: {item.ingredients.join(", ")}</Text>
-            <Text>Ohje: {item.instructions}</Text>
+      <Text style={styles.header}>Suositeltu resepti</Text>
+      <View style={styles.recipeCard}>
+        <Text style={styles.recipeTitle}>{recipe.name}</Text>
+        <Text>Annoksia: {servingSize}</Text>
+        <Text>Ainesosat: {recipe.ingredients.join(", ")}</Text>
+        <Text>Ohje: {recipe.instructions}</Text>
 
-            <TouchableOpacity style={styles.button} onPress={() => saveRecipe(item)}>
-              <Text style={styles.buttonText}>Tallenna</Text>
-            </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={() => console.log("Tallennettu:", recipe.name)}>
+          <Text style={styles.buttonText}>Tallenna</Text>
+        </TouchableOpacity>
 
-            <TouchableOpacity style={styles.button} onPress={() => addToShoppingList(item)}>
-              <Text style={styles.buttonText}>Lisää ostoslistalle</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      />
+        <TouchableOpacity style={styles.button} onPress={() => console.log("Lisätty ostoslistaan:", recipe.ingredients.join(", "))}>
+          <Text style={styles.buttonText}>Lisää ostoslistalle</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
