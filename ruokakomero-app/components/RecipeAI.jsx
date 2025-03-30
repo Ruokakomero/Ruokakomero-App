@@ -1,35 +1,48 @@
+import { OPENAI_API_KEY } from "react-native-dotenv";
 import { OpenAI } from "openai";
-import { OPENAI_API_KEY } from "../constants/config";
 
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
 export async function getRecipe(query) {
-  const prompt = `Olet mestarikokki. Laadi reseptiehdotus annettujen tietojen perusteella seuraavassa JSON-muodossa:
+  const prompt = `Olet mestarikokki, joka hallitsee sujuvan ja kieliopillisesti korrektin suomen kielen. Laadi reseptiehdotus annettujen tietojen perusteella seuraavassa JSON-muodossa:
 
-  {
-    "name": "Ruokalajin nimi",
-    "ingredients": [
-      { "name": "Ainesosan nimi", "quantity": "määrä", "unit": "yksikkö" }
-    ],
-    "instructions": [
-      "Vaihe 1",
-      "Vaihe 2"
-    ]
-  }
+{
+  "name": "Ruokalajin nimi",
+  "ingredients": [
+    { "name": "Ainesosan nimi, jos valkosipuli niin valkosipulinkynsi", "quantity": "määrä", "unit": "yksikkö lyhenteinä" }
+  ],
+  "instructions": [
+    "Yksityiskohtaiset ja selkeät valmistusohjeet, joissa kerrotaan tarkasti, miten ruoka valmistetaan."
+  ]
+}
 
-  Käytä mahdollisimman tarkkoja määriä ja yksityiskohtaisia valmistusohjeita. Tässä käyttäjän antama tieto: "${query}".`;
+Käytä mahdollisimman tarkkoja määriä ja selkeitä valmistusohjeita. Älä kuitenkaan lisää valmistusohjeeseen numeroita. Tässä käyttäjän antamat tiedot: "${query}".
+`;
 
-  const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
-    messages: [{ role: "user", content: prompt }],
-    max_tokens: 500,
-    response_format: "json",
-  });
+    try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [{ role: "user", content: prompt }],
+      max_tokens: 1000, 
+    });
 
-  try {
-    return JSON.parse(response.choices[0].message.content);
+    const cleanResponse = response.choices[0].message.content.trim();
+
+    // tarkista, että vastaus on JSON-muodossa
+    if (cleanResponse.startsWith("{") && cleanResponse.endsWith("}")) {
+      try {
+        const parsedRecipe = JSON.parse(cleanResponse);
+        return parsedRecipe;
+      } catch (jsonError) {
+        console.error("JSON parsing error:", jsonError);
+        return null;
+      }
+    } else {
+      console.error("Response is not valid JSON:", cleanResponse);
+      return null;
+    }
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching recipe:", error);
     return null;
   }
 }
