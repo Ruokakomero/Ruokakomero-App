@@ -10,6 +10,11 @@ import {
 } from "react-native";
 import { useState } from "react";
 import AuthScreen from "./AuthScreen";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getDatabase, ref, set } from "firebase/database";
+
+const auth = getAuth();
+const database = getDatabase();
 
 export default function Register({ navigation }) {
   const [email, setEmail] = useState("");
@@ -24,7 +29,7 @@ export default function Register({ navigation }) {
       return "Salasanan pitää olla vähintään 8 merkkiä pitkä!";
     }
 
-    // Iso kirjain
+    //Iso kirjain
     if (!/[A-Z]/.test(password)) {
       return "Salasanan pitää sisältää vähintään yksi iso kirjain!";
     }
@@ -34,7 +39,7 @@ export default function Register({ navigation }) {
       return "Salasanan pitää sisältää vähintään yksi numero!";
     }
 
-    // Erikoismerkki
+    //Erikoismerkki
     if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
       return "Salasanan pitää sisältää vähintään yksi erikoismerkki!";
     }
@@ -64,18 +69,30 @@ export default function Register({ navigation }) {
 
     setLoading(true);
 
-    // Käyttää AuthScreen handleRegister
-    const result = await AuthScreen.handleRegister(email, password, username);
-    setLoading(false);
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
 
-    if (result.success) {
+      // Tallennetaan käyttäjä Realtime Databaseen
+      await set(ref(database, `users/${user.uid}`), {
+        username: username,
+        email: email,
+        diet: {
+          vege: false,
+          glutenFree: false,
+          lactoseFree: false,
+        },
+      });
+
+      setLoading(false);
       setEmail("");
       setPassword("");
       setUsername("");
       setPasswordError("");
       Alert.alert("Rekisteröityminen onnistui!");
-    } else {
-      Alert.alert("Rekisteröityminen epäonnistui!", result.error);
+    } catch (error) {
+      setLoading(false);
+      Alert.alert("Rekisteröityminen epäonnistui!", error.message);
     }
   };
 
@@ -107,9 +124,7 @@ export default function Register({ navigation }) {
           secureTextEntry
           editable={!loading}
         />
-        {passwordError ? (
-          <Text style={styles.errorText}>{passwordError}</Text>
-        ) : null}
+        {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
         <Text style={styles.passwordHint}>
           Salasanan pitää sisältää vähintään 8 merkkiä, yksi iso kirjain, yksi
           numero ja yksi erikoismerkki.

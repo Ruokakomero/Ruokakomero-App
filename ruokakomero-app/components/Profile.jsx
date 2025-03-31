@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { getAuth, deleteUser } from 'firebase/auth';
+import { getAuth, deleteUser, signOut } from 'firebase/auth';
 import { getDatabase, ref, get, set, remove } from 'firebase/database';
-
 
 const auth = getAuth();
 const database = getDatabase();
@@ -17,10 +16,15 @@ export default function Profile() {
       vege: false,
       glutenFree: false,
       lactoseFree: false,
+      vegan: false,
+      nutAllergy: false,
+      halal: false,
     },
+    favoriteIngredients: '',
+    dislikedIngredients: '',
   });
 
-  // Haetaan käyttäjän tiedot Realtime Database:sta
+  // Hakee käyttäjän tiedot firebasesta
   useEffect(() => {
     const fetchUserData = async () => {
       const currentUser = auth.currentUser;
@@ -38,6 +42,7 @@ export default function Profile() {
     fetchUserData();
   }, []);
 
+  // Tallentaa käyttäjän tiedot realtime databaseen
   const handleSave = async () => {
     const currentUser = auth.currentUser;
     if (currentUser) {
@@ -51,31 +56,37 @@ export default function Profile() {
     }
   };
 
-  // Poista käyttäjän tiedot Realtime Database:sta ja Firebase Authenticationista
-  const handleDeleteAccount = async () => {
-    const auth = getAuth();
-    const currentUser = auth.currentUser;
+  // Vahvistusikkuna profiilin poistamiseen
+  const confirmDeleteAccount = () => {
+    Alert.alert(
+      "Vahvista poistaminen",
+      "Haluatko varmasti poistaa profiilisi? Tätä toimintoa ei voi perua!",
+      [
+        { text: "Peruuta", style: "cancel" },
+        { text: "Poista", onPress: handleDeleteAccount, style: "destructive" }
+      ]
+    );
+  };
 
+  // Poistaa käyttäjän profiilin firebasesta
+  // En saanut toimimaan uloskirjautumista poiston yhteydessä
+  const handleDeleteAccount = async () => {
+    const currentUser = auth.currentUser;
     if (!currentUser) {
       Alert.alert("Virhe", "Käyttäjää ei löytynyt.");
       return;
     }
 
     try {
-      // Poistetaan tiedot Firebase Realtime Databasesta
-      const database = getDatabase();
       const userRef = ref(database, `users/${currentUser.uid}`);
-
-      await remove(userRef); // Poistetaan käyttäjän tiedot tietokannasta
-      await deleteUser(currentUser); // Poistetaan käyttäjä Firebase Authenticationista
-
+      await remove(userRef);
+      await deleteUser(currentUser);
       Alert.alert("Poisto onnistui", "Profiilisi on poistettu onnistuneesti.");
-      navigation.navigate("Login"); // Palaa kirjautumissivulle poiston jälkeen
+      await signOut(auth);
     } catch (error) {
       Alert.alert("Virhe", "Profiilin poistaminen epäonnistui: " + error.message);
     }
   };
-
 
   const handleInputChange = (field, value) => {
     setUser((prevUser) => ({
@@ -84,6 +95,7 @@ export default function Profile() {
     }));
   };
 
+  // Päivittää käyttäjän ruokavalion
   const toggleDiet = (dietType) => {
     setUser((prevUser) => ({
       ...prevUser,
@@ -92,6 +104,17 @@ export default function Profile() {
         [dietType]: !prevUser.diet[dietType],
       },
     }));
+  };
+
+  // Ruokavalio vaihtoehdot
+  // Näitä voi laittaa lisää jos tulee mieleen
+  const dietOptions = {
+    vege: "Vege",
+    glutenFree: "Gluteeniton",
+    lactoseFree: "Laktoositon",
+    vegan: "Vegaani",
+    nutAllergy: "Pähkinäallergia",
+    halal: "Halal",
   };
 
   return (
@@ -116,48 +139,41 @@ export default function Profile() {
         value={user.email}
         onChangeText={(text) => handleInputChange('email', text)}
       />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Salasana"
-        secureTextEntry
-        value={user.password}
-        onChangeText={(text) => handleInputChange('password', text)}
-      />
-
+      
       <Text style={styles.subtitle}>Ruokavalio</Text>
       <View style={styles.dietContainer}>
-        <TouchableOpacity
-          style={[
-            styles.dietButton,
-            { backgroundColor: user.diet.vege ? '#98fb98' : '#f0f0f0' },
-          ]}
-          onPress={() => toggleDiet('vege')}
-        >
-          <Text>Vege</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[
-            styles.dietButton,
-            { backgroundColor: user.diet.glutenFree ? '#ffebcd' : '#f0f0f0' },
-          ]}
-          onPress={() => toggleDiet('glutenFree')}
-        >
-          <Text>Gluteeniton</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[
-            styles.dietButton,
-            { backgroundColor: user.diet.lactoseFree ? '#add8e6' : '#f0f0f0' },
-          ]}
-          onPress={() => toggleDiet('lactoseFree')}
-        >
-          <Text>Maidoton</Text>
-        </TouchableOpacity>
+        {Object.keys(dietOptions).map((dietType) => (
+          <TouchableOpacity
+            key={dietType}
+            style={[
+              styles.dietButton,
+              { backgroundColor: user.diet[dietType] ? '#98fb98' : '#f0f0f0' },
+            ]}
+            onPress={() => toggleDiet(dietType)}
+          >
+            <Text>{dietOptions[dietType]}</Text>
+          </TouchableOpacity>
+        ))}
       </View>
 
+      <Text style={styles.subtitle}>Suosikkiraaka-aineet</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Kirjoita suosikkiraaka-aineet pilkuilla erotettuna"
+        value={user.favoriteIngredients}
+        onChangeText={(text) => handleInputChange('favoriteIngredients', text)}
+      />
+      
+      <Text style={styles.subtitle}>Inhokkiraaka-aineet</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Kirjoita inhokkiraaka-aineet pilkuilla erotettuna"
+        value={user.dislikedIngredients}
+        onChangeText={(text) => handleInputChange('dislikedIngredients', text)}
+      />
+
       <Button title="Tallenna tiedot" onPress={handleSave} />
-      <Button title="Poista profiili" color="red" onPress={handleDeleteAccount} />
+      <Button title="Poista profiili" color="red" onPress={confirmDeleteAccount} />
     </View>
   );
 }
@@ -183,6 +199,7 @@ const styles = StyleSheet.create({
   },
   dietContainer: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     justifyContent: 'space-between',
     marginBottom: 20,
   },
@@ -191,5 +208,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
+    marginBottom: 5,
+    marginRight: 5,
   },
 });
