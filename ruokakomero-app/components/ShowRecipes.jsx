@@ -8,6 +8,9 @@ import {
   Button,
 } from "react-native";
 import { getRecipe } from "./RecipeAI";
+import { ref, push, update } from "firebase/database";
+import { database } from "../constants/firebaseConfig";
+
 
 // Otetaan UserInputFormista lähetetyt tiedot vastaan
 const ShowRecipes = ({ route }) => {
@@ -22,6 +25,7 @@ const ShowRecipes = ({ route }) => {
 
   const [recipe, setRecipe] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   // Funktio reseptin hakemiseen
   const fetchRecipe = async () => {
@@ -52,8 +56,41 @@ const ShowRecipes = ({ route }) => {
 
   // Funktio, joka regeneroi reseptin
   const regenerateRecipe = () => {
-    setRecipe(null); // Tyhjennetään nykyinen resepti
-    fetchRecipe(); // Haetaan uusi resepti
+    setRecipe(null);
+    fetchRecipe();
+  };
+
+  // Funktio reseptin tallentamiseksi tietokantaan
+  const saveRecipeToDatabase = async () => {
+    if (!recipe || !recipe.name || recipe.ingredients.length === 0) {
+      Alert.alert("Virhe", "Reseptiä ei voida tallentaa");
+      return;
+    }
+
+    try {
+      setSaving(true);
+
+      const newRecipeRef = push(ref(database, "recipes/"));
+      const newRecipeKey = newRecipeRef.key;
+
+      const newRecipe = { ...recipe, id: newRecipeKey };
+
+      await update(ref(database, `recipes/${newRecipeKey}`), newRecipe);
+
+      setSaving(false);
+
+      //Onnistumisilmoitus
+      Alert.alert("Resepti tallennettu onnistuneesti!", [
+        { text: "OK" },
+      ]);
+    } catch (error) {
+      setSaving(false);
+      Alert.alert(
+        "Virhe",
+        "Reseptin tallentaminen epäonnistui: " + error.message
+      );
+      console.error("Virhe reseptiä tallennettaessa:", error);
+    }
   };
 
   return (
@@ -70,16 +107,27 @@ const ShowRecipes = ({ route }) => {
               - {ingredient.name}: {ingredient.quantity} {ingredient.unit}
             </Text>
           ))}
-
           <View style={styles.sectionSpacing} />
-
           <Text style={styles.sectionTitle}>Ohje:</Text>
           {recipe.instructions.map((step, index) => (
             <Text key={index} style={styles.instructionText}>
               {index + 1}. {step}
             </Text>
           ))}
-          <Button title="Luo uusi resepti" onPress={regenerateRecipe} />
+          <View style={styles.buttonContainer}>
+            <Button
+              title="Luo uusi resepti"
+              onPress={regenerateRecipe}
+              disabled={saving}
+            />
+            <View style={styles.buttonSpacing} />
+            <Button
+              title={saving ? "Tallennetaan..." : "Tallenna resepti"}
+              onPress={saveRecipeToDatabase}
+              disabled={saving}
+              color="#007BFF"
+            />
+          </View>
         </View>
       ) : (
         <View>
@@ -139,6 +187,14 @@ const styles = StyleSheet.create({
     color: "red",
     textAlign: "center",
     marginTop: 20,
+  },
+  buttonContainer: {
+    marginTop: 15,
+    flexDirection: "column",
+    width: "100%",
+  },
+  buttonSpacing: {
+    height: 10,
   },
 });
 
