@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { getAuth, deleteUser, signOut } from 'firebase/auth';
+import { getAuth, deleteUser, signOut, updatePassword } from 'firebase/auth';
 import { getDatabase, ref, get, set, remove } from 'firebase/database';
 
 const auth = getAuth();
@@ -23,6 +23,8 @@ export default function Profile() {
     favoriteIngredients: '',
     dislikedIngredients: '',
   });
+
+  const [newPassword, setNewPassword] = useState('');
 
   // Hakee käyttäjän tiedot firebasesta
   useEffect(() => {
@@ -88,6 +90,33 @@ export default function Profile() {
     }
   };
 
+
+  // Salasanan vaihto
+  const handlePasswordChange = async () => {
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
+      Alert.alert("Virhe", "Käyttäjää ei löytynyt.");
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      Alert.alert("Virhe", "Salasanan tulee olla vähintään 6 merkkiä pitkä.");
+      return;
+    }
+
+    try {
+      await updatePassword(currentUser, newPassword);
+      Alert.alert("Salasana päivitetty", "Uusi salasana on tallennettu.");
+      setNewPassword('');
+    } catch (error) {
+      if (error.code === 'auth/requires-recent-login') {
+        Alert.alert("Uudelleenkirjautuminen vaaditaan", "Kirjaudu ulos ja takaisin sisään vaihtaaksesi salasanan.");
+      } else {
+        Alert.alert("Virhe", error.message);
+      }
+    }
+  };
+
   const handleInputChange = (field, value) => {
     setUser((prevUser) => ({
       ...prevUser,
@@ -139,6 +168,15 @@ export default function Profile() {
         value={user.email}
         onChangeText={(text) => handleInputChange('email', text)}
       />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Uusi salasana"
+        value={newPassword}
+        onChangeText={(text) => setNewPassword(text)}
+        secureTextEntry
+      />
+      <Button title="Vaihda salasana" onPress={handlePasswordChange} />
       
       <Text style={styles.subtitle}>Ruokavalio</Text>
       <View style={styles.dietContainer}>

@@ -12,7 +12,6 @@ import Profile from './components/Profile';
 import UserInputForm from './components/UserInputForm';
 import ShowRecipes from './components/ShowRecipes';
 
-
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
