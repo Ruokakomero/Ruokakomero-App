@@ -11,7 +11,7 @@ import {
   Modal,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { database } from "../constants/firebaseConfig";
+import { database } from "../configuration/firebaseConfig";
 import { ref, push, onValue, remove, update, get } from "firebase/database";
 
 export default function RecipeCollection({ recipes = [] }) {

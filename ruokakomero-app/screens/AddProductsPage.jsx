@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native';
-import AddProduct from './AddProduct'
+import AddProduct from '../components/AddProduct'
 
 
 /*POISTETAANKO?*/

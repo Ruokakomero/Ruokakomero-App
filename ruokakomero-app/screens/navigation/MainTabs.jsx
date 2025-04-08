@@ -1,9 +1,9 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
-import HomePage from "./HomePage";
-import Recipes from "./Recipes";
-import ShoppingList from "./ShoppingList";
-import Profile from "./Profile";
+import HomePage from "../HomePage";
+import Recipes from "../Recipes";
+import ShoppingList from "../ShoppingList";
+import Profile from "../Profile";
 import RecipeStack from "./RecipeStack";
 
 const Tab = createBottomTabNavigator();

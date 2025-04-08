@@ -1,12 +1,38 @@
 import React, { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationContainer } from "@react-navigation/native";
-import AppStack from "./components/AppStack";
-import AuthStack from "./components/AuthStack";
+import * as Font from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
+import AppStack from "./screens/navigation/AppStack";
+import AuthStack from "./screens/navigation/AuthStack";
+
+
+SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isCheckingLogin, setIsCheckingLogin] = useState(true);
+  const [fontsLoaded, setFontsLoaded] = useState(false);
+
+ 
+  useEffect(() => {
+    const loadFonts = async () => {
+      try {
+        await Font.loadAsync({
+          "Manrope-R": require("./assets/fonts/manrope-regular.otf"),
+          "Manrope-B": require("./assets/fonts/manrope-bold.otf"),
+          "Manrope-L": require("./assets/fonts/manrope-light.otf"),
+          "Manrope-EB": require("./assets/fonts/manrope-extrabold.otf"),
+        });
+        setFontsLoaded(true);
+      } catch (err) {
+        console.warn("Font loading error:", err);
+      }
+    };
+
+    loadFonts();
+  }, []);
+
 
   useEffect(() => {
     const checkLoginStatus = async () => {
@@ -25,17 +51,18 @@ export default function App() {
     checkLoginStatus();
   }, []);
 
-  const handleLogin = async () => {
-    setIsLoggedIn(true);
-    await AsyncStorage.setItem("isLoggedIn", "true");
-  };
 
-  const handleLogout = async () => {
-    setIsLoggedIn(false);
-    await AsyncStorage.removeItem("isLoggedIn");
-  };
+  useEffect(() => {
+    if (fontsLoaded && !isCheckingLogin) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, isCheckingLogin]);
 
-  if (isCheckingLogin) return null;
+
+  if (!fontsLoaded || isCheckingLogin) {
+    return null;
+  }
+
 
   return (
     <NavigationContainer>
@@ -46,4 +73,15 @@ export default function App() {
       )}
     </NavigationContainer>
   );
+
+
+  async function handleLogin() {
+    setIsLoggedIn(true);
+    await AsyncStorage.setItem("isLoggedIn", "true");
+  }
+
+  async function handleLogout() {
+    setIsLoggedIn(false);
+    await AsyncStorage.removeItem("isLoggedIn");
+  }
 }
