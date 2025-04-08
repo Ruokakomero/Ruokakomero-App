@@ -8,9 +8,10 @@ import RecipeStack from "./RecipeStack";
 
 const Tab = createBottomTabNavigator();
 
-export default function MainTabs({ handleLogout }) {
+export default function MainTabs({ handleLogout, initialTab, profileName }) {
   return (
     <Tab.Navigator
+      initialRouteName={initialTab}  // Käytetään tätä, jotta aloitetaan oikealta välilehdeltä
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size }) => {
           let iconName;
@@ -32,7 +33,12 @@ export default function MainTabs({ handleLogout }) {
       <Tab.Screen name="Reseptit" component={Recipes} />
       <Tab.Screen name="Ostoslista" component={ShoppingList} />
       <Tab.Screen name="Profiili">
-        {() => <Profile handleLogout={handleLogout} />}
+        {() => (
+          <Profile 
+            handleLogout={handleLogout} 
+            profileName="Profiili" // Lähetä nimi tänne
+          />
+        )}
       </Tab.Screen>
     </Tab.Navigator>
   );

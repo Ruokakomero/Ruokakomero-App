@@ -6,15 +6,26 @@ import * as SplashScreen from "expo-splash-screen";
 import AppStack from "./screens/navigation/AppStack";
 import AuthStack from "./screens/navigation/AuthStack";
 
-
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isCheckingLogin, setIsCheckingLogin] = useState(true);
   const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [initialTab, setInitialTab] = useState("Etusivu");
 
- 
+
+  async function handleLogin(tab = "Etusivu") {
+    setInitialTab(tab); // Asetetaan ensin aloitusvälilehti
+    await AsyncStorage.setItem("isLoggedIn", "true");
+    setIsLoggedIn(true); // Ja sitten siirrytään AppStackiin
+  }
+
+  async function handleLogout() {
+    setIsLoggedIn(false);
+    await AsyncStorage.removeItem("isLoggedIn");
+  }
+
   useEffect(() => {
     const loadFonts = async () => {
       try {
@@ -33,7 +44,6 @@ export default function App() {
     loadFonts();
   }, []);
 
-
   useEffect(() => {
     const checkLoginStatus = async () => {
       try {
@@ -51,37 +61,26 @@ export default function App() {
     checkLoginStatus();
   }, []);
 
-
   useEffect(() => {
     if (fontsLoaded && !isCheckingLogin) {
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded, isCheckingLogin]);
 
-
   if (!fontsLoaded || isCheckingLogin) {
     return null;
   }
 
-
   return (
     <NavigationContainer>
       {isLoggedIn ? (
-        <AppStack handleLogout={handleLogout} />
+        console.log("🔐 Näytetään AppStack"),
+        <AppStack handleLogout={handleLogout} initialTab={initialTab} />
       ) : (
-        <AuthStack setIsLoggedIn={handleLogin} />
+        console.log("🔓 Näytetään AuthStack"),
+        <AuthStack handleLogin={handleLogin} />
       )}
     </NavigationContainer>
   );
 
-
-  async function handleLogin() {
-    setIsLoggedIn(true);
-    await AsyncStorage.setItem("isLoggedIn", "true");
-  }
-
-  async function handleLogout() {
-    setIsLoggedIn(false);
-    await AsyncStorage.removeItem("isLoggedIn");
-  }
 }

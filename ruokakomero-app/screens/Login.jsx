@@ -14,13 +14,16 @@ import ButtonComponent from "../components/ButtonComponent";
 import screensStyles from "../styles/screensStyles";
 import textStyles from "../styles/textStyles";
 import componentStyles from "../styles/componentStyles";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function Login({ navigation, setIsLoggedIn }) {
+export default function Login({ navigation, handleLogin, route }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async () => {
+  const { profileName } = route.params || {};
+
+  const processLogin = async () => {
     if (!email || !password) {
       Alert.alert("Virhe", "Syötä sähköposti ja salasana");
       return;
@@ -31,9 +34,19 @@ export default function Login({ navigation, setIsLoggedIn }) {
     setLoading(false);
 
     if (result.success) {
+      const isFirstLogin = await AsyncStorage.getItem("firstLoginDone");
+
       setEmail("");
       setPassword("");
-      setIsLoggedIn(true);
+
+      if (isFirstLogin !== "true") {
+        await AsyncStorage.setItem("firstLoginDone", "true");
+        console.log("First login, setting tab to Profiili");
+        handleLogin("Profiili"); // Tämä on nyt App.js:stä tuleva funktio
+      } else {
+        console.log("Not first login, setting tab to Etusivu");
+        handleLogin("Etusivu");
+      }
     } else {
       Alert.alert("Kirjautuminen epäonnistui!", result.error);
     }
@@ -49,7 +62,7 @@ export default function Login({ navigation, setIsLoggedIn }) {
       >
         <View style={screensStyles.loginContainer}>
           <TextThemed style={textStyles.titleLargeBLight}>
-            Kirjaudu sisään
+            Kirjaudu sisään {profileName ? `- Tervetuloa, ${profileName}!` : ""}
           </TextThemed>
 
           <InputFieldComponent
@@ -77,11 +90,11 @@ export default function Login({ navigation, setIsLoggedIn }) {
           />
 
           <View style={componentStyles.buttonWrapper}>
-            <ButtonComponent
-              content={loading ? "Kirjaudutaan..." : "Kirjaudu"}
-              onPress={handleLogin}
-              disabled={loading}
-            />
+          <ButtonComponent
+  content={loading ? "Kirjaudutaan..." : "Kirjaudu"}
+  onPress={processLogin}
+  disabled={loading}
+/>
 
             <TextThemed
               style={textStyles.titleSmallBLight}
