@@ -29,9 +29,7 @@ export default function Login({ navigation, setIsLoggedIn }) {
     if (result.success) {
       setEmail("");
       setPassword("");
-      Alert.alert("Kirjautuminen onnistui!");
 
-      // Update state to switch to MainTabs
       setIsLoggedIn(true);
 
     } else {
@@ -51,14 +49,19 @@ export default function Login({ navigation, setIsLoggedIn }) {
           autoCapitalize="none"
           keyboardType="email-address"
           editable={!loading}
+          textContentType="emailAddress"
+          autoComplete="email"
         />
         <TextInput
           style={styles.input}
           placeholder="Salasana"
           value={password}
           onChangeText={setPassword}
-          secureTextEntry
           editable={!loading}
+          secureTextEntry={true}
+          textContentType="password"
+          autoComplete="password"
+          autoCapitalize="none"
         />
         <Button
           title={loading ? "Kirjaudutaan..." : "Kirjaudu"}

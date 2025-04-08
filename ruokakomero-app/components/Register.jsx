@@ -115,14 +115,19 @@ export default function Register({ navigation }) {
           autoCapitalize="none"
           keyboardType="email-address"
           editable={!loading}
+          textContentType="emailAddress"
+          autoComplete="email"
         />
         <TextInput
           style={styles.input}
           placeholder="Salasana"
           value={password}
           onChangeText={handlePasswordChange}
-          secureTextEntry
           editable={!loading}
+          secureTextEntry={true}
+          textContentType="password"
+          autoComplete="password"
+          autoCapitalize="none"
         />
         {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
         <Text style={styles.passwordHint}>
@@ -136,7 +141,7 @@ export default function Register({ navigation }) {
         />
         <Text
           style={styles.link}
-          onPress={() => navigation && navigation.navigate("Login")}
+          navigation={navigation}
         >
           Oletko jo käyttäjä? Kirjaudu sisään täältä
         </Text>

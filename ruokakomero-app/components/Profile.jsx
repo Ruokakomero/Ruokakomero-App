@@ -1,17 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { getAuth, deleteUser, signOut, updatePassword } from 'firebase/auth';
-import { getDatabase, ref, get, set, remove } from 'firebase/database';
+import React, { useState, useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
+import { getAuth, deleteUser, signOut, updatePassword } from "firebase/auth";
+import { getDatabase, ref, get, set, remove } from "firebase/database";
 
 const auth = getAuth();
 const database = getDatabase();
 
-export default function Profile() {
+export default function Profile({ handleLogout }) {
   const [user, setUser] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
     diet: {
       vege: false,
       glutenFree: false,
@@ -20,11 +29,11 @@ export default function Profile() {
       nutAllergy: false,
       halal: false,
     },
-    favoriteIngredients: '',
-    dislikedIngredients: '',
+    favoriteIngredients: "",
+    dislikedIngredients: "",
   });
 
-  const [newPassword, setNewPassword] = useState('');
+  const [newPassword, setNewPassword] = useState("");
 
   // Hakee käyttäjän tiedot firebasesta
   useEffect(() => {
@@ -51,9 +60,9 @@ export default function Profile() {
       try {
         const userRef = ref(database, `users/${currentUser.uid}`);
         await set(userRef, user);
-        Alert.alert('Tiedot tallennettu onnistuneesti!');
+        Alert.alert("Tiedot tallennettu onnistuneesti!");
       } catch (error) {
-        Alert.alert('Virhe tallennuksessa', error.message);
+        Alert.alert("Virhe tallennuksessa", error.message);
       }
     }
   };
@@ -65,7 +74,7 @@ export default function Profile() {
       "Haluatko varmasti poistaa profiilisi? Tätä toimintoa ei voi perua!",
       [
         { text: "Peruuta", style: "cancel" },
-        { text: "Poista", onPress: handleDeleteAccount, style: "destructive" }
+        { text: "Poista", onPress: handleDeleteAccount, style: "destructive" },
       ]
     );
   };
@@ -86,10 +95,12 @@ export default function Profile() {
       Alert.alert("Poisto onnistui", "Profiilisi on poistettu onnistuneesti.");
       await signOut(auth);
     } catch (error) {
-      Alert.alert("Virhe", "Profiilin poistaminen epäonnistui: " + error.message);
+      Alert.alert(
+        "Virhe",
+        "Profiilin poistaminen epäonnistui: " + error.message
+      );
     }
   };
-
 
   // Salasanan vaihto
   const handlePasswordChange = async () => {
@@ -107,10 +118,13 @@ export default function Profile() {
     try {
       await updatePassword(currentUser, newPassword);
       Alert.alert("Salasana päivitetty", "Uusi salasana on tallennettu.");
-      setNewPassword('');
+      setNewPassword("");
     } catch (error) {
-      if (error.code === 'auth/requires-recent-login') {
-        Alert.alert("Uudelleenkirjautuminen vaaditaan", "Kirjaudu ulos ja takaisin sisään vaihtaaksesi salasanan.");
+      if (error.code === "auth/requires-recent-login") {
+        Alert.alert(
+          "Uudelleenkirjautuminen vaaditaan",
+          "Kirjaudu ulos ja takaisin sisään vaihtaaksesi salasanan."
+        );
       } else {
         Alert.alert("Virhe", error.message);
       }
@@ -154,19 +168,19 @@ export default function Profile() {
         style={styles.input}
         placeholder="Etunimi"
         value={user.firstName}
-        onChangeText={(text) => handleInputChange('firstName', text)}
+        onChangeText={(text) => handleInputChange("firstName", text)}
       />
       <TextInput
         style={styles.input}
         placeholder="Sukunimi"
         value={user.lastName}
-        onChangeText={(text) => handleInputChange('lastName', text)}
+        onChangeText={(text) => handleInputChange("lastName", text)}
       />
       <TextInput
         style={styles.input}
         placeholder="Sähköposti"
         value={user.email}
-        onChangeText={(text) => handleInputChange('email', text)}
+        onChangeText={(text) => handleInputChange("email", text)}
       />
 
       <TextInput
@@ -177,7 +191,7 @@ export default function Profile() {
         secureTextEntry
       />
       <Button title="Vaihda salasana" onPress={handlePasswordChange} />
-      
+
       <Text style={styles.subtitle}>Ruokavalio</Text>
       <View style={styles.dietContainer}>
         {Object.keys(dietOptions).map((dietType) => (
@@ -185,7 +199,7 @@ export default function Profile() {
             key={dietType}
             style={[
               styles.dietButton,
-              { backgroundColor: user.diet[dietType] ? '#98fb98' : '#f0f0f0' },
+              { backgroundColor: user.diet[dietType] ? "#98fb98" : "#f0f0f0" },
             ]}
             onPress={() => toggleDiet(dietType)}
           >
@@ -199,19 +213,40 @@ export default function Profile() {
         style={styles.input}
         placeholder="Kirjoita suosikkiraaka-aineet pilkuilla erotettuna"
         value={user.favoriteIngredients}
-        onChangeText={(text) => handleInputChange('favoriteIngredients', text)}
+        onChangeText={(text) => handleInputChange("favoriteIngredients", text)}
       />
-      
+
       <Text style={styles.subtitle}>Inhokkiraaka-aineet</Text>
       <TextInput
         style={styles.input}
         placeholder="Kirjoita inhokkiraaka-aineet pilkuilla erotettuna"
         value={user.dislikedIngredients}
-        onChangeText={(text) => handleInputChange('dislikedIngredients', text)}
+        onChangeText={(text) => handleInputChange("dislikedIngredients", text)}
       />
 
       <Button title="Tallenna tiedot" onPress={handleSave} />
-      <Button title="Poista profiili" color="red" onPress={confirmDeleteAccount} />
+      <Button
+        title="Poista profiili"
+        color="red"
+        onPress={confirmDeleteAccount}
+      />
+      <TouchableOpacity
+        style={styles.logoutButton}
+        onPress={async () => {
+          try {
+            await signOut(auth);
+            await AsyncStorage.removeItem("isLoggedIn");
+            handleLogout();
+          } catch (error) {
+            Alert.alert(
+              "Virhe",
+              "Uloskirjautuminen epäonnistui: " + error.message
+            );
+          }
+        }}
+      >
+        <Text style={styles.logoutButtonText}>Kirjaudu ulos</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -226,7 +261,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     padding: 10,
     marginBottom: 10,
     borderRadius: 5,
@@ -236,17 +271,28 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   dietContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
     marginBottom: 20,
   },
   dietButton: {
     padding: 10,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderRadius: 5,
     marginBottom: 5,
     marginRight: 5,
+  },
+  logoutButton: {
+    backgroundColor: "#555",
+    padding: 12,
+    marginTop: 10,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  logoutButtonText: {
+    color: "#fff",
+    fontSize: 16,
   },
 });
