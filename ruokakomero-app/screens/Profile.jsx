@@ -8,6 +8,10 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
+  SafeAreaView,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { getAuth, deleteUser, signOut, updatePassword } from "firebase/auth";
 import { getDatabase, ref, get, set, remove } from "firebase/database";
@@ -161,94 +165,113 @@ export default function Profile({ handleLogout }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Profiilin tiedot</Text>
-
-      <TextInput
-        style={styles.input}
-        placeholder="Etunimi"
-        value={user.firstName}
-        onChangeText={(text) => handleInputChange("firstName", text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Sukunimi"
-        value={user.lastName}
-        onChangeText={(text) => handleInputChange("lastName", text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Sähköposti"
-        value={user.email}
-        onChangeText={(text) => handleInputChange("email", text)}
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Uusi salasana"
-        value={newPassword}
-        onChangeText={(text) => setNewPassword(text)}
-        secureTextEntry
-      />
-      <Button title="Vaihda salasana" onPress={handlePasswordChange} />
-
-      <Text style={styles.subtitle}>Ruokavalio</Text>
-      <View style={styles.dietContainer}>
-        {Object.keys(dietOptions).map((dietType) => (
-          <TouchableOpacity
-            key={dietType}
-            style={[
-              styles.dietButton,
-              { backgroundColor: user.diet[dietType] ? "#98fb98" : "#f0f0f0" },
-            ]}
-            onPress={() => toggleDiet(dietType)}
-          >
-            <Text>{dietOptions[dietType]}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      <Text style={styles.subtitle}>Suosikkiraaka-aineet</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Kirjoita suosikkiraaka-aineet pilkuilla erotettuna"
-        value={user.favoriteIngredients}
-        onChangeText={(text) => handleInputChange("favoriteIngredients", text)}
-      />
-
-      <Text style={styles.subtitle}>Inhokkiraaka-aineet</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Kirjoita inhokkiraaka-aineet pilkuilla erotettuna"
-        value={user.dislikedIngredients}
-        onChangeText={(text) => handleInputChange("dislikedIngredients", text)}
-      />
-
-      <Button title="Tallenna tiedot" onPress={handleSave} />
-      <Button
-        title="Poista profiili"
-        color="red"
-        onPress={confirmDeleteAccount}
-      />
-      <TouchableOpacity
-        style={styles.logoutButton}
-        onPress={async () => {
-          try {
-            await signOut(auth);
-            await AsyncStorage.removeItem("isLoggedIn");
-            handleLogout();
-          } catch (error) {
-            Alert.alert(
-              "Virhe",
-              "Uloskirjautuminen epäonnistui: " + error.message
-            );
-          }
-        }}
+    <SafeAreaView style={{ flex: 1 }}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0} // tarvittaessa säädä
       >
-        <Text style={styles.logoutButtonText}>Kirjaudu ulos</Text>
-      </TouchableOpacity>
-    </View>
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <View style={styles.container}>
+            <Text style={styles.title}>Profiilin tiedot</Text>
+  
+            <TextInput
+              style={styles.input}
+              placeholder="Etunimi"
+              value={user.firstName}
+              onChangeText={(text) => handleInputChange("firstName", text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Sukunimi"
+              value={user.lastName}
+              onChangeText={(text) => handleInputChange("lastName", text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Sähköposti"
+              value={user.email}
+              onChangeText={(text) => handleInputChange("email", text)}
+            />
+  
+            <TextInput
+              style={styles.input}
+              placeholder="Uusi salasana"
+              value={newPassword}
+              onChangeText={(text) => setNewPassword(text)}
+              secureTextEntry
+            />
+            <Button title="Vaihda salasana" onPress={handlePasswordChange} />
+  
+            <Text style={styles.subtitle}>Ruokavalio</Text>
+            <View style={styles.dietContainer}>
+              {Object.keys(dietOptions).map((dietType) => (
+                <TouchableOpacity
+                  key={dietType}
+                  style={[
+                    styles.dietButton,
+                    {
+                      backgroundColor: user.diet[dietType]
+                        ? "#98fb98"
+                        : "#f0f0f0",
+                    },
+                  ]}
+                  onPress={() => toggleDiet(dietType)}
+                >
+                  <Text>{dietOptions[dietType]}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+  
+            <Text style={styles.subtitle}>Suosikkiraaka-aineet</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Kirjoita suosikkiraaka-aineet pilkuilla erotettuna"
+              value={user.favoriteIngredients}
+              onChangeText={(text) =>
+                handleInputChange("favoriteIngredients", text)
+              }
+            />
+  
+            <Text style={styles.subtitle}>Inhokkiraaka-aineet</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Kirjoita inhokkiraaka-aineet pilkuilla erotettuna"
+              value={user.dislikedIngredients}
+              onChangeText={(text) =>
+                handleInputChange("dislikedIngredients", text)
+              }
+            />
+  
+            <Button title="Tallenna tiedot" onPress={handleSave} />
+            <Button
+              title="Poista profiili"
+              color="red"
+              onPress={confirmDeleteAccount}
+            />
+            <TouchableOpacity
+              style={styles.logoutButton}
+              onPress={async () => {
+                try {
+                  await signOut(auth);
+                  await AsyncStorage.removeItem("isLoggedIn");
+                  handleLogout();
+                } catch (error) {
+                  Alert.alert(
+                    "Virhe",
+                    "Uloskirjautuminen epäonnistui: " + error.message
+                  );
+                }
+              }}
+            >
+              <Text style={styles.logoutButtonText}>Kirjaudu ulos</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
+
 }
 
 const styles = StyleSheet.create({

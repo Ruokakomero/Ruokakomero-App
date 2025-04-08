@@ -15,6 +15,7 @@ import InputFieldComponent from "../components/InputFieldComponent";
 import screensStyles from "../styles/screensStyles";
 import ButtonComponent from "../components/ButtonComponent";
 import { LinearGradient } from "expo-linear-gradient";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const auth = getAuth();
 const database = getDatabase();
@@ -26,31 +27,22 @@ export default function Register({ navigation }) {
   const [passwordError, setPasswordError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Salasanan vaatimukset
   const validatePassword = (password) => {
     if (password.length < 8) {
       return "Salasanan pitää olla vähintään 8 merkkiä pitkä!";
     }
-
-    //Iso kirjain
     if (!/[A-Z]/.test(password)) {
       return "Salasanan pitää sisältää vähintään yksi iso kirjain!";
     }
-
-    // Numero
     if (!/[0-9]/.test(password)) {
       return "Salasanan pitää sisältää vähintään yksi numero!";
     }
-
-    //Erikoismerkki
     if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
       return "Salasanan pitää sisältää vähintään yksi erikoismerkki!";
     }
-
     return "";
   };
 
-  // Päivitys ja validointi
   const handlePasswordChange = (text) => {
     setPassword(text);
     setPasswordError(validatePassword(text));
@@ -62,7 +54,6 @@ export default function Register({ navigation }) {
       return;
     }
 
-    // Salasanan tarkistus ennen rekisteröintiä
     const passwordValidationError = validatePassword(password);
     if (passwordValidationError) {
       setPasswordError(passwordValidationError);
@@ -80,7 +71,7 @@ export default function Register({ navigation }) {
       );
       const user = userCredential.user;
 
-      // Tallennetaan käyttäjä Realtime Databaseen
+      // Tallennetaan käyttäjän tiedot tietokantaan
       await set(ref(database, `users/${user.uid}`), {
         username: username,
         email: email,
@@ -91,15 +82,24 @@ export default function Register({ navigation }) {
         },
       });
 
-      setLoading(false);
+      // Merkataan että profiilin täyttö on tekemättä (eka login)
+      await AsyncStorage.setItem("firstLoginDone", "false");
+
+      // Tyhjennetään kentät ja ilmoitetaan käyttäjälle
       setEmail("");
       setPassword("");
       setUsername("");
       setPasswordError("");
       Alert.alert("Rekisteröityminen onnistui!");
+
+      // Navigoidaan login-näkymään
+      navigation.navigate("Kirjaudu");
+
     } catch (error) {
       setLoading(false);
       Alert.alert("Rekisteröityminen epäonnistui!", error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -113,6 +113,7 @@ export default function Register({ navigation }) {
       >
         <View style={screensStyles.registerContainer}>
           <TextThemed style={textStyles.titleLargeBLight}>Rekisteröidy</TextThemed>
+
           <InputFieldComponent
             placeholder="Käyttäjätunnus"
             value={username}
@@ -139,25 +140,29 @@ export default function Register({ navigation }) {
             autoComplete="password"
             autoCapitalize="none"
           />
-          
-          <View style={componentStyles.buttonWrapper}> 
-          {passwordError ? (
-            <TextThemed style={textStyles.textDanger}>{passwordError}</TextThemed>
-          ) : null}
-          <TextThemed style={textStyles.bodySmallLight}>
-            Salasanan pitää sisältää vähintään 8 merkkiä, yksi iso kirjain, yksi
-            numero ja yksi erikoismerkki.
-          </TextThemed>
-          <ButtonComponent
-            content={loading ? "Rekisteröidään..." : "Rekisteröidy"}
-            onPress={handleRegister}
-            disabled={loading}
-          />
-          <TextThemed style={textStyles.bodyLargeBLight} navigation={navigation}>
-            Oletko jo käyttäjä? Kirjaudu sisään täältä
-          </TextThemed>
+
+          <View style={componentStyles.buttonWrapper}>
+            {passwordError ? (
+              <TextThemed style={textStyles.textDanger}>{passwordError}</TextThemed>
+            ) : null}
+            <TextThemed style={textStyles.bodySmallLight}>
+              Salasanan pitää sisältää vähintään 8 merkkiä, yksi iso kirjain, yksi
+              numero ja yksi erikoismerkki.
+            </TextThemed>
+
+            <ButtonComponent
+              content={loading ? "Rekisteröidään..." : "Rekisteröidy"}
+              onPress={handleRegister}
+              disabled={loading}
+            />
+
+            <TextThemed
+              style={textStyles.bodyLargeBLight}
+              onPress={() => navigation.navigate("Kirjaudu")} // Tämä toimii linkkinä login-näyttöön
+            >
+              Oletko jo käyttäjä? Kirjaudu sisään täältä
+            </TextThemed>
           </View>
-         
         </View>
       </LinearGradient>
     </TouchableWithoutFeedback>
