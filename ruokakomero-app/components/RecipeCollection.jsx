@@ -11,7 +11,7 @@ import {
   Modal,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { database } from "../constants/firebaseConfig";
+import { database } from "../configuration/firebaseConfig";
 import { ref, push, onValue, remove, update, get } from "firebase/database";
 
 export default function RecipeCollection({ recipes = [] }) {
@@ -23,7 +23,6 @@ export default function RecipeCollection({ recipes = [] }) {
   const [collections, setCollections] = useState([]);
   const [menuVisible, setMenuVisible] = useState(null);
 
-  // State for add recipe modal (used for both create and edit flows)
   const [selectedCollectionId, setSelectedCollectionId] = useState(null);
   const [addRecipeModalVisible, setAddRecipeModalVisible] = useState(false);
   const [recipeDetails, setRecipeDetails] = useState({});
@@ -102,10 +101,7 @@ export default function RecipeCollection({ recipes = [] }) {
         await update(collectionRef, { recipes: updatedRecipes });
 
         setAddRecipeModalVisible(false);
-        Alert.alert(
-          "Resepti lisätty",
-          "Resepti lisättiin kokoelmaan onnistuneesti."
-        );
+       
       }
     } catch (error) {
       console.error("Error adding recipe: ", error);
@@ -164,10 +160,7 @@ export default function RecipeCollection({ recipes = [] }) {
       setIsEditCollectionModalVisible(false);
       setCollectionToEdit(null);
       setEditedCollectionName("");
-      Alert.alert(
-        "Kokoelma päivitetty",
-        "Kokoelma on päivitetty onnistuneesti!"
-      );
+      
     } catch (error) {
       console.error("Error updating collection:", error);
       Alert.alert("Virhe", "Kokoelman päivitys epäonnistui!");

@@ -1,6 +1,6 @@
 import { StyleSheet, Text, TextInput, Button, View, Alert, FlatList, TouchableOpacity } from 'react-native';
 import { useState, useEffect } from 'react';
-import { database } from '../constants/firebaseConfig'; // Käytä omaa Firebase-konfiguraatiota
+import { database } from '../configuration/firebaseConfig'; // Käytä omaa Firebase-konfiguraatiota
 import { ref, push, onValue, remove, update } from "firebase/database";
 
 export default function ShoppingList() {

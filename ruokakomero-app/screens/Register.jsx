@@ -1,17 +1,20 @@
 import {
-  StyleSheet,
-  Text,
   View,
-  TextInput,
-  Button,
   TouchableWithoutFeedback,
   Keyboard,
   Alert,
 } from "react-native";
 import { useState } from "react";
-import AuthScreen from "./AuthScreen";
+import AuthScreen from "../configuration/AuthScreen";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { getDatabase, ref, set } from "firebase/database";
+import TextThemed from "../components/TextThemed";
+import componentStyles from "../styles/componentStyles";
+import textStyles from "../styles/textStyles";
+import InputFieldComponent from "../components/InputFieldComponent";
+import screensStyles from "../styles/screensStyles";
+import ButtonComponent from "../components/ButtonComponent";
+import { LinearGradient } from "expo-linear-gradient";
 
 const auth = getAuth();
 const database = getDatabase();
@@ -70,7 +73,11 @@ export default function Register({ navigation }) {
     setLoading(true);
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const user = userCredential.user;
 
       // Tallennetaan käyttäjä Realtime Databaseen
@@ -98,88 +105,61 @@ export default function Register({ navigation }) {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={styles.container}>
-        <Text style={styles.title}>Rekisteröidy</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Käyttäjätunnus"
-          value={username}
-          onChangeText={setUsername}
-          editable={!loading}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Sähköposti"
-          value={email}
-          onChangeText={setEmail}
-          autoCapitalize="none"
-          keyboardType="email-address"
-          editable={!loading}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Salasana"
-          value={password}
-          onChangeText={handlePasswordChange}
-          secureTextEntry
-          editable={!loading}
-        />
-        {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
-        <Text style={styles.passwordHint}>
-          Salasanan pitää sisältää vähintään 8 merkkiä, yksi iso kirjain, yksi
-          numero ja yksi erikoismerkki.
-        </Text>
-        <Button
-          title={loading ? "Rekisteröidään..." : "Rekisteröidy"}
-          onPress={handleRegister}
-          disabled={loading}
-        />
-        <Text
-          style={styles.link}
-          onPress={() => navigation && navigation.navigate("Login")}
-        >
-          Oletko jo käyttäjä? Kirjaudu sisään täältä
-        </Text>
-      </View>
+      <LinearGradient
+        colors={["#41381e", "#389c9a"]}
+        start={{ x: 0, y: 1.5 }}
+        end={{ x: 1, y: 0 }}
+        style={componentStyles.gradientContainer}
+      >
+        <View style={screensStyles.registerContainer}>
+          <TextThemed style={textStyles.titleLargeBLight}>Rekisteröidy</TextThemed>
+          <InputFieldComponent
+            placeholder="Käyttäjätunnus"
+            value={username}
+            onChangeText={setUsername}
+            editable={!loading}
+          />
+          <InputFieldComponent
+            placeholder="Sähköposti"
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize="none"
+            keyboardType="email-address"
+            editable={!loading}
+            textContentType="emailAddress"
+            autoComplete="email"
+          />
+          <InputFieldComponent
+            placeholder="Salasana"
+            value={password}
+            onChangeText={handlePasswordChange}
+            editable={!loading}
+            secureTextEntry={true}
+            textContentType="password"
+            autoComplete="password"
+            autoCapitalize="none"
+          />
+          
+          <View style={componentStyles.buttonWrapper}> 
+          {passwordError ? (
+            <TextThemed style={textStyles.textDanger}>{passwordError}</TextThemed>
+          ) : null}
+          <TextThemed style={textStyles.bodySmallLight}>
+            Salasanan pitää sisältää vähintään 8 merkkiä, yksi iso kirjain, yksi
+            numero ja yksi erikoismerkki.
+          </TextThemed>
+          <ButtonComponent
+            content={loading ? "Rekisteröidään..." : "Rekisteröidy"}
+            onPress={handleRegister}
+            disabled={loading}
+          />
+          <TextThemed style={textStyles.bodyLargeBLight} navigation={navigation}>
+            Oletko jo käyttäjä? Kirjaudu sisään täältä
+          </TextThemed>
+          </View>
+         
+        </View>
+      </LinearGradient>
     </TouchableWithoutFeedback>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  title: {
-    fontSize: 24,
-    marginBottom: 20,
-  },
-  input: {
-    width: 300,
-    height: 40,
-    borderColor: "gray",
-    borderWidth: 1,
-    marginBottom: 10,
-    padding: 10,
-    borderRadius: 5,
-  },
-  errorText: {
-    color: "red",
-    marginBottom: 10,
-    textAlign: "center",
-    width: 300,
-  },
-  passwordHint: {
-    fontSize: 12,
-    color: "gray",
-    marginBottom: 15,
-    textAlign: "center",
-    width: 300,
-  },
-  link: {
-    marginTop: 20,
-    color: "blue",
-  },
-});

@@ -1,74 +1,87 @@
-import React, { useState } from "react";
-import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createStackNavigator } from '@react-navigation/stack';
-import { Ionicons } from '@expo/vector-icons';
-import HomePage from './components/HomePage';
-import Recipes from './components/Recipes';
-import Login from './components/Login';
-import Register from './components/Register';
-import ShoppingList from './components/ShoppingList';
-import Profile from './components/Profile';
-import UserInputForm from './components/UserInputForm';
-import ShowRecipes from './components/ShowRecipes';
+import React, { useState, useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { NavigationContainer } from "@react-navigation/native";
+import * as Font from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
+import AppStack from "./screens/navigation/AppStack";
+import AuthStack from "./screens/navigation/AuthStack";
 
-const Stack = createStackNavigator();
-const Tab = createBottomTabNavigator();
 
-// Recipe Stack
-function RecipeStack() {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen name="Löydä resepti" component={UserInputForm} options={{ headerShown: true }} />
-      <Stack.Screen name="ShowRecipes" component={ShowRecipes} options={{ headerShown: false }} />
-    </Stack.Navigator>
-  );
-}
+SplashScreen.preventAutoHideAsync();
 
-// Authentication Stack
-function AuthStack({ setIsLoggedIn }) {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen name="Kirjaudu">
-        {(props) => <Login {...props} setIsLoggedIn={setIsLoggedIn} />}
-      </Stack.Screen>
-      <Stack.Screen name="Rekisteröidy" component={Register} />
-    </Stack.Navigator>
-  );
-}
-
-// Main Tab Navigator
-function MainTabs() {
-  return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ color, size }) => {
-          let iconName;
-          if (route.name === 'Etusivu') iconName = 'home';
-          else if (route.name === 'Reseptit') iconName = 'book';
-          else if (route.name === 'Ostoslista') iconName = 'cart';
-          else if (route.name === 'Profiili') iconName = 'person';
-          else if (route.name === 'Löydä resepti') iconName = 'search';
-          return <Ionicons name={iconName} size={size} color={color} />;
-        },
-      })}
-    >
-      <Tab.Screen name="Etusivu" component={HomePage} />
-      <Tab.Screen name="Löydä resepti" component={RecipeStack} options={{ headerShown: false }} />
-      <Tab.Screen name="Reseptit" component={Recipes} />
-      <Tab.Screen name="Ostoslista" component={ShoppingList} />
-      <Tab.Screen name="Profiili" component={Profile} />
-    </Tab.Navigator>
-  );
-}
-
-// App Component
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isCheckingLogin, setIsCheckingLogin] = useState(true);
+  const [fontsLoaded, setFontsLoaded] = useState(false);
+
+ 
+  useEffect(() => {
+    const loadFonts = async () => {
+      try {
+        await Font.loadAsync({
+          "Manrope-R": require("./assets/fonts/manrope-regular.otf"),
+          "Manrope-B": require("./assets/fonts/manrope-bold.otf"),
+          "Manrope-L": require("./assets/fonts/manrope-light.otf"),
+          "Manrope-EB": require("./assets/fonts/manrope-extrabold.otf"),
+        });
+        setFontsLoaded(true);
+      } catch (err) {
+        console.warn("Font loading error:", err);
+      }
+    };
+
+    loadFonts();
+  }, []);
+
+
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      try {
+        const storedStatus = await AsyncStorage.getItem("isLoggedIn");
+        if (storedStatus === "true") {
+          setIsLoggedIn(true);
+        }
+      } catch (e) {
+        console.error("Error loading login status:", e);
+      } finally {
+        setIsCheckingLogin(false);
+      }
+    };
+
+    checkLoginStatus();
+  }, []);
+
+
+  useEffect(() => {
+    if (fontsLoaded && !isCheckingLogin) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, isCheckingLogin]);
+
+
+  if (!fontsLoaded || isCheckingLogin) {
+    return null;
+  }
+
 
   return (
     <NavigationContainer>
-      {isLoggedIn ? <MainTabs /> : <AuthStack setIsLoggedIn={setIsLoggedIn} />}
+      {isLoggedIn ? (
+        <AppStack handleLogout={handleLogout} />
+      ) : (
+        <AuthStack setIsLoggedIn={handleLogin} />
+      )}
     </NavigationContainer>
   );
+
+
+  async function handleLogin() {
+    setIsLoggedIn(true);
+    await AsyncStorage.setItem("isLoggedIn", "true");
+  }
+
+  async function handleLogout() {
+    setIsLoggedIn(false);
+    await AsyncStorage.removeItem("isLoggedIn");
+  }
 }

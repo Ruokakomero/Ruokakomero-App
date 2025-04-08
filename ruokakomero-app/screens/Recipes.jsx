@@ -16,8 +16,8 @@ import {
 import { Picker } from "@react-native-picker/picker";
 import Slider from "@react-native-community/slider";
 import { Ionicons } from "@expo/vector-icons";
-import RecipeCollection from "./RecipeCollection";
-import { database } from "../constants/firebaseConfig";
+import RecipeCollection from "../components/RecipeCollection";
+import { database } from "../configuration/firebaseConfig";
 import { ref, push, onValue, remove, update } from "firebase/database";
 
 {
@@ -230,8 +230,10 @@ export default function Recipes() {
           },
           {
             text: "Sulje tallentamatta",
-            onPress: () => {setIsEditModalVisible(false); resetForm();}
-            
+            onPress: () => {
+              setIsEditModalVisible(false);
+              resetForm();
+            },
           },
         ],
         { cancelable: true }
@@ -290,7 +292,10 @@ export default function Recipes() {
           <View style={styles.circleButtonContainer}>
             <TouchableOpacity
               style={styles.circleButton}
-              onPress={() => {setIsAddModalVisible(true); resetForm();}}
+              onPress={() => {
+                setIsAddModalVisible(true);
+                resetForm();
+              }}
             >
               <Ionicons name="add" size={24} color="white" />
             </TouchableOpacity>
@@ -318,7 +323,7 @@ export default function Recipes() {
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <TouchableOpacity
-                onLongPress={() => {
+                onPress={() => {
                   setRecipe(item);
                   setSelectedRecipe(item);
                   setIsRecipeDetailVisible(true);
@@ -347,7 +352,7 @@ export default function Recipes() {
                   <View style={styles.modalContentCreate}>
                     <Text style={styles.header}>{recipe.name}</Text>
 
-                    <View >
+                    <View>
                       {currentStep === 1 && (
                         <>
                           <Text style={styles.header}>Perustiedot</Text>
@@ -467,7 +472,7 @@ export default function Recipes() {
                         ) : (
                           <TouchableOpacity
                             style={styles.saveButton}
-                            onPress={()=> {
+                            onPress={() => {
                               handleAddRecipe();
                               resetForm();
                             }}
@@ -497,7 +502,7 @@ export default function Recipes() {
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
               <View style={styles.modalOverlay}>
                 <TouchableWithoutFeedback>
-                  <View style={styles.modalContentCreate}>
+                  <View style={styles.modalContentEdit}>
                     <ScrollView
                       style={{ width: "100%" }}
                       contentContainerStyle={styles.scrollContainer}
@@ -777,11 +782,15 @@ export default function Recipes() {
         animationType="slide"
         transparent={true}
       >
-        <TouchableWithoutFeedback
-          onPress={() => setIsRecipeDetailVisible(false)}
-        >
-          <View style={styles.modalOverlay}>
-            <ScrollView style={styles.modalContentRecipe}>
+        <View style={styles.modalOverlay}>
+          <TouchableWithoutFeedback
+            onPress={() => setIsRecipeDetailVisible(false)}
+          >
+            <View style={StyleSheet.absoluteFill} />
+          </TouchableWithoutFeedback>
+
+          <View style={styles.modalContentRecipe}>
+            <ScrollView>
               <Text style={styles.header}>{selectedRecipe?.name}</Text>
               <Text style={styles.subHeader}>Ainesosat</Text>
 
@@ -821,7 +830,7 @@ export default function Recipes() {
               </TouchableOpacity>
             </ScrollView>
           </View>
-        </TouchableWithoutFeedback>
+        </View>
       </Modal>
     </View>
   );
@@ -854,6 +863,18 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
+  modalContentEdit:{
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    marginTop: 30,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+
   modalContentRecipe: {
     backgroundColor: "#fff",
     padding: 20,
@@ -865,7 +886,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-    maxHeight: "60%",
+    maxHeight: "70%",
   },
 
   /* Tekstit ja otsikot */
@@ -883,7 +904,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 10,
   },
-
 
   /* Napit ja niiden tyylit */
   closeButton: {
