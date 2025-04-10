@@ -90,11 +90,11 @@ export default function Login({ navigation, handleLogin, route }) {
           />
 
           <View style={componentStyles.buttonWrapper}>
-          <ButtonComponent
-  content={loading ? "Kirjaudutaan..." : "Kirjaudu"}
-  onPress={processLogin}
-  disabled={loading}
-/>
+            <ButtonComponent
+              content={loading ? "Kirjaudutaan..." : "Kirjaudu"}
+              onPress={processLogin}
+              disabled={loading}
+            />
 
             <TextThemed
               style={textStyles.titleSmallBLight}
