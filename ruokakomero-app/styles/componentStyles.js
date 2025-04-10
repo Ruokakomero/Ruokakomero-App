@@ -1,5 +1,4 @@
 // uudelleenkäytettävien komponenttien tyylit 
-// Erittele kommenteilla
 
 
 import { StyleSheet } from "react-native";
@@ -39,6 +38,7 @@ const componentStyles = StyleSheet.create({
   buttonWrapper: {
     justifyContent: "space-between",
     alignItems: "center",
+    flexDirection: "row",
     marginTop: 16,
     gap: 16,
   },
@@ -61,6 +61,9 @@ const componentStyles = StyleSheet.create({
   dangerButton: {
     backgroundColor: MainTheme.colors.danger,
   },
+  editButton: {
+    backgroundColor: MainTheme.colors.highlightYellow,
+  },
   defaultButton: {
     backgroundColor: MainTheme.colors.highlightBlue,
   },
@@ -69,13 +72,39 @@ const componentStyles = StyleSheet.create({
     width: "100%",
     gap: 8,
     alignContent: "flex-end",
+    marginVertical: 16,
   },
 
   inputField: {
-    backgroundColor: MainTheme.colors.inputBackground,
-    borderRadius: 10,
-    padding: 8,
+    backgroundColor: MainTheme.colors.dark20,
+    borderRadius: 16,
+    padding: 16,
     color: MainTheme.colors.text,
+  },
+  cardContainer: {
+    padding: 16,
+    borderRadius: 16,
+    borderWidth: 3,
+    borderColor: MainTheme.colors.dark20,
+  },
+
+  tabButtonOpen: {
+    backgroundColor: MainTheme.colors.highlightBlue,
+    borderRadius: 8,
+    padding: 8,
+    margin: 8,
+  },
+  tabButtonClosed: {
+    backgroundColor: MainTheme.colors.blueMuted,
+    borderRadius: 8,
+    padding: 8,
+    margin: 8,
+  },
+  
+  tabContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 20,
   },
   
   

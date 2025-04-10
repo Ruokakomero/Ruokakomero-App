@@ -16,13 +16,11 @@ const textStyles = StyleSheet.create({
     fontFamily: "Manrope-R",
     fontSize: MainTheme.fontSizes.bodyLarge,
     color: MainTheme.colors.text,
-    fontWeight: MainTheme.fontWeights.regular,
   },
   bodyLargeB: {
-    fontFamily: "Manrope-R",
+    fontFamily: "Manrope-B",
     fontSize: MainTheme.fontSizes.bodyLarge,
     color: MainTheme.colors.text,
-    fontWeight: MainTheme.fontWeights.regular,
   },
   textDanger: {
     fontFamily: "Manrope-R",
@@ -31,16 +29,14 @@ const textStyles = StyleSheet.create({
     fontWeight: MainTheme.fontWeights.regular,
   },
   bodyLargeBLight: {
-    fontFamily: "Manrope-R",
-    fontSize: MainTheme.fontSizes.bodyLarge,
-    color: MainTheme.colors.textLight,
-    fontWeight: MainTheme.fontWeights.regular,
-  },
-  buttonText: {
     fontFamily: "Manrope-B",
     fontSize: MainTheme.fontSizes.bodyLarge,
     color: MainTheme.colors.textLight,
-    fontWeight: MainTheme.fontWeights.bold,
+  },
+  buttonText: {
+    fontFamily: "Manrope-EB",
+    fontSize: MainTheme.fontSizes.bodyLarge,
+    color: MainTheme.colors.textLight,
     textTransform: "uppercase",
   },
   titleLarge: {
@@ -59,7 +55,6 @@ const textStyles = StyleSheet.create({
     fontFamily: "Manrope-B",
     fontSize: MainTheme.fontSizes.titleLarge,
     color: MainTheme.colors.textLight,
-    fontWeight: MainTheme.fontWeights.bold,
   },
   titleSmall: {
     fontFamily: "Manrope-R",
@@ -71,19 +66,16 @@ const textStyles = StyleSheet.create({
     fontFamily: "Manrope-R",
     fontSize: MainTheme.fontSizes.titleSmall,
     color: MainTheme.colors.textLight,
-    fontWeight: MainTheme.fontWeights.regular,
   },
   titleSmallBLight: {
-    fontFamily: "Manrope-R",
+    fontFamily: "Manrope-B",
     fontSize: MainTheme.fontSizes.titleSmall,
     color: MainTheme.colors.textLight,
-    fontWeight: MainTheme.fontWeights.bold,
   },
   titleSmallB: {
-    fontFamily: "Manrope-R",
+    fontFamily: "Manrope-B",
     fontSize: MainTheme.fontSizes.titleSmall,
     color: MainTheme.colors.text,
-    fontWeight: MainTheme.fontWeights.bold,
   },
   sliderLabel: {
     fontFamily: "Manrope-R",
@@ -105,6 +97,32 @@ const textStyles = StyleSheet.create({
     color: MainTheme.colors.textLight,
     fontWeight: MainTheme.fontWeights.regular,
   },
+  listHeader: {
+    fontFamily: "Manrope-B",
+    fontSize: MainTheme.fontSizes.titleSmall,
+    color: MainTheme.colors.text,
+    paddingVertical: 8,
+  },
+  listItemText: {
+    fontFamily: "Manrope-B",
+    fontSize: MainTheme.fontSizes.bodySmall,
+    color: MainTheme.colors.text,
+    paddingVertical: 4,
+  },
+  ingredientText: {
+    fontFamily: "Manrope-B",
+    fontSize: MainTheme.fontSizes.bodySmall,
+    color: MainTheme.colors.text,
+    paddingVertical: 8,
+  },
+  recipeTitle: {
+    fontFamily: "Manrope-B",
+    fontSize: MainTheme.fontSizes.titleMedium,
+    color: MainTheme.colors.text,
+    paddingVertical: 16,
+  },
+  
+
 });
 
 export default textStyles;

@@ -11,6 +11,12 @@ export default function ButtonComponent({ content, type = "default", onPress, ..
     switch (type) {
       case "danger":
         return componentStyles.dangerButton;
+      case "tabOpen":
+        return componentStyles.tabButtonOpen;
+      case "tabClosed":
+        return componentStyles.tabButtonClosed;
+      case "edit":
+        return componentStyles.editButton;
       default:
         return componentStyles.defaultButton;
     }
