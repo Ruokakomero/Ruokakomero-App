@@ -16,7 +16,7 @@ import {
 import { Picker } from "@react-native-picker/picker";
 import Slider from "@react-native-community/slider";
 import { Ionicons } from "@expo/vector-icons";
-import RecipeCollection from "../components/RecipeCollection";
+import RecipeCollection from "./RecipeCollection";
 import { database } from "../configuration/firebaseConfig";
 import { ref, push, onValue, remove, update } from "firebase/database";
 
