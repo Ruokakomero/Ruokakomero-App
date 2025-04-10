@@ -18,12 +18,13 @@ export default function InputFieldComponent({ placeholder, styleType, value, onC
 
   return (
     <View style={componentStyles.inputFieldContainer}>
-      <TextThemed style={[textStyles.bodyLarge, getInputType() ]}>{header}</TextThemed>
+      <TextThemed style={[textStyles.bodyLargeB, getInputType() ]}>{header}</TextThemed>
       <TextInput
         placeholder={placeholder}
         value={value}
         onChangeText={onChangeText}
         style={componentStyles.inputField}
+        textStyles={textStyles.bodySmall}
         {...props}
       />
     </View>

@@ -2,20 +2,24 @@
 
 const MainTheme = {
   colors: {
-    highlightGYellow: "#FDDB70",
+    highlightYellow: "#FDDB70",
     highlightBlue: "#389C9A",
+    blueMuted: "#389C9A66",
     dark: "#1D1D1D",
+    dark40: "#1D1D1D66",
+    dark20: "#1D1D1D33",
     text: "#1D1D1D",
     textLight: "#FFFFFF",
     textDanger: "#FF9292",
     danger: "#B65555",
-    inputBackground: 'rgba(255, 255, 255, 0.20)',
     
   },
+
   fontSizes: {
     bodySmall: 12,
     bodyLarge: 14,
     titleSmall: 16,
+    titleMedium: 20,
     titleLarge: 24,
   },
   fontWeights: {
