@@ -107,6 +107,8 @@ const componentStyles = StyleSheet.create({
     marginTop: 20,
   },
   
+  iconButton: {
+  },
   
 });
 

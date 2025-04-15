@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, FlatList, TouchableOpacity, Alert } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+
 import TextThemed from "../components/TextThemed";
 import RecipeCard from "../components/recipes/RecipeCard";
 import CreateCollectionModal from "../components/recipes/CreateCollectionModal";
@@ -12,6 +12,7 @@ import { ref, push, onValue, remove, update, get } from "firebase/database";
 import styles from "../styles/recipesStyles";
 import componentStyles from "../styles/componentStyles";
 import textStyles from "../styles/textStyles";
+import IconButton from "../components/IconButton";
 
 export default function RecipeCollection({ recipes = [] }) {
   const [collectionName, setCollectionName] = useState("");
@@ -27,6 +28,9 @@ export default function RecipeCollection({ recipes = [] }) {
   const [collections, setCollections] = useState([]);
   const [recipeDetails, setRecipeDetails] = useState({});
   const [menuVisible, setMenuVisible] = useState(null);
+  const [addRecipeModalVisible, setAddRecipeModalVisible] = useState(false);
+
+  
   const fetchRecipeDetails = async (collectionsData) => {
     let recipeData = { ...recipeDetails };
 
@@ -177,12 +181,10 @@ export default function RecipeCollection({ recipes = [] }) {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity
+      <IconButton
         onPress={() => setIsCreateModalVisible(true)}
-        style={styles.plusButton}
-      >
-        <Ionicons name="add" size={30} color="white" />
-      </TouchableOpacity>
+        iconType="add-circle"
+      />
 
       <CreateCollectionModal
         visible={isCreateModalVisible}
@@ -191,7 +193,6 @@ export default function RecipeCollection({ recipes = [] }) {
         recipes={recipes}
         selectedRecipes={selectedRecipesForNewCollection}
         toggleRecipeSelection={(id) => {
-          // Toggle logic as before
         }}
         onCreate={createCollection}
         onClose={() => {
@@ -220,6 +221,7 @@ export default function RecipeCollection({ recipes = [] }) {
             onDelete={deleteCollection}
             onRemoveRecipe={removeRecipeFromCollection}
             onOpenAddRecipe={(collId) => {
+              openAddRecipeModal(collId);
               setSelectedCollectionId(collId);
               setIsAddRecipeModalVisible(true);
             }}

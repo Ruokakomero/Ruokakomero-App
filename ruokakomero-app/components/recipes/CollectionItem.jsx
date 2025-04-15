@@ -7,6 +7,7 @@ import ButtonComponent from "../../components/ButtonComponent";
 import { Ionicons } from "@expo/vector-icons";
 import styles from "../../styles/recipesStyles";
 import textStyles from "../../styles/textStyles";
+import IconButton from "../IconButton";
 import componentStyles from "../../styles/componentStyles";
 
 export default function CollectionItem({
@@ -27,9 +28,11 @@ export default function CollectionItem({
             {collection.name}
           </TextThemed>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => onEdit(collection)}>
-          <TextThemed style={{ color: "blue", fontSize: 14 }}>Muokkaa</TextThemed>
-        </TouchableOpacity>
+        <IconButton
+          iconType="edit"
+          onPress={() => onEdit(collection)}
+          iconSize="small"
+        />
       </View>
       {isMenuVisible && (
         <View style={styles.menuOptions}>
@@ -48,18 +51,16 @@ export default function CollectionItem({
             <TextThemed style={textStyles.bodyLarge}>
               {recipeDetails[recipeId] || "Ladataan..."}
             </TextThemed>
-            <TouchableOpacity onPress={() => onRemoveRecipe(collection.id, recipeId)}>
-              <TextThemed style={{ color: "red", fontSize: 14 }}>Poista</TextThemed>
-            </TouchableOpacity>
+            <IconButton
+              onPress={() => onRemoveRecipe(collection.id, recipeId)}
+              iconType="remove"
+              iconSize="small"
+            />
           </View>
         )}
         ListFooterComponent={
-          <TouchableOpacity
-            style={styles.addRecipeButton}
-            onPress={() => onOpenAddRecipe(collection.id)}
-          >
-            <Ionicons name="add-circle" size={24} color="green" />
-          </TouchableOpacity>
+          <IconButton  onPress={() => onOpenAddRecipe(collection.id)} iconSize="small"/>
+        
         }
       />
     </View>
