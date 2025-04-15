@@ -47,11 +47,7 @@ export default function EditCollectionModal({
         onPress={() => onAddRecipe(collection.id)}
         type="default"
       />
-      <ButtonComponent
-        content="Tallenna muutokset"
-        onPress={onUpdate}
-        type="default"
-      />
+      <ButtonComponent content="Tallenna muutokset" onPress={onUpdate} type="default" />
     </BaseModal>
   );
 }

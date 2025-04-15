@@ -6,6 +6,7 @@ const MainTheme = {
     highlightBlue: "#389C9A",
     blueMuted: "#389C9A66",
     dark: "#1D1D1D",
+    dark60: "#1D1D1D99",
     dark40: "#1D1D1D66",
     dark20: "#1D1D1D33",
     text: "#1D1D1D",

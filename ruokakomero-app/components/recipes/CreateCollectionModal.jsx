@@ -4,11 +4,10 @@ import { FlatList, TouchableOpacity } from "react-native";
 import TextThemed from "../../components/TextThemed";
 import InputFieldComponent from "../../components/InputFieldComponent";
 import ButtonComponent from "../../components/ButtonComponent";
-import { Ionicons } from "@expo/vector-icons";
 import BaseModal from "../../components/BaseModal";
 import styles from "../../styles/recipesStyles";
-import componentStyles from "../../styles/componentStyles";
 import textStyles from "../../styles/textStyles";
+import componentStyles from "../../styles/componentStyles";
 
 export default function CreateCollectionModal({
   visible,
@@ -21,7 +20,7 @@ export default function CreateCollectionModal({
   onClose,
 }) {
   return (
-    <BaseModal visible={visible} title="Luo Kokoelma" onClose={onClose}>
+    <BaseModal visible={visible} title="Luo Kokoelma" onClose={onClose} modalStyle="list">
       <InputFieldComponent
         placeholder="Kokoelman nimi"
         header="Kokoelman nimi"
@@ -30,6 +29,7 @@ export default function CreateCollectionModal({
       />
       <TextThemed style={textStyles.listHeader}>Valitse reseptit</TextThemed>
       <FlatList
+        style={styles.recipeList}
         data={recipes}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => {
@@ -37,7 +37,7 @@ export default function CreateCollectionModal({
           return (
             <TouchableOpacity
               style={[
-                styles.recipeList,
+                styles.recipeItem,
                 isSelected && styles.selectedRecipe,
               ]}
               onPress={() => toggleRecipeSelection(item.id)}
@@ -47,11 +47,7 @@ export default function CreateCollectionModal({
           );
         }}
       />
-      <ButtonComponent
-        content="Luo kokoelma"
-        onPress={onCreate}
-        type="default"
-      />
+      <ButtonComponent content="Luo kokoelma" onPress={onCreate} type="default" />
     </BaseModal>
   );
 }

@@ -13,6 +13,20 @@ export default StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  modalContentList: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    marginTop: 50,
+    justifyContent: "center",
+    alignItems:"center",
+    width: "90%",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
   modalContentCreate: {
     backgroundColor: "#fff",
     padding: 20,
@@ -223,4 +237,50 @@ export default StyleSheet.create({
     flexGrow: 1,
     paddingBottom: 20,
   },
+
+  recipeItem: {
+    flexDirection: "row",
+    borderWidth: 2,
+    borderRadius: 8,
+    borderColor: MainTheme.colors.dark20,
+    paddingVertical: 8,
+    paddingHorizontal: 24,
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: MainTheme.colors.textLight,
+  },
+  recipeList: {
+    gap: 8,
+    marginVertical: 16,
+  },
+  selectedRecipe: {
+    flexDirection: "row",
+    borderWidth: 2,
+    borderRadius: 8,
+    borderColor: MainTheme.colors.highlightBlue,
+    paddingVertical: 8,
+    paddingHorizontal: 24,
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: MainTheme.colors.blueMuted,
+  }
+  ,
+
+  collectionHeader: {
+    flexDirection: "row",
+  },
+  collectionItem: {
+    paddingHorizontal: 8,
+    borderRadius: 16,
+    backgroundColor: MainTheme.colors.dark20,
+  },
+  collectionWrapper: {
+    gap: 8,
+  },
+
+  menuOptions: {
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 8,
+  }
 });

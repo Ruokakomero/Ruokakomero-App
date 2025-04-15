@@ -243,10 +243,8 @@ export default function Recipes() {
       {activeTab === "reseptit" ? (
         <>
           <View style={styles.circleButtonContainer}>
-           
-
             <IconButton
-               onPress={() => {
+              onPress={() => {
                 setIsAddModalVisible(true);
                 resetForm();
               }}
@@ -255,8 +253,6 @@ export default function Recipes() {
               onPress={() => setIsSearchActive((prev) => !prev)}
               iconType="search"
             />
-
-  
           </View>
 
           {isSearchActive && (
