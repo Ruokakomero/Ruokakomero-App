@@ -1,4 +1,3 @@
-// components/recipes/RecipeDetailModal.jsx
 // Tämä komponentti siirrettiin Recipes.jsx:stä refaktoroinnin yhteydessä (Sprintti 4)
 
 import React, { useState, useEffect } from "react";

@@ -68,6 +68,15 @@ const componentStyles = StyleSheet.create({
     backgroundColor: MainTheme.colors.highlightBlue,
   },
 
+  selectableListItem: {
+    borderWidth: 2,
+    borderColor: MainTheme.colors.dark20,
+    borderRadius: 8,
+    padding: 8,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
   inputFieldContainer: {
     width: "100%",
     gap: 8,
@@ -86,6 +95,7 @@ const componentStyles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 3,
     borderColor: MainTheme.colors.dark20,
+
   },
 
   tabButtonOpen: {
@@ -107,6 +117,8 @@ const componentStyles = StyleSheet.create({
     marginTop: 20,
   },
   
+  iconButton: {
+  },
   
 });
 

@@ -21,6 +21,7 @@ import styles from "../styles/recipesStyles";
 import componentStyles from "../styles/componentStyles";
 import TabComponent from "../components/TabComponent";
 import InputFieldComponent from "../components/InputFieldComponent";
+import IconButton from "../components/IconButton";
 
 // Alustavat tilat ja funktiot
 export default function Recipes() {
@@ -242,21 +243,16 @@ export default function Recipes() {
       {activeTab === "reseptit" ? (
         <>
           <View style={styles.circleButtonContainer}>
-            <TouchableOpacity
-              style={styles.circleButton}
+            <IconButton
               onPress={() => {
                 setIsAddModalVisible(true);
                 resetForm();
               }}
-            >
-              <Ionicons name="add" size={24} color="white" />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.circleButton}
+            />
+            <IconButton
               onPress={() => setIsSearchActive((prev) => !prev)}
-            >
-              <Ionicons name="search" size={24} color="white" />
-            </TouchableOpacity>
+              iconType="search"
+            />
           </View>
 
           {isSearchActive && (
