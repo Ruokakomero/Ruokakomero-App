@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { 
-  View, Text, TouchableOpacity, StyleSheet, TextInput, 
-  KeyboardAvoidingView, Platform, ScrollView, TouchableWithoutFeedback, Keyboard 
-} from "react-native";
-import Slider from "@react-native-community/slider";
+import { View, StyleSheet, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
+import ProteinStep from "../components/userinputform/ProteinStep";
+import CarbStep from "../components/userinputform/CarbStep";
+import ServingSizeStep from "../components/userinputform/ServingSizeStep";
+import DietStep from "../components/userinputform/DietStep";
 
 const UserInputForm = ({ navigation }) => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -13,10 +13,6 @@ const UserInputForm = ({ navigation }) => {
   const [selectedDiets, setSelectedDiets] = useState([]);
   const [otherProtein, setOtherProtein] = useState('');
   const [otherCarb, setOtherCarb] = useState('');
-
-  const proteins = ["Kana", "Kala", "Naudanliha", "Possu", "Kasviproteiini", "Muu"];
-  const carbs = ["Riisi", "Peruna", "Pasta", "Muu"];
-  const diets = ["Vegaani", "Gluteeniton", "Laktoositon", "Keto", "Kasvis"];
 
   const handleNext = () => setCurrentStep((prev) => prev + 1);
   const handleBack = () => setCurrentStep((prev) => prev - 1);
@@ -33,141 +29,51 @@ const UserInputForm = ({ navigation }) => {
   };
 
   return (
-    <KeyboardAvoidingView 
-      behavior={Platform.OS === "ios" ? "padding" : "height"} 
-      style={styles.container}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 80} // Estää painikkeiden peittymisen
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 80}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <ScrollView contentContainerStyle={styles.scrollView}>
-          <View style={styles.inner}>
+        <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}>
+          <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: 20 }}>
             {currentStep === 1 && (
-              <View style={styles.stepContainer}>
-                <Text style={styles.header}>Valitse proteiini:</Text>
-                {proteins.map((protein) => (
-                  <TouchableOpacity
-                    key={protein}
-                    onPress={() => {
-                      setSelectedProteins((prev) =>
-                        prev.includes(protein) ? prev.filter((p) => p !== protein) : [...prev, protein]
-                      );
-                    }}
-                    style={[
-                      styles.optionButton,
-                      selectedProteins.includes(protein) && styles.selectedOption,
-                    ]}
-                  >
-                    <Text style={{ color: selectedProteins.includes(protein) ? "white" : "black" }}>
-                      {protein}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-
-                {selectedProteins.includes("Muu") && (
-                  <TextInput
-                    style={styles.textInput}
-                    placeholder="Kirjoita proteiini"
-                    value={otherProtein}
-                    onChangeText={setOtherProtein}
-                    returnKeyType="done"
-                  />
-                )}
-
-                <TouchableOpacity style={styles.button} onPress={handleNext}>
-                  <Text style={styles.buttonText}>Seuraava</Text>
-                </TouchableOpacity>
-              </View>
+              <ProteinStep
+                selectedProteins={selectedProteins}
+                setSelectedProteins={setSelectedProteins}
+                otherProtein={otherProtein}
+                setOtherProtein={setOtherProtein}
+                handleNext={handleNext}
+              />
             )}
 
             {currentStep === 2 && (
-              <View style={styles.stepContainer}>
-                <Text style={styles.header}>Valitse hiilihydraatti:</Text>
-                {carbs.map((carb) => (
-                  <TouchableOpacity
-                    key={carb}
-                    onPress={() => {
-                      setSelectedCarbs((prev) =>
-                        prev.includes(carb) ? prev.filter((c) => c !== carb) : [...prev, carb]
-                      );
-                    }}
-                    style={[
-                      styles.optionButton,
-                      selectedCarbs.includes(carb) && styles.selectedOption,
-                    ]}
-                  >
-                    <Text style={{ color: selectedCarbs.includes(carb) ? "white" : "black" }}>
-                      {carb}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-
-                {selectedCarbs.includes("Muu") && (
-                  <TextInput
-                    style={styles.textInput}
-                    placeholder="Kirjoita hiilihydraatti"
-                    value={otherCarb}
-                    onChangeText={setOtherCarb}
-                    returnKeyType="done"
-                  />
-                )}
-
-                <TouchableOpacity style={styles.button} onPress={handleBack}>
-                  <Text style={styles.buttonText}>Edellinen</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={handleNext}>
-                  <Text style={styles.buttonText}>Seuraava</Text>
-                </TouchableOpacity>
-              </View>
+              <CarbStep
+                selectedCarbs={selectedCarbs}
+                setSelectedCarbs={setSelectedCarbs}
+                otherCarb={otherCarb}
+                setOtherCarb={setOtherCarb}
+                handleNext={handleNext}
+                handleBack={handleBack}
+              />
             )}
 
             {currentStep === 3 && (
-              <View style={styles.stepContainer}>
-                <Text style={styles.header}>Annoskoko: {servingSize} annosta</Text>
-                <Slider
-                  minimumValue={1}
-                  maximumValue={10}
-                  step={1}
-                  value={servingSize}
-                  onValueChange={setServingSize}
-                  style={styles.slider}
-                />
-                <TouchableOpacity style={styles.button} onPress={handleBack}>
-                  <Text style={styles.buttonText}>Edellinen</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={handleNext}>
-                  <Text style={styles.buttonText}>Seuraava</Text>
-                </TouchableOpacity>
-              </View>
+              <ServingSizeStep
+                servingSize={servingSize}
+                setServingSize={(value) => setServingSize(Math.round(value))}
+                handleNext={handleNext}
+                handleBack={handleBack}
+              />
             )}
 
             {currentStep === 4 && (
-              <View style={styles.stepContainer}>
-                <Text style={styles.header}>Erityisruokavaliot:</Text>
-                {diets.map((diet) => (
-                  <TouchableOpacity
-                    key={diet}
-                    onPress={() =>
-                      setSelectedDiets((prev) =>
-                        prev.includes(diet) ? prev.filter((d) => d !== diet) : [...prev, diet]
-                      )
-                    }
-                    style={[
-                      styles.optionButton,
-                      selectedDiets.includes(diet) && styles.selectedOption,
-                    ]}
-                  >
-                    <Text style={{ color: selectedDiets.includes(diet) ? "white" : "black" }}>
-                      {diet}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-                <TouchableOpacity style={styles.button} onPress={handleBack}>
-                  <Text style={styles.buttonText}>Edellinen</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-                  <Text style={styles.buttonText}>Näytä reseptit</Text>
-                </TouchableOpacity>
-              </View>
+              <DietStep
+                selectedDiets={selectedDiets}
+                setSelectedDiets={setSelectedDiets}
+                handleBack={handleBack}
+                handleSubmit={handleSubmit}
+              />
             )}
           </View>
         </ScrollView>
