@@ -272,6 +272,7 @@ export default function Recipes() {
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <RecipeCard
+                onDelete={handleDeleteRecipe}
                 recipe={item}
                 onPress={() => {
                   setRecipe(item);
@@ -329,7 +330,6 @@ export default function Recipes() {
               setIsRecipeDetailVisible(false);
               openEditModal(selectedRecipe);
             }}
-            onDelete={handleDeleteRecipe}
           />
         </>
       ) : (

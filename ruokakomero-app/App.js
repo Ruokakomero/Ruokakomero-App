@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { NavigationContainer } from "@react-navigation/native";
 import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
@@ -72,7 +73,8 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <NavigationContainer>
       {isLoggedIn ? (
         console.log("🔐 Näytetään AppStack"),
         <AppStack handleLogout={handleLogout} initialTab={initialTab} />
@@ -81,6 +83,8 @@ export default function App() {
         <AuthStack handleLogin={handleLogin} />
       )}
     </NavigationContainer>
+    </GestureHandlerRootView>
+    
   );
 
 }
