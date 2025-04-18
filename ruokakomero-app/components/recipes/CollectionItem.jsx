@@ -1,26 +1,46 @@
 // components/recipes/CollectionItem.jsx
 import React from "react";
-import { FlatList, TouchableOpacity, View } from "react-native";
+import { FlatList, TouchableOpacity, View, Animated } from "react-native";
 import TextThemed from "../../components/TextThemed";
 import IconButton from "../../components/IconButton";
 import styles from "../../styles/recipesStyles";
 import textStyles from "../../styles/textStyles";
 import ButtonComponent from "../ButtonComponent";
+import { Swipeable } from "react-native-gesture-handler";
+import componentStyles from "../../styles/componentStyles";
 
-export default function CollectionItem({
+const CollectionItem = ({
   collection,
   recipeDetails,
-  onToggleMenu,
   isMenuVisible,
-  onEdit,
   onDelete,
   onRemoveRecipe,
   onOpenAddRecipe,
-}) {
+}) => {
+  const renderRightActions = (progress, dragX) => {
+    const scale = dragX.interpolate({
+      inputRange: [-100, 0],
+      outputRange: [1, 0],
+      extrapolate: "clamp",
+    });
+
+    return (
+      <TouchableOpacity style={componentStyles.swipeableContainer}>
+        <Animated.View style={{ transform: [{ scale }] }}>
+          <IconButton
+            onPress={() => onDelete(collection.id)}
+            iconType="remove"
+            iconColor="white"
+          />
+        </Animated.View>
+      </TouchableOpacity>
+    );
+  };
+
   return (
-    <TouchableOpacity
+    <Swipeable
+      renderRightActions={renderRightActions}
       style={styles.collectionWrapper}
-      onLongPress={() => onToggleMenu(collection.id)}
     >
       <View style={styles.collectionHeader}>
         <TextThemed style={textStyles.titleLargeB}>
@@ -60,6 +80,8 @@ export default function CollectionItem({
           }
         />
       </View>
-    </TouchableOpacity>
+    </Swipeable>
   );
-}
+};
+
+export default CollectionItem;

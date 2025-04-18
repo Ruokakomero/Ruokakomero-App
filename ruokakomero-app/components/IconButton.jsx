@@ -26,8 +26,11 @@ export default function IconButton({
         return MainTheme.colors.danger;
       case "close":
         return MainTheme.colors.dark60;
+      case "white": 
+        return MainTheme.colors.textLight;
       default:
         return MainTheme.colors.highlightBlue;
+
     }
   };
 

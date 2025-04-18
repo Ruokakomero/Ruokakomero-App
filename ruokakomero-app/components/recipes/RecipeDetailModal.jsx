@@ -15,7 +15,7 @@ import styles from "../../styles/recipesStyles";
 import textStyles from "../../styles/textStyles";
 import componentStyles from "../../styles/componentStyles";
 
-const RecipeDetailModal = ({ visible, recipe, onClose, onEdit, onDelete }) => {
+const RecipeDetailModal = ({ visible, recipe, onClose,}) => {
   const [activeTab, setActiveTab] = useState("ainesosat");
 
   return (
@@ -59,14 +59,7 @@ const RecipeDetailModal = ({ visible, recipe, onClose, onEdit, onDelete }) => {
                 ))}
               </>
             )}
-            <View style={componentStyles.buttonWrapper}>
-              <ButtonComponent
-                content="Poista"
-                onPress={() => onDelete(recipe?.id)}
-                type="danger"
-              />
-              <ButtonComponent content="Muokkaa" type="edit" onPress={onEdit} />
-            </View>
+           
           </ScrollView>
         </View>
       </View>

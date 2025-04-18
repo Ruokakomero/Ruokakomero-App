@@ -127,6 +127,23 @@ export default function RecipesCollection({ recipes = [] }) {
     setIsAddRecipeModalVisible(true);
   };
 
+  const confirmClose = () => {
+    Alert.alert(
+      "Varoitus",
+      "Haluatko poistaa kokoelman?",
+      [
+        { text: "Peruuta", style: "cancel" },
+        {
+          text: "Kyllä",
+          style: "destructive",
+          onPress: () => deleteCollection(collectionToEdit.id),
+        },
+      ], { cancelable: true }
+
+    );
+
+  }
+
   const updateCollection = async () => {
     if (!collectionToEdit || !editedCollectionName.trim()) {
       Alert.alert("Virhe", "Anna kokoelman nimi!");

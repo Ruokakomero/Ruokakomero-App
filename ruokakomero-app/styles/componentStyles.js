@@ -98,6 +98,20 @@ const componentStyles = StyleSheet.create({
 
   },
 
+  swipeableContainer: {
+   justifyContent: "center",
+   alignContent: "center",
+   width: 64, 
+   borderRadius: 8,
+  },
+  swipeableButton: {
+    backgroundColor: MainTheme.colors.danger,
+    justifyContent: "center",
+    alignContent: "center",
+    width: 64, 
+    borderRadius: 8,
+   },
+
   tabButtonOpen: {
     backgroundColor: MainTheme.colors.highlightBlue,
     borderRadius: 8,
