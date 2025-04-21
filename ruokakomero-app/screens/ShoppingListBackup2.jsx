@@ -1,31 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, Modal, TextInput, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { database } from '../configuration/firebaseConfig';
-import { ref, push, onValue, remove, update } from "firebase/database";
 
-export default function ShoppingList({ currentList }) {
-  const [items, setItems] = useState([]);
+export default function ShoppingList() {
+  const [shoppingLists, setShoppingLists] = useState([
+    {
+      id: 'default',
+      title: 'Ostoslista',
+      items: []
+    }
+  ]);
+
   const [modalVisible, setModalVisible] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [itemName, setItemName] = useState('');
   const [itemQuantity, setItemQuantity] = useState('');
 
-  useEffect(() => {
-    const itemsRef = ref(database, `items/${currentList.id}`);
-    onValue(itemsRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const loadedItems = Object.keys(data).map((key) => ({
-          id: key,
-          ...data[key],
-        }));
-        setItems(loadedItems);
-      } else {
-        setItems([]);
-      }
-    });
-  }, [currentList.id]);
+  const currentList = shoppingLists[0];
 
   const openModalToAdd = () => {
     setEditingItem(null);
@@ -42,60 +33,44 @@ export default function ShoppingList({ currentList }) {
   };
 
   const handleSaveItem = () => {
-    if (!itemName.trim() || !itemQuantity.trim() || !currentList?.id) return;
+    if (!itemName.trim() || !itemQuantity.trim()) return;
+
 
     const newItem = {
+      id: editingItem ? editingItem.id : Date.now().toString(),
       name: itemName.trim(),
       quantity: itemQuantity.trim(),
       collected: false,
     };
 
-    console.log("Adding item to list:", currentList.id); // Debugging line to ensure we have a valid list ID
+    const updatedItems = editingItem
+      ? currentList.items.map((item) =>
+          item.id === editingItem.id ? newItem : item
+        )
+      : [...currentList.items, newItem];
 
-    const listRef = ref(database, `items/${currentList.id}`);
+    updateListItems(updatedItems);
+    setModalVisible(false);
+  };
 
-    if (editingItem) {
-      const itemRef = ref(database, `items/${currentList.id}/${editingItem.id}`);
-      update(itemRef, newItem)
-        .then(() => {
-          console.log('Item updated successfully!');
-          setModalVisible(false); // Close modal after saving
-        })
-        .catch((error) => {
-          console.error("Error updating item:", error);
-        });
-    } else {
-      push(listRef, newItem)
-        .then(() => {
-          console.log('Item added successfully!');
-          setModalVisible(false); // Close modal after saving
-        })
-        .catch((error) => {
-          console.error("Error adding item:", error);
-        });
-    }
+  const updateListItems = (items) => {
+    setShoppingLists((prevLists) =>
+      prevLists.map((list) =>
+        list.id === currentList.id ? { ...list, items } : list
+      )
+    );
   };
 
   const handleToggleCollected = (itemId) => {
-    const item = items.find(i => i.id === itemId);
-    if (!item) return;
-
-    const itemRef = ref(database, `items/${currentList.id}/${itemId}`);
-    update(itemRef, { ...item, collected: !item.collected })
-      .catch((error) => {
-        console.error("Error updating item:", error);
-      });
+    const updatedItems = currentList.items.map((item) =>
+      item.id === itemId ? { ...item, collected: !item.collected } : item
+    );
+    updateListItems(updatedItems);
   };
 
   const handleDeleteItem = (itemId) => {
-    const itemRef = ref(database, `items/${currentList.id}/${itemId}`);
-    remove(itemRef)
-      .then(() => {
-        console.log("Item deleted successfully");
-      })
-      .catch((error) => {
-        console.error("Error deleting item:", error);
-      });
+    const updatedItems = currentList.items.filter((item) => item.id !== itemId);
+    updateListItems(updatedItems);
   };
 
   const renderItem = ({ item }) => (
@@ -104,7 +79,7 @@ export default function ShoppingList({ currentList }) {
       onPress={() => handleToggleCollected(item.id)}
       style={[
         styles.itemContainer,
-        item.collected && styles.itemCollected,
+        item.collected && styles.itemCollected
       ]}
     >
       <View style={styles.itemContent}>
@@ -121,14 +96,12 @@ export default function ShoppingList({ currentList }) {
     <View style={styles.container}>
       <Text style={styles.title}>{currentList.title}</Text>
       <FlatList
-        data={items}
+        data={currentList.items}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         ListEmptyComponent={<Text style={styles.empty}>Ei tuotteita</Text>}
-        contentContainerStyle={styles.listContent}
       />
 
-      {/* Add button at the bottom of the list */}
       <TouchableOpacity style={styles.addButton} onPress={openModalToAdd}>
         <Ionicons name="add" size={28} color="white" />
       </TouchableOpacity>
@@ -171,7 +144,6 @@ export default function ShoppingList({ currentList }) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: '#fff' },
   title: { fontSize: 24, fontWeight: 'bold', marginBottom: 10 },
@@ -196,12 +168,13 @@ const styles = StyleSheet.create({
   quantityText: { fontSize: 16, color: '#888' },
   empty: { textAlign: 'center', marginTop: 20, color: '#aaa' },
   addButton: {
+    position: 'absolute',
+    right: 20,
+    bottom: 20,
     backgroundColor: '#0a9396',
     padding: 15,
     borderRadius: 50,
     elevation: 4,
-    marginTop: 20,
-    alignSelf: 'center',
   },
   modalBackdrop: {
     flex: 1,
@@ -244,8 +217,5 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     fontWeight: '600',
-  },
-  listContent: {
-    paddingBottom: 80,
   },
 });
