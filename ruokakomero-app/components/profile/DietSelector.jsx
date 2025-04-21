@@ -1,6 +1,13 @@
 // Tämä komponentti siirrettiin Profile.jsx:stä refaktoroinnin yhteydessä (Sprintti 4)
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import componentStyles from "../../styles/componentStyles";
+import MainTheme from "../../styles/MainTheme";
+import textStyles from "../../styles/textStyles";
+import TextThemed from "../../components/TextThemed";
+import { Button } from "react-native-paper";
+import ButtonComponent from "../ButtonComponent";
+import { ScrollView } from "react-native-gesture-handler";
 
 const dietOptions = {
   vege: "Vege",
@@ -11,45 +18,24 @@ const dietOptions = {
   halal: "Halal",
 };
 
-export default function DietSelector({ userDiet, toggleDiet }) {
+export default function DietSelector({ userDiet, toggleDiet, ...props }) {
   return (
-    <View>
-      <Text style={styles.subtitle}>Ruokavalio</Text>
-      <View style={styles.dietContainer}>
-        {Object.keys(dietOptions).map((dietType) => (
-          <TouchableOpacity
-            key={dietType}
-            style={[
-              styles.dietButton,
-              { backgroundColor: userDiet[dietType] ? "#98fb98" : "#f0f0f0" },
-            ]}
-            onPress={() => toggleDiet(dietType)}
-          >
-            <Text>{dietOptions[dietType]}</Text>
-          </TouchableOpacity>
-        ))}
+    <View style={componentStyles.section}>
+    <View style={componentStyles.dietSelectorWrapper}>
+      <TextThemed style={textStyles.titleLargeB}>Ruokavalio</TextThemed>
+      <View  style={componentStyles.dietSelectorContainer}>
+        <ScrollView horizontal={true} contentContainerStyle={componentStyles.dietContainer}>
+          {Object.keys(dietOptions).map((dietType) => (
+            <ButtonComponent
+              key={dietType}
+              type={userDiet[dietType] ? "enabled" : "disabled"}
+              onPress={() => toggleDiet(dietType)}
+              content={dietOptions[dietType]}
+            />
+          ))}
+        </ScrollView>
       </View>
+    </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  subtitle: {
-    fontSize: 18,
-    marginBottom: 5,
-  },
-  dietContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    marginBottom: 20,
-  },
-  dietButton: {
-    padding: 10,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    marginBottom: 5,
-    marginRight: 5,
-  },
-});

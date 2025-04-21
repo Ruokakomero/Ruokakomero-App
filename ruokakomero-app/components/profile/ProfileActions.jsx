@@ -1,29 +1,32 @@
 // Tämä komponentti siirrettiin Profile.jsx:stä refaktoroinnin yhteydessä (Sprintti 4)
 import React from "react";
-import { View, Button, TouchableOpacity, Text, StyleSheet } from "react-native";
+import { View } from "react-native";
+import ButtonComponent from "../../components/ButtonComponent";
+import componentStyles from "../../styles/componentStyles";
 
-export default function ProfileActions({ handleSave, confirmDeleteAccount, handleLogout }) {
+export default function ProfileActions({
+  handleSave,
+  confirmDeleteAccount,
+  handleLogout, ...props
+}) {
   return (
-    <View>
-      <Button title="Tallenna tiedot" onPress={handleSave} />
-      <Button title="Poista profiili" color="red" onPress={confirmDeleteAccount} />
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutButtonText}>Kirjaudu ulos</Text>
-      </TouchableOpacity>
+    <View style={componentStyles.actionsContainer}> 
+      <View style={componentStyles.buttonWrapper}>
+        <ButtonComponent content="Tallenna tiedot" onPress={handleSave} />
+        <ButtonComponent
+          content="Poista profiili"
+          onPress={confirmDeleteAccount}
+          type="dangerMuted"
+        />
+      </View>
+
+      <View>
+        <ButtonComponent
+          content="kirjaudu ulos"
+          onPress={handleLogout}
+          type="danger"
+        />
+      </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  logoutButton: {
-    backgroundColor: "#555",
-    padding: 12,
-    marginTop: 10,
-    borderRadius: 5,
-    alignItems: "center",
-  },
-  logoutButtonText: {
-    color: "#fff",
-    fontSize: 16,
-  },
-});

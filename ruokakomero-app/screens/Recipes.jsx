@@ -227,6 +227,8 @@ export default function Recipes() {
     kpl: { min: 0, max: 20, step: 1 },
   };
 
+
+  
   return (
     <View style={styles.container}>
       <TabComponent

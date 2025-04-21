@@ -1,9 +1,4 @@
-import {
-  View,
-  TouchableWithoutFeedback,
-  Keyboard,
-  Alert,
-} from "react-native";
+import { View, TouchableWithoutFeedback, Keyboard, Alert } from "react-native";
 import { useState } from "react";
 import AuthScreen from "../configuration/AuthScreen";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
@@ -29,16 +24,16 @@ export default function Register({ navigation }) {
 
   const validatePassword = (password) => {
     if (password.length < 8) {
-      return "Salasanan pitää olla vähintään 8 merkkiä pitkä!";
+      return "Salasanan tulee olla vähintään 8 merkkiä pitkä!";
     }
     if (!/[A-Z]/.test(password)) {
-      return "Salasanan pitää sisältää vähintään yksi iso kirjain!";
+      return "Salasana tulee sisältää vähintään yksi iso kirjain!";
     }
     if (!/[0-9]/.test(password)) {
-      return "Salasanan pitää sisältää vähintään yksi numero!";
+      return "Salasana tulee sisältää vähintään yksi numero!";
     }
     if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
-      return "Salasanan pitää sisältää vähintään yksi erikoismerkki!";
+      return "Salasana tulee sisältää vähintään yksi erikoismerkki!";
     }
     return "";
   };
@@ -94,7 +89,6 @@ export default function Register({ navigation }) {
 
       // Navigoidaan login-näkymään
       navigation.navigate("Kirjaudu");
-
     } catch (error) {
       setLoading(false);
       Alert.alert("Rekisteröityminen epäonnistui!", error.message);
@@ -112,15 +106,20 @@ export default function Register({ navigation }) {
         style={componentStyles.gradientContainer}
       >
         <View style={screensStyles.registerContainer}>
-          <TextThemed style={textStyles.titleLargeBLight}>Rekisteröidy</TextThemed>
+          <TextThemed style={textStyles.titleLargeBLight}>
+            Rekisteröidy
+          </TextThemed>
 
           <InputFieldComponent
+            header="käyttäjätunnus"
             placeholder="Käyttäjätunnus"
             value={username}
             onChangeText={setUsername}
             editable={!loading}
+            styleType="light"
           />
           <InputFieldComponent
+            header="sähköposti"
             placeholder="Sähköposti"
             value={email}
             onChangeText={setEmail}
@@ -129,8 +128,10 @@ export default function Register({ navigation }) {
             editable={!loading}
             textContentType="emailAddress"
             autoComplete="email"
+            styleType="light"
           />
           <InputFieldComponent
+            header="salasana"
             placeholder="Salasana"
             value={password}
             onChangeText={handlePasswordChange}
@@ -139,29 +140,34 @@ export default function Register({ navigation }) {
             textContentType="password"
             autoComplete="password"
             autoCapitalize="none"
+            styleType="light"
           />
 
-          <View style={componentStyles.buttonWrapper}>
+          <View style={componentStyles.loginButtonWrapper}>
             {passwordError ? (
-              <TextThemed style={textStyles.textDanger}>{passwordError}</TextThemed>
+              <View style={componentStyles.errorContainer}>
+                <TextThemed style={textStyles.textDangerB}>
+                  {passwordError}
+                </TextThemed>
+              </View>
             ) : null}
-            <TextThemed style={textStyles.bodySmallLight}>
-              Salasanan pitää sisältää vähintään 8 merkkiä, yksi iso kirjain, yksi
-              numero ja yksi erikoismerkki.
-            </TextThemed>
 
             <ButtonComponent
               content={loading ? "Rekisteröidään..." : "Rekisteröidy"}
               onPress={handleRegister}
               disabled={loading}
             />
-
-            <TextThemed
-              style={textStyles.bodyLargeBLight}
-              onPress={() => navigation.navigate("Kirjaudu")} // Tämä toimii linkkinä login-näyttöön
-            >
-              Oletko jo käyttäjä? Kirjaudu sisään täältä
-            </TextThemed>
+            <View style={componentStyles.textContainer}>
+              <TextThemed style={textStyles.bodyLargeLight}>
+                Oletko jo käyttäjä?
+              </TextThemed>
+              <TextThemed
+                style={textStyles.linkLabel}
+                onPress={() => navigation.navigate("Kirjaudu")}
+              >
+                Kirjaudu sisään täältä
+              </TextThemed>
+            </View>
           </View>
         </View>
       </LinearGradient>

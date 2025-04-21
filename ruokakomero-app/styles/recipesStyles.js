@@ -2,138 +2,200 @@ import { StyleSheet } from "react-native";
 import MainTheme from "./MainTheme";
 
 export default StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    padding: 20,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.85)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
+
+  // Modal content containers
   modalContentList: {
-    backgroundColor: "#fff",
-    padding: 20,
-    borderRadius: 10,
-    marginTop: 50,
+    alignItems: "center",
     justifyContent: "center",
-    alignItems:"center",
     width: "90%",
+    padding: 20,
+    marginTop: 50,
+    borderRadius: 10,
+    backgroundColor: "#fff",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 2, }
   },
   modalContentCreate: {
-    backgroundColor: "#fff",
-    padding: 20,
-    borderRadius: 10,
-    marginTop: 50,
     width: "90%",
+    padding: 20,
+    marginTop: 50,
+    borderRadius: 10,
+    backgroundColor: "#fff",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 2, }
   },
   modalContentEdit: {
-    backgroundColor: "#fff",
     padding: 20,
-    borderRadius: 10,
     marginTop: 30,
+    borderRadius: 10,
+    backgroundColor: "#fff",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 2, }
   },
   modalContentRecipe: {
-    backgroundColor: "#fff",
-    padding: 20,
-    borderRadius: 10,
-    marginTop: 50,
-    shadowColor: "#000",
     width: "90%",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-    maxHeight: "70%",
+    padding: 20,
+    marginTop: 50,
+    borderRadius: 10,
+    backgroundColor: "#fff",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2, }
   },
+
+  // Modal overlay
+  modalOverlay: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.85)",
+  },
+
+  // Headers & text
   header: {
+    marginBottom: 10,
     fontSize: 20,
     fontWeight: "bold",
-    marginBottom: 10,
   },
   subHeader: {
+    marginTop: 10,
     fontSize: 16,
     fontWeight: "bold",
-    marginTop: 10,
   },
   paragraph: {
-    fontSize: 14,
     marginBottom: 10,
-  },
-  closeButton: {
-    padding: 10,
-    backgroundColor: "#8a3633",
-    borderRadius: 5,
-    marginTop: 10,
+    fontSize: 14,
   },
   closeButtonText: {
-    fontSize: 16,
     color: "#ffffff",
+    fontSize: 16,
+    textAlign: "center",
+  },
+  editButtonText: {
+    color: "#ffffff",
+    fontSize: 16,
+    textAlign: "center",
+  },
+  saveButtonText: {
+    color: "#ffffff",
+    fontSize: 16,
+    textAlign: "center",
+  },
+  tabText: {
+    color: "#000",
+    fontWeight: "bold",
+  },
+  unitText: {
+    color: "white",
+    fontWeight: "bold",
+  },
+  emptyText: {
+    marginTop: 20,
+    fontSize: 16,
+    textAlign: "center",
+  },
+
+  // Recipe items & layout
+  recipeCard: {
+    padding: 15,
+    marginBottom: 10,
+    borderWidth: 3,
+    borderColor: "#ccc",
+    borderRadius: 5,
+  },
+  recipeHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  recipeItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 8,
+    paddingHorizontal: 24,
+    borderWidth: 2,
+    borderColor: MainTheme.colors.dark20,
+    borderRadius: 8,
+    backgroundColor: MainTheme.colors.textLight,
+  },
+  recipeList: {
+    marginVertical: 16,
+    gap: 8,
+  },
+  selectedRecipe: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 8,
+    paddingHorizontal: 24,
+    borderWidth: 2,
+    borderColor: MainTheme.colors.highlightBlue,
+    borderRadius: 8,
+    backgroundColor: MainTheme.colors.blueMuted,
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    paddingBottom: 20,
+  },
+  emptyText: {
+    marginTop: 20,
+    fontSize: 16,
+    textAlign: "center",
+  },
+
+  // Buttons
+  closeButton: {
+    padding: 10,
+    marginTop: 10,
+    borderRadius: 5,
+    backgroundColor: "#8a3633",
+  },
+  closeButtonText: {
+    color: "#ffffff",
+    fontSize: 16,
     textAlign: "center",
   },
   editButton: {
     padding: 10,
-    backgroundColor: "#FFA500",
-    borderRadius: 5,
     marginTop: 10,
+    borderRadius: 5,
+    backgroundColor: "#FFA500",
   },
   editButtonText: {
-    fontSize: 16,
     color: "#ffffff",
+    fontSize: 16,
     textAlign: "center",
   },
   saveButton: {
     padding: 10,
-    backgroundColor: "#007BFF",
-    borderRadius: 5,
     marginTop: 10,
+    borderRadius: 5,
+    backgroundColor: "#007BFF",
   },
   saveButtonText: {
-    fontSize: 16,
     color: "#ffffff",
+    fontSize: 16,
     textAlign: "center",
   },
   circleButton: {
-    backgroundColor: MainTheme.colors.highlightBlue,
-    borderRadius: 25,
-    width: 40,
-    height: 40,
     alignItems: "center",
     justifyContent: "center",
+    width: 40,
+    height: 40,
+    borderRadius: 25,
+    backgroundColor: MainTheme.colors.highlightBlue,
   },
   circleButtonContainer: {
     flexDirection: "row",
     justifyContent: "flex-end",
-    marginHorizontal: 10,
     marginVertical: 10,
+    marginHorizontal: 10,
     gap: 24,
   },
   navButtons: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 20,
-  },
-  tabContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: 20,
   },
   tabButton: {
     paddingVertical: 10,
@@ -148,141 +210,87 @@ export default StyleSheet.create({
     color: "#000",
     fontWeight: "bold",
   },
-  searchInput: {
-    borderWidth: 1,
-    borderColor: "gray",
-    padding: 10,
+  unitButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginLeft: 5,
     borderRadius: 5,
-    marginBottom: 10,
+    backgroundColor: "#007BFF",
   },
-  input: {
-    borderWidth: 1,
-    borderColor: "gray",
+
+  // Inputs & ingredient rows
+  searchInput: {
     padding: 10,
     marginBottom: 10,
+    borderWidth: 1,
+    borderColor: "gray",
+    borderRadius: 5,
   },
   fullInput: {
     flex: 1,
+    padding: 10,
     borderWidth: 1,
     borderColor: "#ccc",
-    padding: 10,
     borderRadius: 5,
     backgroundColor: "white",
   },
   ingredientRow: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#f8f8f8",
     padding: 10,
-    borderRadius: 10,
     marginBottom: 10,
+    borderRadius: 10,
+    backgroundColor: "#f8f8f8",
   },
   ingredientNameInput: {
     flex: 2,
+    padding: 8,
     borderWidth: 1,
     borderColor: "#ccc",
-    padding: 8,
     borderRadius: 5,
     backgroundColor: "white",
   },
   quantityWrapper: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    flex: 1,
     justifyContent: "space-between",
     marginLeft: 10,
   },
   ingredientQuantityInput: {
     width: 50,
+    padding: 8,
     borderWidth: 1,
     borderColor: "#ccc",
-    padding: 8,
     borderRadius: 5,
     backgroundColor: "white",
     textAlign: "center",
   },
-  unitButton: {
-    backgroundColor: "#007BFF",
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 5,
-    marginLeft: 5,
-  },
-  unitText: {
-    color: "white",
-    fontWeight: "bold",
-  },
-  recipeCard: {
-    padding: 15,
-    borderWidth: 3,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    marginBottom: 10,
-  },
-  recipeHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  recipeName: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  emptyText: {
-    textAlign: "center",
-    marginTop: 20,
-    fontSize: 16,
-  },
-  scrollContainer: {
-    flexGrow: 1,
-    paddingBottom: 20,
-  },
 
-  recipeItem: {
-    flexDirection: "row",
-    borderWidth: 2,
-    borderRadius: 8,
-    borderColor: MainTheme.colors.dark20,
-    paddingVertical: 8,
-    paddingHorizontal: 24,
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: MainTheme.colors.textLight,
-  },
-  recipeList: {
-    gap: 8,
-    marginVertical: 16,
-  },
-  selectedRecipe: {
-    flexDirection: "row",
-    borderWidth: 2,
-    borderRadius: 8,
-    borderColor: MainTheme.colors.highlightBlue,
-    paddingVertical: 8,
-    paddingHorizontal: 24,
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: MainTheme.colors.blueMuted,
-  }
-  ,
-
+  // Collections & menu
   collectionHeader: {
     flexDirection: "row",
   },
   collectionItem: {
+    paddingVertical: 8,
     paddingHorizontal: 8,
+    marginVertical: 8,
     borderRadius: 16,
     backgroundColor: MainTheme.colors.dark20,
-    paddingVertical: 8,
-    marginVertical: 8,
   },
   collectionWrapper: {
     gap: 8,
   },
-
   menuOptions: {
-    justifyContent: "center",
     alignItems: "center",
+    justifyContent: "center",
     padding: 8,
-  }
+  },
+
+  // General container
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: "#fff",
+  },
 });

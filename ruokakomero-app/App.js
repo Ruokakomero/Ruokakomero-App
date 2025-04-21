@@ -6,6 +6,7 @@ import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import AppStack from "./screens/navigation/AppStack";
 import AuthStack from "./screens/navigation/AuthStack";
+import screensStyles from "./styles/screensStyles";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -73,8 +74,8 @@ export default function App() {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <NavigationContainer>
+    <GestureHandlerRootView style={screensStyles.stackContainer} >
+      <NavigationContainer >
       {isLoggedIn ? (
         console.log("🔐 Näytetään AppStack"),
         <AppStack handleLogout={handleLogout} initialTab={initialTab} />
