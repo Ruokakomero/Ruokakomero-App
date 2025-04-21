@@ -5,7 +5,6 @@ import { Ionicons } from "@expo/vector-icons";
 import TextThemed from "../components/TextThemed";
 import RecipeCard from "../components/recipes/RecipeCard";
 import CreateCollectionModal from "../components/recipes/CreateCollectionModal";
-import EditCollectionModal from "../components/recipes/EditCollectionModal";
 import AddRecipeModal from "../components/recipes/AddRecipeModal";
 import CollectionItem from "../components/recipes/CollectionItem";
 import { database } from "../configuration/firebaseConfig";
@@ -20,8 +19,6 @@ export default function RecipesCollection({ recipes = [] }) {
   const [selectedRecipesForNewCollection, setSelectedRecipesForNewCollection] =
     useState([]);
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
-  const [isEditCollectionModalVisible, setIsEditCollectionModalVisible] =
-    useState(false);
   const [collectionToEdit, setCollectionToEdit] = useState(null);
   const [editedCollectionName, setEditedCollectionName] = useState("");
   const [isAddRecipeModalVisible, setIsAddRecipeModalVisible] = useState(false);
@@ -38,7 +35,7 @@ export default function RecipesCollection({ recipes = [] }) {
           const rRef = ref(database, `recipes/${recipeId}`);
           const snapshot = await get(rRef);
           if (snapshot.exists()) {
-            details[recipeId] = snapshot.val().name;
+            details[recipeId] = snapshot.val();
           }
         }
       }
@@ -238,7 +235,6 @@ export default function RecipesCollection({ recipes = [] }) {
             onEdit={(coll) => {
               setCollectionToEdit(coll);
               setEditedCollectionName(coll.name);
-              setIsEditCollectionModalVisible(true);
             }}
             onDelete={deleteCollection}
             onRemoveRecipe={removeRecipeFromCollection}
@@ -252,23 +248,6 @@ export default function RecipesCollection({ recipes = [] }) {
         onAddRecipe={addRecipeToCollection}
         onClose={() => setIsAddRecipeModalVisible(false)}
       />
-      {isEditCollectionModalVisible && collectionToEdit && (
-        <EditCollectionModal
-          visible={isEditCollectionModalVisible}
-          collection={collectionToEdit}
-          editedName={editedCollectionName}
-          setEditedName={setEditedCollectionName}
-          recipeDetails={recipeDetails}
-          onUpdate={updateCollection}
-          onAddRecipe={(collId) => openAddRecipeModal(collId)}
-          onClose={() => {
-            setIsEditCollectionModalVisible(false);
-            setCollectionToEdit(null);
-            setEditedCollectionName("");
-          }}
-          onRemoveRecipe={removeRecipeFromCollection}
-        />
-      )}
     </View>
   );
 }
