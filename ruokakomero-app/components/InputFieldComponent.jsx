@@ -9,16 +9,16 @@ export default function InputFieldComponent({ placeholder, styleType, value, onC
 
   const getInputType = () => {
     switch (styleType) {
-      case "dark":
-        return textStyles.inputHeaderDark;
+      case "light":
+        return textStyles.inputLabelLight;
       default:
-        return textStyles.inputHeader;
+        return textStyles.inputLabel;
     }
   }
 
   return (
     <View style={componentStyles.inputFieldContainer}>
-      <TextThemed style={[textStyles.bodyLargeB, getInputType() ]}>{header}</TextThemed>
+      <TextThemed style={ getInputType() }>{header}</TextThemed>
       <TextInput
         placeholder={placeholder}
         value={value}

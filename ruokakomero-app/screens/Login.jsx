@@ -75,6 +75,7 @@ export default function Login({ navigation, handleLogin, route }) {
             editable={!loading}
             textContentType="emailAddress"
             autoComplete="email"
+            styleType="light"
           />
 
           <InputFieldComponent
@@ -87,21 +88,27 @@ export default function Login({ navigation, handleLogin, route }) {
             textContentType="password"
             autoComplete="password"
             autoCapitalize="none"
+            styleType="light"
           />
 
-          <View style={componentStyles.buttonWrapper}>
+          <View style={componentStyles.loginButtonWrapper}>
             <ButtonComponent
               content={loading ? "Kirjaudutaan..." : "Kirjaudu"}
               onPress={processLogin}
               disabled={loading}
             />
 
-            <TextThemed
-              style={textStyles.titleSmallBLight}
-              onPress={() => navigation.navigate("Rekisteröidy")}
-            >
-              Eikö sinulla ole tiliä? Rekisteröidy tästä
-            </TextThemed>
+            <View style={componentStyles.textContainer}>
+              <TextThemed style={textStyles.bodyLargeLight}>
+                Eikö sinulla ole tiliä?
+              </TextThemed>
+              <TextThemed
+                style={textStyles.linkLabel}
+                onPress={() => navigation.navigate("Rekisteröidy")}
+              >
+                Rekisteröidy tästä
+              </TextThemed>
+            </View>
           </View>
         </View>
       </LinearGradient>

@@ -5,6 +5,7 @@ import Recipes from "../Recipes";
 import ShoppingList from "../ShoppingList";
 import Profile from "../Profile";
 import RecipeStack from "./RecipeStack";
+import screensStyles from "../../styles/screensStyles";
 
 const Tab = createBottomTabNavigator();
 
@@ -24,15 +25,15 @@ export default function MainTabs({ handleLogout, initialTab, profileName }) {
         },
       })}
     >
-      <Tab.Screen name="Etusivu" component={HomePage} />
+      <Tab.Screen name="Etusivu" component={HomePage} options={{ headerShown: false }} />
       <Tab.Screen
         name="Löydä resepti"
         component={RecipeStack}
         options={{ headerShown: false }}
       />
-      <Tab.Screen name="Reseptit" component={Recipes} />
-      <Tab.Screen name="Ostoslista" component={ShoppingList} />
-      <Tab.Screen name="Profiili">
+      <Tab.Screen name="Reseptit" component={Recipes} options={{ headerShown: false }}/>
+      <Tab.Screen name="Ostoslista" component={ShoppingList} options={{ headerShown: false }}/>
+      <Tab.Screen name="Profiili" options={{ headerShown: false }} >
         {() => (
           <Profile 
             handleLogout={handleLogout} 

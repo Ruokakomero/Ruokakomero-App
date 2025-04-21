@@ -2,31 +2,35 @@
 import React from "react";
 import { Text, TextInput, View, StyleSheet } from "react-native";
 
-export default function ProfileFormFields({ user, handleInputChange }) {
+import InputFieldComponent from "../../components/InputFieldComponent";
+import ButtonComponent from "../../components/ButtonComponent";
+import TextThemed from "../../components/TextThemed";
+import textStyles from "../../styles/textStyles";
+import componentStyles from "../../styles/componentStyles";
+import MainTheme from "../../styles/MainTheme";
+
+export default function ProfileFormFields({ user, handleInputChange, ...props }) {
   return (
     <View>
-      <TextInput
-        style={styles.input}
-        placeholder="Etunimi"
+      <InputFieldComponent
+        header="Etunimi"
         value={user.firstName}
         onChangeText={(text) => handleInputChange("firstName", text)}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Sukunimi"
+      <InputFieldComponent
+        header="Sukunimi"
         value={user.lastName}
         onChangeText={(text) => handleInputChange("lastName", text)}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Sähköposti"
+      <InputFieldComponent
+        header="Sähköposti"
         value={user.email}
         onChangeText={(text) => handleInputChange("email", text)}
       />
-
-      <Text style={styles.subtitle}>Suosikkiraaka-aineet</Text>
-      <TextInput
-        style={styles.input}
+{/*
+      <TextThemed style={textStyles.titleLargeB}>Suosikkiraaka-aineet</TextThemed>
+      <InputFieldComponent
+        header="Suosikkiraaka-aineet"
         placeholder="Kirjoita suosikkiraaka-aineet pilkuilla erotettuna"
         value={user.favoriteIngredients}
         onChangeText={(text) =>
@@ -34,29 +38,19 @@ export default function ProfileFormFields({ user, handleInputChange }) {
         }
       />
 
-      <Text style={styles.subtitle}>Inhokkiraaka-aineet</Text>
-      <TextInput
-        style={styles.input}
+      <TextThemed style={textStyles.titleLargeB}>Inhokkiraaka-aineet</TextThemed>
+      <InputFieldComponent
+        header="Inhokkiraaka-aineet"
         placeholder="Kirjoita inhokkiraaka-aineet pilkuilla erotettuna"
         value={user.dislikedIngredients}
         onChangeText={(text) =>
           handleInputChange("dislikedIngredients", text)
         }
       />
+
+      */ }
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
-    marginBottom: 10,
-    borderRadius: 5,
-  },
-  subtitle: {
-    fontSize: 18,
-    marginBottom: 5,
-  },
-});
+

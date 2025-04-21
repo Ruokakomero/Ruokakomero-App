@@ -16,6 +16,10 @@ import ProfileFormFields from "../components/profile/ProfileFormFields";
 import PasswordChanger from "../components/profile/PasswordChanger";
 import DietSelector from "../components/profile/DietSelector";
 import ProfileActions from "../components/profile/ProfileActions";
+import TextThemed from "../components/TextThemed";
+import textStyles from "../styles/textStyles";
+import screensStyles from "../styles/screensStyles";
+import componentStyles from "../styles/componentStyles";
 
 const auth = getAuth();
 const database = getDatabase();
@@ -67,10 +71,14 @@ export default function Profile({ handleLogout }) {
   };
 
   const confirmDeleteAccount = () => {
-    Alert.alert("Vahvista poistaminen", "Haluatko varmasti poistaa profiilisi?", [
-      { text: "Peruuta", style: "cancel" },
-      { text: "Poista", onPress: handleDeleteAccount, style: "destructive" },
-    ]);
+    Alert.alert(
+      "Vahvista poistaminen",
+      "Haluatko varmasti poistaa profiilisi?",
+      [
+        { text: "Peruuta", style: "cancel" },
+        { text: "Poista", onPress: handleDeleteAccount, style: "destructive" },
+      ]
+    );
   };
 
   const handleDeleteAccount = async () => {
@@ -123,11 +131,19 @@ export default function Profile({ handleLogout }) {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
-        <ScrollView contentContainerStyle={{ padding: 20 }}>
-          <Text style={{ fontSize: 24, marginBottom: 10 }}>Profiilin tiedot</Text>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <ScrollView contentContainerStyle={screensStyles.profileContainer}>
+          <TextThemed style={textStyles.titleLargeB}>
+            Profiilin tiedot
+          </TextThemed>
 
-          <ProfileFormFields user={user} handleInputChange={handleInputChange} />
+          <ProfileFormFields
+            user={user}
+            handleInputChange={handleInputChange}
+          />
           <PasswordChanger
             newPassword={newPassword}
             setNewPassword={setNewPassword}

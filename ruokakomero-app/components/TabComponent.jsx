@@ -4,6 +4,7 @@ import { View } from "react-native";
 import ButtonComponent from "./ButtonComponent";
 import componentStyles from "../styles/componentStyles";
 
+
 export default function TabComponent({ openedTabType, openTabOnPress, closedTabType, closedTabOnPress, openTab, closedTab, ...props  }) {
   return (
     <View style={componentStyles.tabContainer}>

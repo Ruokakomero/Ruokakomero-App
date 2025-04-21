@@ -14,6 +14,7 @@ const MainTheme = {
     textLight20: "#FFFFFF20",
     textDanger: "#FF9292",
     danger: "#B65555",
+    dangerMuted: "#B6555566",
     
   },
 
