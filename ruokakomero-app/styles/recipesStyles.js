@@ -273,6 +273,8 @@ export default StyleSheet.create({
     paddingHorizontal: 8,
     borderRadius: 16,
     backgroundColor: MainTheme.colors.dark20,
+    paddingVertical: 8,
+    marginVertical: 8,
   },
   collectionWrapper: {
     gap: 8,

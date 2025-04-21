@@ -7,7 +7,7 @@ export default function AppStack({ handleLogout, initialTab }) {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Main" options={{ headerShown: false }}>
-        {() => <MainTabs handleLogout={handleLogout} initialTab={initialTab} />}
+        {() => <MainTabs handleLogout={handleLogout} initialTab={initialTab}  options={{ headerShown: false }}/>}
       </Stack.Screen>
     </Stack.Navigator>
   );

@@ -11,6 +11,7 @@ const MainTheme = {
     dark20: "#1D1D1D33",
     text: "#1D1D1D",
     textLight: "#FFFFFF",
+    textLight20: "#FFFFFF20",
     textDanger: "#FF9292",
     danger: "#B65555",
     
