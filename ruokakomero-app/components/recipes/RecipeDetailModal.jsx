@@ -14,6 +14,7 @@ import TabComponent from "../TabComponent";
 import styles from "../../styles/recipesStyles";
 import textStyles from "../../styles/textStyles";
 import componentStyles from "../../styles/componentStyles";
+import recipesStyles from "../../styles/recipesStyles";
 
 const RecipeDetailModal = ({ visible, recipe, onClose,}) => {
   const [activeTab, setActiveTab] = useState("ainesosat");
@@ -32,9 +33,9 @@ const RecipeDetailModal = ({ visible, recipe, onClose,}) => {
               openTabOnPress={() => setActiveTab("ainesosat")}
               closedTabOnPress={() => setActiveTab("ohjeet")}
               openedTabType={
-                activeTab === "ainesosat" ? "tabOpen" : "tabClosed"
+                activeTab === "ainesosat" ? "enabled" : "disabled"
               }
-              closedTabType={activeTab === "ohjeet" ? "tabOpen" : "tabClosed"}
+              closedTabType={activeTab === "ohjeet" ? "enabled" : "disabled"}
             />
             <TextThemed style={textStyles.recipeTitle}>
               {recipe?.name}
@@ -43,9 +44,15 @@ const RecipeDetailModal = ({ visible, recipe, onClose,}) => {
               <>
                 <TextThemed style={textStyles.listHeader}>Ainesosat</TextThemed>
                 {recipe?.ingredients.map((ing, idx) => (
-                  <TextThemed key={idx} style={textStyles.ingredientText}>
-                    {`${ing.name}: ${ing.quantity} ${ing.unit}`}
-                  </TextThemed>
+                  <View style={recipesStyles.ingredientListItem}>
+                    <TextThemed key={idx} style={textStyles.ingredientText}>
+                    {`${ing.quantity} ${ing.unit}`}
+                    </TextThemed>
+                    <TextThemed key={idx} style={textStyles.ingredientText}>
+                    {`${ing.name}`}
+                    </TextThemed>
+                  </View>
+                  
                 ))}
               </>
             )}

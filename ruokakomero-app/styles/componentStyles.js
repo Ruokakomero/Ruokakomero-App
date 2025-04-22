@@ -39,6 +39,7 @@ const componentStyles = StyleSheet.create({
     borderColor: MainTheme.colors.dark20,
     borderRadius: 16,
   },
+  
 
   // Button styles
   buttonWrapper: {
