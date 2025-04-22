@@ -60,10 +60,10 @@ Kun käyttäjä valitsee reseptin, sovellus luo siitä automaattisesti ostoslist
 ## 3. Käyttöliittymä
 
 ### Käyttöliittymäkaavio
-- Visuaaliset kaaviot löytyvät Figmasta tai [UI-suunnitelmadokumentista](linkki).
+- Visuaaliset kaaviot löytyvät Figmasta tai [UI-suunnitelmadokumentista](https://www.figma.com/design/UjDkmgpcvd6Rm2ateRlwBh/Ruokakomero?node-id=0-1&m=dev&t=2ExFLF6ieDR6BuYQ-1).
 
 ### Käyttöliittymän näkymät
-- Etusivu
+LISÄÄ KUVAKAAPPAUKSET
 - Ruokatoiveiden kysely
 - Chatbotin reseptiehdotukset
 - Reseptilistaus
@@ -181,15 +181,22 @@ Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunnitel
 ## 8. Asennusohjeet 
 
 ### Esivaatimukset
-1. Asenna [Node.js](https://nodejs.org/).
-2. Asenna Expo CLI:
+
+1. Sovelluksen kloonaaminen Githubista
+    ```
+    git clone https://github.com/Ruokakomero/Ruokakomero-App/tree/main
+    ```
+
+2. Asenna [Node.js](https://nodejs.org/).
+3. Asenna Expo CLI:
    ```bash
    npm install -g expo-cli
+   ```
 
-3. Asenna React Native riippuvuudet:
+5. Asenna React Native riippuvuudet:
     ```bash
     npm install
-4. Asenna Firebase:
+6. Asenna Firebase:
 
    ```bash
    npx expo install @react-native-firebase/app
@@ -199,6 +206,69 @@ Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunnitel
    npm install @react-navigation/native
    npx expo install react-native-screens react-native-safe-area-context
    npm install @react-navigation/bottom-tabs
+
+6. Riippuvuuksien asennus:
+  ```
+  npm install
+  ```
+**Tarvittavat riippuvuudet:**
+  - React Native -komponentit:
+    - react-native
+    - react
+    - expo (versio ~52.0.46, käytössä Expo SDK)
+    - expo-font, expo-splash-screen, expo-linear-gradient, expo-status-bar
+    - react-native-gesture-handler, react-native-screens, react-native-safe-area-context
+    
+  - Navigointi
+    - @react-navigation/native
+    - @react-navigation/bottom-tabs
+    - @react-navigation/stack
+    - @react-navigation/native-stack
+
+  - Firebase
+    - @react-native-firebase/app
+    - @react-native-firebase/firestore
+    - firebase
+
+  - Käyttöliittymä
+    - @expo/vector-icons
+    - react-native-vector-icons
+    - react-native-paper
+    - react-native-element-dropdown
+    - react-native-popup-menu
+    - react-native-check-box
+    - @react-native-picker/picker
+    - @react-native-community/slider
+    - react-native-linear-gradient
+
+  - Konfiguraatio ja ympäristö
+    - dotenv
+    - react-native-config
+    - react-native-dotenv
+
+  - Async Storage
+    - @react-native-async-storage/async-storage
+
+  - Työkalut ja tyypitykset
+    - @types/react
+    - @types/react-native
+    - typescript
+    - @babel/core
+
+  - Tekoäly
+    - openai 
+
+
+
+7. Luo ympäristömuuttujatiedosto Luo .env -tiedosto projektin juureen ja täytä tarvittavat muuttujat:
+  API_KEY=...
+FIREBASE_PROJECT_ID=...
+
+8. Kehitysympäristön käynnistäminen
+  npx expo start
+
+
+## 10. Tekoäly 
 
 ## 9. Projektisuunnitelma
 
