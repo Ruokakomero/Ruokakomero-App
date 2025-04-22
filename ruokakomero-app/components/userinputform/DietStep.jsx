@@ -4,7 +4,7 @@ import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 
 const DietStep = ({ selectedDiets, setSelectedDiets, handleBack, handleSubmit }) => {
-  const diets = ["Vegaani", "Gluteeniton", "Laktoositon", "Keto", "Kasvis"];
+  const diets = ["Vegaani", "Gluteeniton", "Laktoositon", "Kasvis"];
 
   return (
     <View style={{ alignItems: "center" }}>
