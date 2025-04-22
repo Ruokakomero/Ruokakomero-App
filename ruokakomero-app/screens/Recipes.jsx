@@ -24,7 +24,7 @@ import InputFieldComponent from "../components/InputFieldComponent";
 import IconButton from "../components/IconButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getAuth, deleteUser, signOut, updatePassword } from "firebase/auth";
-import {fetchUserData} from "./Profile";
+import {fetchUser} from "../configuration/fetchUserData";
 
 // Alustavat tilat ja funktiot
 export default function Recipes() {
@@ -124,7 +124,8 @@ export default function Recipes() {
 
   // Tallentaa reseptin Firebaseen
   const handleAddRecipe = async () => {
-    
+    const currentUser = fetchUser.fetchUserData;
+     
     if (!recipe.name || recipe.ingredients.length === 0) {
       alert("Lisää reseptin nimi ja vähintään yksi ainesosa!");
       return;
