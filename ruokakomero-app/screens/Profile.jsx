@@ -11,7 +11,6 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getAuth, deleteUser, signOut, updatePassword } from "firebase/auth";
 import { getDatabase, ref, get, set, remove } from "firebase/database";
-
 import ProfileFormFields from "../components/profile/ProfileFormFields";
 import PasswordChanger from "../components/profile/PasswordChanger";
 import DietSelector from "../components/profile/DietSelector";
