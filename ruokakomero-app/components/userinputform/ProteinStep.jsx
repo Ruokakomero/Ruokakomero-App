@@ -3,13 +3,36 @@
 import React from "react";
 import { View, Text, TouchableOpacity, TextInput } from "react-native";
 
-const ProteinStep = ({ selectedProteins, setSelectedProteins, otherProtein, setOtherProtein, handleNext }) => {
-  const proteins = ["Kana", "Kala", "Naudanliha", "Possu", "Kasviproteiini", "Muu"];
+// selectedDiets lisätty propseihin
+const ProteinStep = ({
+  selectedProteins,
+  setSelectedProteins,
+  otherProtein,
+  setOtherProtein,
+  handleNext,
+  selectedDiets = [],
+}) => {
+  // Alkuperäinen proteiinilista
+  const allProteins = ["Kana", "Kala", "Naudanliha", "Possu", "Kasviproteiini", "Muu"];
+
+  // Suodatetaan proteiinit ruokavalion mukaan
+  const filteredProteins = allProteins.filter((protein) => {
+    const isVegan = selectedDiets.includes("Vegaani");
+
+    // Jos vegaani, näytetään vain kasvipohjaiset ja "Muu"
+    if (isVegan) {
+      return ["Kasviproteiini", "Muu"].includes(protein);
+    }
+
+    // Jos ei erityisruokavaliota, näytetään kaikki
+    return true;
+  });
 
   return (
     <View style={{ alignItems: "center" }}>
       <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 15 }}>Valitse proteiini:</Text>
-      {proteins.map((protein) => (
+
+      {filteredProteins.map((protein) => (
         <TouchableOpacity
           key={protein}
           onPress={() => {

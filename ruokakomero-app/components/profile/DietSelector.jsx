@@ -10,12 +10,10 @@ import ButtonComponent from "../ButtonComponent";
 import { ScrollView } from "react-native-gesture-handler";
 
 const dietOptions = {
-  vege: "Vege",
+  vege: "Kasvisruoka",
   glutenFree: "Gluteeniton",
   lactoseFree: "Laktoositon",
   vegan: "Vegaani",
-  nutAllergy: "Pähkinäallergia",
-  halal: "Halal",
 };
 
 export default function DietSelector({ userDiet, toggleDiet, ...props }) {

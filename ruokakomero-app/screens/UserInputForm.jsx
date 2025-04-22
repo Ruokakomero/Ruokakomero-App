@@ -1,9 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, StyleSheet, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 import ProteinStep from "../components/userinputform/ProteinStep";
 import CarbStep from "../components/userinputform/CarbStep";
 import ServingSizeStep from "../components/userinputform/ServingSizeStep";
 import DietStep from "../components/userinputform/DietStep";
+
+import { getDoc, doc } from "firebase/firestore";
+import { db } from "../firebase";
+import { getAuth } from "firebase/auth";
 
 const UserInputForm = ({ navigation }) => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -13,6 +17,32 @@ const UserInputForm = ({ navigation }) => {
   const [selectedDiets, setSelectedDiets] = useState([]);
   const [otherProtein, setOtherProtein] = useState('');
   const [otherCarb, setOtherCarb] = useState('');
+
+  const [userDietProfile, setUserDietProfile] = useState([]);
+
+  // Käyttäjän ruokavaliotietojen haku Firebase:stä
+  useEffect(() => {
+    const fetchDietProfile = async () => {
+      try {
+        const auth = getAuth();
+        const user = auth.currentUser;
+
+        if (user) {
+          const userDocRef = doc(db, "users", user.uid);
+          const userDoc = await getDoc(userDocRef);
+
+          if (userDoc.exists()) {
+            const data = userDoc.data();
+            setUserDietProfile(data.dietaryPreferences || []); // Varmistetaan oletusarvo
+          }
+        }
+      } catch (error) {
+        console.error("Virhe ruokavaliotietojen haussa:", error);
+      }
+    };
+
+    fetchDietProfile();
+  }, []);
 
   const handleNext = () => setCurrentStep((prev) => prev + 1);
   const handleBack = () => setCurrentStep((prev) => prev - 1);
@@ -37,17 +67,26 @@ const UserInputForm = ({ navigation }) => {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}>
           <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: 20 }}>
-            {currentStep === 1 && (
+          {currentStep === 1 && (
+              <DietStep
+                selectedDiets={selectedDiets}
+                setSelectedDiets={setSelectedDiets}
+                handleBack={handleBack}
+                handleSubmit={handleSubmit}
+              />
+            )}
+            {currentStep === 2 && (
               <ProteinStep
                 selectedProteins={selectedProteins}
                 setSelectedProteins={setSelectedProteins}
                 otherProtein={otherProtein}
                 setOtherProtein={setOtherProtein}
                 handleNext={handleNext}
+                selectedDiets={userDietProfile} // Ruokavaliotiedot propsina ProteinStep-komponentille
               />
             )}
 
-            {currentStep === 2 && (
+            {currentStep === 3 && (
               <CarbStep
                 selectedCarbs={selectedCarbs}
                 setSelectedCarbs={setSelectedCarbs}
@@ -58,7 +97,7 @@ const UserInputForm = ({ navigation }) => {
               />
             )}
 
-            {currentStep === 3 && (
+            {currentStep === 4 && (
               <ServingSizeStep
                 servingSize={servingSize}
                 setServingSize={(value) => setServingSize(Math.round(value))}
@@ -67,20 +106,13 @@ const UserInputForm = ({ navigation }) => {
               />
             )}
 
-            {currentStep === 4 && (
-              <DietStep
-                selectedDiets={selectedDiets}
-                setSelectedDiets={setSelectedDiets}
-                handleBack={handleBack}
-                handleSubmit={handleSubmit}
-              />
-            )}
           </View>
         </ScrollView>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
