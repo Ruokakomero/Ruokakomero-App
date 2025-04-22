@@ -29,17 +29,13 @@ export default function Profile({ handleLogout }) {
     firstName: "",
     lastName: "",
     email: "",
-    password: "",
     diet: {
       vege: false,
       glutenFree: false,
       lactoseFree: false,
       vegan: false,
-      nutAllergy: false,
-      halal: false,
     },
-    favoriteIngredients: "",
-    dislikedIngredients: "",
+    recipes: {},
   });
 
   const [newPassword, setNewPassword] = useState("");
@@ -96,6 +92,7 @@ export default function Profile({ handleLogout }) {
   };
 
   const handlePasswordChange = async () => {
+    
     const currentUser = auth.currentUser;
     if (!currentUser || newPassword.length < 6) return;
 
@@ -160,3 +157,4 @@ export default function Profile({ handleLogout }) {
     </SafeAreaView>
   );
 }
+
