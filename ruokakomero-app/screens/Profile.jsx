@@ -29,12 +29,13 @@ export default function Profile({ handleLogout }) {
   const [newPassword, setNewPassword] = useState("");
 
   useEffect(() => {
-    if (user) setEditableUser(user);
+    if (!user) return;
     setEditableUser({
       ...user,
       email: auth.currentUser?.email ?? user.email,
     });
   }, [user, auth.currentUser]);
+  
 
   if (loading) {
     return (
@@ -116,7 +117,7 @@ export default function Profile({ handleLogout }) {
       await AsyncStorage.removeItem("isLoggedIn");
       handleLogout();
     } catch (error) {
-      Alert.alert("Virhe", error.message);
+      console.log("Virhe", error.message);
     }
   };
 

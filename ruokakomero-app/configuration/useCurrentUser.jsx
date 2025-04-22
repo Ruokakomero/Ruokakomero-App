@@ -1,7 +1,9 @@
 // configuration/useCurrentUser.jsx
-import { useEffect, useState } from "react";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { getDatabase, ref, get, set } from "firebase/database";
+
+import { useState, useEffect } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { ref, get, set } from "firebase/database";
+import { auth, database } from "./firebaseConfig";
 import { defaultUserData } from "./defaultUser";
 
 const useCurrentUser = () => {
@@ -10,12 +12,8 @@ const useCurrentUser = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const auth     = getAuth();
-    const database = getDatabase();
-
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (!currentUser) {
-    
         setUser(null);
         setUserId(null);
         setLoading(false);
@@ -27,18 +25,14 @@ const useCurrentUser = () => {
       const snap    = await get(userRef);
 
       if (!snap.exists()) {
-       
+        // First time: write a default skeleton
         const initData = {
           ...defaultUserData,
           email: currentUser.email || "",
         };
-
-        
         await set(userRef, initData);
-   
         setUser(initData);
       } else {
-
         setUser(snap.val());
       }
 
