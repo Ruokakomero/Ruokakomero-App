@@ -4,64 +4,86 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   Platform,
-  View,
   Text,
   Alert,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getAuth, deleteUser, signOut, updatePassword } from "firebase/auth";
-import { getDatabase, ref, get, set, remove } from "firebase/database";
+import { getDatabase, ref, set, remove } from "firebase/database";
+import useCurrentUser from "../configuration/useCurrentUser";
 import ProfileFormFields from "../components/profile/ProfileFormFields";
 import PasswordChanger from "../components/profile/PasswordChanger";
 import DietSelector from "../components/profile/DietSelector";
 import ProfileActions from "../components/profile/ProfileActions";
 import TextThemed from "../components/TextThemed";
+
 import textStyles from "../styles/textStyles";
 import screensStyles from "../styles/screensStyles";
-import componentStyles from "../styles/componentStyles";
-
-const auth = getAuth();
-const database = getDatabase();
 
 export default function Profile({ handleLogout }) {
-  const [user, setUser] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    diet: {
-      vege: false,
-      glutenFree: false,
-      lactoseFree: false,
-      vegan: false,
-    },
-    recipes: {},
-  });
+  const auth = getAuth();
+  const database = getDatabase();
+  const { user, userId, loading } = useCurrentUser();
 
+  const [editableUser, setEditableUser] = useState(null);
   const [newPassword, setNewPassword] = useState("");
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      const currentUser = auth.currentUser;
-      if (currentUser) {
-        const userRef = ref(database, `users/${currentUser.uid}`);
-        const snapshot = await get(userRef);
-        if (snapshot.exists()) {
-          setUser(snapshot.val());
-        }
-      }
-    };
-    fetchUserData();
-  }, []);
+    if (user) setEditableUser(user);
+    setEditableUser({
+      ...user,
+      email: auth.currentUser?.email ?? user.email,
+    });
+  }, [user, auth.currentUser]);
+
+  if (loading) {
+    return (
+      <SafeAreaView
+        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+      >
+        <Text>Ladataan käyttäjätietoja…</Text>
+      </SafeAreaView>
+    );
+  }
+
+  if (!editableUser) {
+    return (
+      <SafeAreaView
+        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+      >
+        <Text>Ei kirjautunutta käyttäjää.</Text>
+      </SafeAreaView>
+    );
+  }
 
   const handleSave = async () => {
-    const currentUser = auth.currentUser;
-    if (currentUser) {
-      try {
-        await set(ref(database, `users/${currentUser.uid}`), user);
-        Alert.alert("Tiedot tallennettu onnistuneesti!");
-      } catch (error) {
-        Alert.alert("Virhe tallennuksessa", error.message);
-      }
+    try {
+      await set(ref(database, `users/${userId}`), editableUser);
+      Alert.alert("Tiedot tallennettu onnistuneesti!");
+    } catch (error) {
+      Alert.alert("Virhe tallennuksessa", error.message);
+    }
+  };
+
+  const handleInputChange = (field, value) => {
+    setEditableUser((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const toggleDiet = (dietType) => {
+    setEditableUser((prev) => ({
+      ...prev,
+      diet: { ...prev.diet, [dietType]: !prev.diet[dietType] },
+    }));
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      await remove(ref(database, `users/${userId}`));
+      await deleteUser(auth.currentUser);
+      Alert.alert("Poisto onnistui");
+      await signOut(auth);
+    } catch (error) {
+      Alert.alert("Virhe", error.message);
     }
   };
 
@@ -76,43 +98,16 @@ export default function Profile({ handleLogout }) {
     );
   };
 
-  const handleDeleteAccount = async () => {
-    const currentUser = auth.currentUser;
-    if (!currentUser) return;
-
-    try {
-      await remove(ref(database, `users/${currentUser.uid}`));
-      await deleteUser(currentUser);
-      Alert.alert("Poisto onnistui");
-      await signOut(auth);
-    } catch (error) {
-      Alert.alert("Virhe", error.message);
-    }
-  };
-
   const handlePasswordChange = async () => {
-    
-    const currentUser = auth.currentUser;
-    if (!currentUser || newPassword.length < 6) return;
+    if (!auth.currentUser || newPassword.length < 6) return;
 
     try {
-      await updatePassword(currentUser, newPassword);
+      await updatePassword(auth.currentUser, newPassword);
       Alert.alert("Salasana vaihdettu");
       setNewPassword("");
     } catch (error) {
       Alert.alert("Virhe", error.message);
     }
-  };
-
-  const handleInputChange = (field, value) => {
-    setUser((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const toggleDiet = (dietType) => {
-    setUser((prev) => ({
-      ...prev,
-      diet: { ...prev.diet, [dietType]: !prev.diet[dietType] },
-    }));
   };
 
   const handleLocalLogout = async () => {
@@ -137,15 +132,18 @@ export default function Profile({ handleLogout }) {
           </TextThemed>
 
           <ProfileFormFields
-            user={user}
+            user={editableUser}
             handleInputChange={handleInputChange}
           />
+
           <PasswordChanger
             newPassword={newPassword}
             setNewPassword={setNewPassword}
             handlePasswordChange={handlePasswordChange}
           />
-          <DietSelector userDiet={user.diet} toggleDiet={toggleDiet} />
+
+          <DietSelector userDiet={editableUser.diet} toggleDiet={toggleDiet} />
+
           <ProfileActions
             handleSave={handleSave}
             confirmDeleteAccount={confirmDeleteAccount}
@@ -156,4 +154,3 @@ export default function Profile({ handleLogout }) {
     </SafeAreaView>
   );
 }
-
