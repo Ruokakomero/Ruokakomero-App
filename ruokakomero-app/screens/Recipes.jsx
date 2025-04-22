@@ -22,6 +22,9 @@ import componentStyles from "../styles/componentStyles";
 import TabComponent from "../components/TabComponent";
 import InputFieldComponent from "../components/InputFieldComponent";
 import IconButton from "../components/IconButton";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getAuth, deleteUser, signOut, updatePassword } from "firebase/auth";
+import {fetchUserData} from "./Profile";
 
 // Alustavat tilat ja funktiot
 export default function Recipes() {
@@ -46,6 +49,7 @@ export default function Recipes() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("reseptit");
   const [originalRecipe, setOriginalRecipe] = useState(null);
+  const [user, setUser] = useState(null);
 
   // Firebase-haun asetus
   useEffect(() => {
@@ -58,11 +62,16 @@ export default function Recipes() {
           ...data[key],
         }));
         setSavedRecipes(loadedRecipes);
+
       } else {
         setSavedRecipes([]);
+
       }
     });
   }, []);
+
+
+
 
   // Palauttaa lomakkeen alkutilanteeseen
   const resetForm = () => {
@@ -115,6 +124,7 @@ export default function Recipes() {
 
   // Tallentaa reseptin Firebaseen
   const handleAddRecipe = async () => {
+    
     if (!recipe.name || recipe.ingredients.length === 0) {
       alert("Lisää reseptin nimi ja vähintään yksi ainesosa!");
       return;
