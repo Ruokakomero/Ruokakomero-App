@@ -266,6 +266,15 @@ export default StyleSheet.create({
     backgroundColor: "white",
     textAlign: "center",
   },
+  ingredientListItem: {
+    flexDirection: "row",
+    borderTopWidth: 2,
+    borderTopColor: MainTheme.colors.dark20,
+    paddingVertical: 8,
+    paddingHorizontal: 48,
+    justifyContent: "space-between"
+
+  },
 
   // Collections & menu
   collectionHeader: {
