@@ -1,19 +1,36 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Modal, TextInput, StyleSheet, Pressable } from 'react-native';
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  Modal,
+  TextInput,
+  StyleSheet,
+  Pressable,
+  Alert,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { database } from '../configuration/firebaseConfig';
-import { ref, push, onValue, remove, update } from "firebase/database";
+import { ref, push, onValue, remove, update } from 'firebase/database';
+import { getAuth } from 'firebase/auth';
 
-export default function ShoppingList({ currentList }) {
+export default function ShoppingList() {
+  const auth = getAuth();
+  const user = auth.currentUser;
+
   const [items, setItems] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [itemName, setItemName] = useState('');
   const [itemQuantity, setItemQuantity] = useState('');
 
+  const userItemsRef = user ? ref(database, `users/${user.uid}/Ostoslista`) : null;
+
   useEffect(() => {
-    const itemsRef = ref(database, `items/${currentList.id}`);
-    onValue(itemsRef, (snapshot) => {
+    if (!user) return;
+    const itemsRef = ref(database, `users/${user.uid}/Ostoslista`);
+    const unsubscribe = onValue(itemsRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
         const loadedItems = Object.keys(data).map((key) => ({
@@ -25,7 +42,9 @@ export default function ShoppingList({ currentList }) {
         setItems([]);
       }
     });
-  }, [currentList.id]);
+
+    return () => unsubscribe();
+  }, [user]);
 
   const openModalToAdd = () => {
     setEditingItem(null);
@@ -36,80 +55,55 @@ export default function ShoppingList({ currentList }) {
 
   const openModalToEdit = (item) => {
     setEditingItem(item);
-    setItemName(item.name);
-    setItemQuantity(item.quantity.toString());
+    setItemName(item.title);
+    setItemQuantity(item.amount);
     setModalVisible(true);
   };
 
   const handleSaveItem = () => {
-    if (!itemName.trim() || !itemQuantity.trim() || !currentList?.id) return;
+    if (!user) {
+      Alert.alert('Virhe', 'Käyttäjää ei tunnistettu');
+      return;
+    }
 
-    const newItem = {
-      name: itemName.trim(),
-      quantity: itemQuantity.trim(),
-      collected: false,
+    if (!itemName.trim() || !itemQuantity.trim()) {
+      Alert.alert('Virhe', 'Täytä molemmat kentät');
+      return;
+    }
+
+    const product = {
+      title: itemName.trim(),
+      amount: itemQuantity.trim(),
     };
 
-    console.log("Adding item to list:", currentList.id); // Debugging line to ensure we have a valid list ID
-
-    const listRef = ref(database, `items/${currentList.id}`);
-
     if (editingItem) {
-      const itemRef = ref(database, `items/${currentList.id}/${editingItem.id}`);
-      update(itemRef, newItem)
-        .then(() => {
-          console.log('Item updated successfully!');
-          setModalVisible(false); // Close modal after saving
-        })
-        .catch((error) => {
-          console.error("Error updating item:", error);
-        });
+      const itemRef = ref(database, `users/${user.uid}/Ostoslista/${editingItem.id}`);
+      update(itemRef, product)
+        .then(() => Alert.alert('Tuote päivitetty'))
+        .catch(() => Alert.alert('Virhe', 'Tuotteen päivitys epäonnistui'));
     } else {
-      push(listRef, newItem)
-        .then(() => {
-          console.log('Item added successfully!');
-          setModalVisible(false); // Close modal after saving
-        })
-        .catch((error) => {
-          console.error("Error adding item:", error);
-        });
+      push(userItemsRef, product)
+        .catch(() => Alert.alert('Virhe', 'Tuotteen lisäys epäonnistui'));
     }
-  };
 
-  const handleToggleCollected = (itemId) => {
-    const item = items.find(i => i.id === itemId);
-    if (!item) return;
-
-    const itemRef = ref(database, `items/${currentList.id}/${itemId}`);
-    update(itemRef, { ...item, collected: !item.collected })
-      .catch((error) => {
-        console.error("Error updating item:", error);
-      });
+    setModalVisible(false);
   };
 
   const handleDeleteItem = (itemId) => {
-    const itemRef = ref(database, `items/${currentList.id}/${itemId}`);
+    const itemRef = ref(database, `users/${user.uid}/Ostoslista/${itemId}`);
     remove(itemRef)
-      .then(() => {
-        console.log("Item deleted successfully");
-      })
-      .catch((error) => {
-        console.error("Error deleting item:", error);
-      });
+      .then(() => Alert.alert('Tuote poistettu'))
+      .catch(() => Alert.alert('Virhe', 'Poisto epäonnistui'));
   };
 
   const renderItem = ({ item }) => (
     <TouchableOpacity
       onLongPress={() => openModalToEdit(item)}
-      onPress={() => handleToggleCollected(item.id)}
-      style={[
-        styles.itemContainer,
-        item.collected && styles.itemCollected,
-      ]}
+      style={styles.itemContainer}
     >
       <View style={styles.itemContent}>
-        <Text style={styles.itemText}>{item.name}</Text>
-        <Text style={styles.quantityText}>{item.quantity}</Text>
+        <Text style={styles.itemText}>{item.title}</Text>
+        <Text style={styles.quantityText}>{item.amount}</Text>
       </View>
       <TouchableOpacity onPress={() => handleDeleteItem(item.id)}>
         <Ionicons name="trash" size={20} color="red" />
@@ -119,21 +113,19 @@ export default function ShoppingList({ currentList }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{currentList.title}</Text>
+      <Text style={styles.title}>Ostoslista</Text>
       <FlatList
         data={items}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         ListEmptyComponent={<Text style={styles.empty}>Ei tuotteita</Text>}
-        contentContainerStyle={styles.listContent}
+        ListFooterComponent={
+          <TouchableOpacity style={styles.listAddButton} onPress={openModalToAdd}>
+            <Ionicons name="add" size={28} color="white" />
+          </TouchableOpacity>
+        }
       />
 
-      {/* Add button at the bottom of the list */}
-      <TouchableOpacity style={styles.addButton} onPress={openModalToAdd}>
-        <Ionicons name="add" size={28} color="white" />
-      </TouchableOpacity>
-
-      {/* Modal for add/edit */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -184,9 +176,6 @@ const styles = StyleSheet.create({
     marginVertical: 6,
     borderRadius: 10,
   },
-  itemCollected: {
-    backgroundColor: '#d2f5d2',
-  },
   itemContent: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -195,13 +184,13 @@ const styles = StyleSheet.create({
   itemText: { fontSize: 18 },
   quantityText: { fontSize: 16, color: '#888' },
   empty: { textAlign: 'center', marginTop: 20, color: '#aaa' },
-  addButton: {
+  listAddButton: {
     backgroundColor: '#0a9396',
     padding: 15,
-    borderRadius: 50,
-    elevation: 4,
+    borderRadius: 10,
+    alignItems: 'center',
     marginTop: 20,
-    alignSelf: 'center',
+    marginBottom: 20,
   },
   modalBackdrop: {
     flex: 1,
@@ -244,8 +233,5 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     fontWeight: '600',
-  },
-  listContent: {
-    paddingBottom: 80,
   },
 });
