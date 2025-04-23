@@ -74,6 +74,7 @@ export default function ShoppingList() {
     const product = {
       title: itemName.trim(),
       amount: itemQuantity.trim(),
+      picked: false,
     };
 
     if (editingItem) {
@@ -89,6 +90,14 @@ export default function ShoppingList() {
     setModalVisible(false);
   };
 
+  const toggleItemPicked = (item) => {
+    const itemRef = ref(database, `users/${user.uid}/Ostoslista/${item.id}`);
+    update(itemRef, { picked: !item.picked }).catch(() =>
+      Alert.alert('Virhe', 'Valinta epäonnistui')
+    );
+  };
+  
+
   const handleDeleteItem = (itemId) => {
     const itemRef = ref(database, `users/${user.uid}/Ostoslista/${itemId}`);
     remove(itemRef)
@@ -98,18 +107,36 @@ export default function ShoppingList() {
 
   const renderItem = ({ item }) => (
     <TouchableOpacity
+      onPress={() => toggleItemPicked(item)}
       onLongPress={() => openModalToEdit(item)}
-      style={styles.itemContainer}
+      style={[
+        styles.itemContainer,
+        item.picked && styles.itemPickedContainer,
+      ]}
     >
       <View style={styles.itemContent}>
-        <Text style={styles.itemText}>{item.title}</Text>
-        <Text style={styles.quantityText}>{item.amount}</Text>
+        <Ionicons
+          name={item.picked ? 'checkbox' : 'square-outline'}
+          style={styles.checkbox}
+          size={24}
+          color={item.picked ? '#0a9396' : '#aaa'}
+        />
+        <View style={styles.textRow}>
+          <Text style={[styles.itemText, item.picked && styles.pickedText]}>
+            {item.title}
+          </Text>
+          <Text style={[styles.quantityText, item.picked && styles.pickedText]}>
+            {item.amount}
+          </Text>
+        </View>
       </View>
       <TouchableOpacity onPress={() => handleDeleteItem(item.id)}>
         <Ionicons name="trash" size={20} color="red" />
       </TouchableOpacity>
     </TouchableOpacity>
   );
+  
+  
 
   return (
     <View style={styles.container}>
@@ -234,4 +261,23 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: '600',
   },
+  checkbox: {
+    marginRight: 10,
+  },
+  
+  textRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  
+  pickedText: {
+    color: '#888',
+  },
+  
+  itemPickedContainer: {
+    backgroundColor: '#d8f3dc',
+  },
+  
+  
 });
