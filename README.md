@@ -49,7 +49,7 @@ Kun käyttäjä valitsee reseptin, sovellus luo siitä automaattisesti ostoslist
 - **Yksittäiset käyttäjät:** Sovelluksen käyttäminen henkilökohtaiseen tarpeeseen.
 
 ### Käyttötapaukset ja käyttäjätarinat
-[Käyttäjätarinat ja niiden hyväksymiskriteerit](https://haagahelia.sharepoint.com/:w:/t/Ruokakomero-app/EXVuzQbDBO1DtNnOEmNZY0wBUATwizgeybNp6XLnpgdUHA?e=8r5j4c)
+[Käyttäjätarinat ja niiden hyväksymiskriteerit](https://github.com/orgs/Ruokakomero/projects/1/views/1)
 
 
 ### Prosessikaavio ###
@@ -66,15 +66,28 @@ Kun käyttäjä valitsee reseptin, sovellus luo siitä automaattisesti ostoslist
 [![Android Studio][android-studio-logo]][android-studio-url]
 [![Bruno][bruno-logo]][bruno-url]
 [![Visual Studio Code][vs-code-logo]][vs-code-url]
+[![Firebase][firebase-logo]][firebase-url]
+[![Openai][openai-logo]][openai-url]
+[![Node.js][nodejs-logo]][nodejs-url]
+
 
 <details>
 <summary>Käytetyt kirjastot ja riippuvuudet:</summary>
-
+expo/vector-icons<br>
 react-navigation/native<br>
 react-navigation/bottom-tabs<br>
+react-native-community/slider<br>
+react-native-picker/picker<br>
+react-native-async-storage/async-storage<br>
+react-native-element-dropdown<br>
+react-native-check-box<br>
+react-native-config<br>
 react-native-screens<br>
-react-native-safe-area-context
-
+react-native-safe-area-context<br>
+react-native-popup-menu<br>
+react-native-vector-icons<br>
+dotenv
+expofont
 </details>
 
 
@@ -311,3 +324,9 @@ Firebase palauttaa kirjautumisen jälkeen automaattisesti ID-tokenin, jota käyt
 [bruno-url]: https://www.usebruno.com/
 [vs-code-logo]: https://custom-icon-badges.demolab.com/badge/Visual%20Studio%20Code-0078d7.svg?logo=vsc&logoColor=white&style=for-the-badge
 [vs-code-url]: https://code.visualstudio.com/
+[firebase-url]: https://firebase.google.com/
+[firebase-logo]:https://img.shields.io/badge/firebase-ffca28?style=for-the-badge&logo=firebase&logoColor=black
+[openai-url]: https://openai.com/
+[openai-logo]: https://img.shields.io/badge/OpenAI-412991?logo=openai&logoColor=fff&style=for-the-badge
+[nodejs-url]: https://nodejs.org/en
+[nodejs-logo]: https://img.shields.io/badge/node.js-339933?style=for-the-badge&logo=Node.js&logoColor=white
