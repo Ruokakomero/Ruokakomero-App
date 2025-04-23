@@ -56,7 +56,7 @@ const CollectionItem = ({
     <>
       <Swipeable renderRightActions={renderRightActions} style={styles.collectionWrapper}>
         <View style={styles.collectionHeader}>
-          <TextThemed style={textStyles.titleLargeB}>{collection.name}</TextThemed>
+          <TextThemed style={textStyles.titleLargeB}>{collection.name || "Ladataan..."}</TextThemed>
         </View>
         <View style={styles.collectionItem}>
           {isMenuVisible && (
@@ -75,7 +75,7 @@ const CollectionItem = ({
               <View style={styles.recipeItem} key={recipeId}>
                 <TouchableOpacity onPress={() => handleRecipePress(recipeId)}>
                   <TextThemed style={textStyles.bodyLarge}>
-                    {recipeDetails[recipeId].name || "Ladataan..."}
+                    {recipeDetails[recipeId]?.name || "Ladataan..."}
                   </TextThemed>
                 </TouchableOpacity>
                 <IconButton
