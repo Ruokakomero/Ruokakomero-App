@@ -3,45 +3,46 @@
 import React from "react";
 import { View, Text, TouchableOpacity, TextInput } from "react-native";
 
-// selectedDiets lisätty propseihin
 const ProteinStep = ({
   selectedProteins,
   setSelectedProteins,
   otherProtein,
   setOtherProtein,
   handleNext,
-  selectedDiets = [],
+  selectedDiets = {}, 
 }) => {
-  // Alkuperäinen proteiinilista
   const allProteins = ["Kana", "Kala", "Naudanliha", "Possu", "Kasviproteiini", "Muu"];
 
-  // Suodatetaan proteiinit ruokavalion mukaan
-  const filteredProteins = allProteins.filter((protein) => {
-    const isVegan = selectedDiets.includes("Vegaani");
+  // Tarkista onko käyttäjän ruokavalio kasvipohjainen
+  const isPlantBased = selectedDiets.vegan || selectedDiets.vege;
 
-    // Jos vegaani, näytetään vain kasvipohjaiset ja "Muu"
-    if (isVegan) {
+  const filteredProteins = allProteins.filter((protein) => {
+    if (isPlantBased) {
       return ["Kasviproteiini", "Muu"].includes(protein);
     }
-
-    // Jos ei erityisruokavaliota, näytetään kaikki
     return true;
   });
 
   return (
     <View style={{ alignItems: "center" }}>
-      <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 15 }}>Valitse proteiini:</Text>
+      <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 15 }}>
+        Valitse proteiini:
+      </Text>
 
       {filteredProteins.map((protein) => (
         <TouchableOpacity
           key={protein}
           onPress={() => {
             setSelectedProteins((prev) =>
-              prev.includes(protein) ? prev.filter((p) => p !== protein) : [...prev, protein]
+              prev.includes(protein)
+                ? prev.filter((p) => p !== protein)
+                : [...prev, protein]
             );
           }}
           style={{
-            backgroundColor: selectedProteins.includes(protein) ? "#4CAF50" : "#f8f8f8",
+            backgroundColor: selectedProteins.includes(protein)
+              ? "#4CAF50"
+              : "#f8f8f8",
             padding: 15,
             marginVertical: 10,
             borderRadius: 10,
@@ -49,7 +50,11 @@ const ProteinStep = ({
             alignItems: "center",
           }}
         >
-          <Text style={{ color: selectedProteins.includes(protein) ? "white" : "black" }}>
+          <Text
+            style={{
+              color: selectedProteins.includes(protein) ? "white" : "black",
+            }}
+          >
             {protein}
           </Text>
         </TouchableOpacity>
@@ -83,7 +88,9 @@ const ProteinStep = ({
         }}
         onPress={handleNext}
       >
-        <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 16 }}>Seuraava</Text>
+        <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 16 }}>
+          Seuraava
+        </Text>
       </TouchableOpacity>
     </View>
   );
