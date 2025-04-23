@@ -219,6 +219,18 @@ Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunnitel
 - OK, toimii
 
 
+### Testi 3: Reseptin luominen
+
+- Luodaan uusi resepti
+- Lisätään ainesosia
+- Tallennetaan resepti
+- Resepti näkyy kokoelmassa
+- Sovellus kaatuu, kun avaan tallennetun reseptin
+  - Sitä ei voi myöskään suoraan tuosta poistaa
+
+![image](https://github.com/user-attachments/assets/0aa1693b-9933-43a2-8425-3112d2ac921b)
+
+
 
 
 ---
