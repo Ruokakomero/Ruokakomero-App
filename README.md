@@ -280,7 +280,7 @@ Firebase palauttaa kirjautumisen jälkeen automaattisesti ID-tokenin, jota käyt
 - Tallennetaan resepti
 - Resepti näkyy kokoelmassa
 - Sen voi poistaa pyyhkäisemällä vasemmalle paljastaen poisto painikkeen.
-- OK, toimii1
+- OK, toimii!
 
 
 ---
