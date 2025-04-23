@@ -10,6 +10,7 @@ Ruokakomero-sovellus on mobiilisovellus, joka auttaa käyttäjiä seuraamaan ruo
 2. [Järjestelmän määrittely](#järjestelmän-määrittely) 🟡
    - [Käyttäjäryhmät](#käyttäjäryhmät) 
    - [Käyttötapaukset ja käyttäjätarinat](#käyttötapaukset-ja-käyttäjätarinat) 
+3. [Asennusohjeet](#asennusohjeet) 🟡
 3. [Käyttöliittymä](#käyttöliittymä)  🔴
    - [Käyttöliittymäkaavio](#käyttöliittymäkaavio)
    - [Käyttöliittymän näkymät](#käyttöliittymän-näkymät)
@@ -22,7 +23,7 @@ Ruokakomero-sovellus on mobiilisovellus, joka auttaa käyttäjiä seuraamaan ruo
    - [Ruokakunnan API-pyynnöt](#ruokakunnan-api-pyynnöt)
 6. [Autentikointi](#autentikointi) 🔴
 7. [Testaus](#testaus)  🔴
-8. [Asennusohjeet](#asennusohjeet) 🟡
+
 9. [Projektisuunnitelma](#projektisuunnitelma) 🟡
 10. [Käyttäjätarinat](#käyttäjätarinat) 🟡
 11. [Kehitystiimi ja lisenssi](#kehitystiimi-ja-lisenssi) 🟡
@@ -39,9 +40,10 @@ Ruokakomero-sovellus on suunniteltu helpottamaan reseptien löytämistä ja osto
 
 Sovellus ohjaa käyttäjää reseptin valinnassa interaktiivisen käyttöliittymän avulla. Käyttäjä voi valita haluamansa hiilihydraatin, proteiinin ja annoskoon flashcard-tyylisellä valinnalla sekä säätää ruoan ravitsemuspitoisuutta liukusäätimellä. Näiden valintojen perusteella chatbot ehdottaa sopivia reseptejä. Mikäli saatavilla, resepteissä esitetään myös ravintoarvotiedot.
 
-Kun käyttäjä valitsee reseptin, sovellus luo siitä automaattisesti ostoslistan. Käyttäjä voi merkitä jo olemassa olevat ainesosat, jolloin ne poistuvat listalta. Lisäksi sovellus sisältää reseptien arviointitoiminnon, jonka avulla käyttäjä voi vaikuttaa suosituksiin. Pidetyistä resepteistä muodostuu henkilökohtainen reseptilista, kun taas epämieluisat reseptit suodattuvat pois, eikä chatbot ehdota niitä uudelleen.
+Kun käyttäjä valitsee reseptin, sovellus luo siitä automaattisesti ostoslistan. Käyttäjä voi merkitä ostoslistalta jo olemassa olevat ainesosat, jolloin ne poistuvat listalta. (Poistetaanko?: Lisäksi sovellus sisältää reseptien arviointitoiminnon, jonka avulla käyttäjä voi vaikuttaa suosituksiin. Pidetyistä resepteistä muodostuu henkilökohtainen reseptilista, kun taas epämieluisat reseptit suodattuvat pois, eikä chatbot ehdota niitä uudelleen.)
 
 ---
+
 
 ## 2. Järjestelmän määrittely
 
@@ -57,16 +59,56 @@ Kun käyttäjä valitsee reseptin, sovellus luo siitä automaattisesti ostoslist
 
 ---
 
+## Käytetyt teknologiat
+[![TypeScript][typescript-logo]][typescript-url]
+[![React Native][react-native-logo]][react-native-url]
+[![GitHub][github-logo]][github-url]
+[![Expo Go][expo-logo]][expo-url]
+[![Android Studio][android-studio-logo]][android-studio-url]
+[![Bruno][bruno-logo]][bruno-url]
+[![Visual Studio Code][vs-code-logo]][vs-code-url]
+
+<details>
+<summary>Käytetyt kirjastot ja riippuvuudet:</summary>
+
+react-navigation/native<br>
+react-navigation/bottom-tabs<br>
+react-native-screens<br>
+react-native-safe-area-context
+
+</details>
+
+
+## 3. Asennusohjeet 
+
+### Esivaatimukset
+1. Asenna [Node.js](https://nodejs.org/).
+2. Asenna Expo CLI:
+   ```bash
+   npm install -g expo-cli
+
+3. Asenna React Native riippuvuudet:
+    ```bash
+    npm install
+
+4. Asenna Firebase:
+
+   ```bash
+   npx expo install @react-native-firebase/app
+   ```
+    ---
+
 ## 3. Käyttöliittymä
 
 ### Käyttöliittymäkaavio
 - Visuaaliset kaaviot löytyvät Figmasta tai [UI-suunnitelmadokumentista](linkki).
 
 ### Käyttöliittymän näkymät
-- Etusivu
+
 - Ruokatoiveiden kysely
 - Chatbotin reseptiehdotukset
 - Reseptilistaus
+- Profiili
 
 ---
 
@@ -147,23 +189,46 @@ Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunnitel
 
 ## 5. REST API dokumentaatio ()
 
-### Myyntitapahtumien API-dokumentaatio
-- Esimerkki: `/api/items`
+Kaikki pyynnöt ovat käyttäjäkohtaisia ja edellyttävät, että käyttäjä on kirjautunut Firebase Authenticationin kautta. Jokainen käyttäjän data sijaitsee polussa
+```
+/users/{userId}/
+```
 
-### Ruokien (Items) API-pyynnöt
+### Ruokien API-pyynnöt
 - CRUD-operaatiot.
 
-### Ruokakunnan API-pyynnöt
-- Ruokakunnan hallinta ja synkronointi.
+GET ostoslista
+POST lisää tuote
+PATCH muokkaa tuotetta
+DELETE poista tuote
+
+
+
 
 ---
 
-## 6. Autentikointi 
+## 6. Käyttäjän autentikointi 
 
-- **Teknologia:** Firebase Authentication tai JWT.
-- **Ominaisuudet:**
-  - Token-pohjainen kirjautuminen.
-  - Turvallinen salasanan tallennus.
+**Teknologia:**
+
+Firebase Authentication tai JWT
+
+Tämä API käyttää Firebase Authentication -tunnistautumista. Kirjautumisen jälkeen käyttäjän tunnus (ID token) käytetään REST API -kutsujen valtuuttamiseen.
+
+**Kuinka kirjautuminen toimii**
+
+Käyttäjä syöttää sähköpostin ja salasanan. Kirjautuminen tehdään seuraavalla funktiolla:
+
+```
+const result = await AuthScreen.handleLogin(email, password);
+```
+Jos kirjautuminen onnistuu, result.success === true.
+
+**Firebase ID-tokenin käyttö REST API:ssa**
+
+Firebase palauttaa kirjautumisen jälkeen automaattisesti ID-tokenin, jota käytetään kaikissa REST-pyynnöissä.
+
+
 
 ---
 
@@ -235,32 +300,9 @@ Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunnitel
 
 ---
 
-## 8. Asennusohjeet 
 
-### Esivaatimukset
-1. Asenna [Node.js](https://nodejs.org/).
-2. Asenna Expo CLI:
-   ```bash
-   npm install -g expo-cli
 
-3. Asenna React Native riippuvuudet:
-    ```bash
-    npm install
-4. Asenna Firebase:
 
-   ```bash
-   npx expo install @react-native-firebase/app
-   ```
-
-5. Asenna React Navigation:
-   npm install @react-navigation/native
-   npx expo install react-native-screens react-native-safe-area-context
-   npm install @react-navigation/bottom-tabs
-
-## 9. Projektisuunnitelma
-
-- **Sprinttijako:** 3 Viikon sprintit, yhteensä 4 sprinttiä
-- **Tiimi:** 6 Henkilöä (tiimijäsenet)
 
 ## 10. Käyttäjätarinat
 
@@ -268,14 +310,28 @@ Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunnitel
 [Käyttäjätarinat ja niiden hyväksymiskriteerit](https://haagahelia.sharepoint.com/:w:/t/Ruokakomero-app/EXVuzQbDBO1DtNnOEmNZY0wBUATwizgeybNp6XLnpgdUHA?e=8r5j4c)
 
 
-## 11. Kehitystiimi ja lisenssi
+## 11. Sovelluksen ovat toteuttaneet 
 
-- **Rinne Jonna**
-- **Hynninen Lauri**
-- **Kaitasalo Jouni**
-- **Aarnio Arttu**
-- **San Juan Rowina**
-- **Kulmala Henri**
-
-Lisenssi..
-
+- **Jonna Rinne**
+- **Lauri Hynninen**
+- **Jouni Kaitasalo**
+- **Arttu Aarnio**
+- **Rowina San Juan**
+- **Henri Kulmala**
+<!-- TEKNOLOGIAT JA TYÖKALUT-->
+[typescript-logo]: https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white
+[typescript-url]: https://www.typescriptlang.org/
+[react-native-logo]: https://img.shields.io/badge/react_native-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB
+[react-native-url]: https://reactnative.dev/
+[github-logo]: https://img.shields.io/badge/GitHub-%23121011.svg?logo=github&logoColor=white&style=for-the-badge
+[github-url]: https://github.com/
+[docker-logo]: https://img.shields.io/badge/docker-257bd6?style=for-the-badge&logo=docker&logoColor=white
+[docker-url]: https://www.docker.com/
+[expo-logo]: https://img.shields.io/badge/Expo-000020?style=for-the-badge&logo=expo&logoColor=fff
+[expo-url]: https://expo.dev/go
+[android-studio-logo]: https://img.shields.io/badge/android%20studio-346ac1?style=for-the-badge&logo=android%20studio&logoColor=white
+[android-studio-url]: https://developer.android.com/studio
+[bruno-logo]: https://img.shields.io/badge/Bruno-FF6C37?style=for-the-badge&logo=Bruno&logoColor=white
+[bruno-url]: https://www.usebruno.com/
+[vs-code-logo]: https://custom-icon-badges.demolab.com/badge/Visual%20Studio%20Code-0078d7.svg?logo=vsc&logoColor=white&style=for-the-badge
+[vs-code-url]: https://code.visualstudio.com/
