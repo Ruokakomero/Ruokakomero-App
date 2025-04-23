@@ -176,6 +176,63 @@ Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunnitel
 - **Frontend:** React Native Testing Library.
 
 
+### Testi 1: Rekisteröityminen
+
+- Sovellus aukeaa sisäänkirjautumissivulle
+- "Eikö sinulla ole tiliä.." klikataan
+  - Ongelma napin kanssa, se klippaa ruudun ulkopuolelle
+  - Ei estä etenemistä
+
+![image](https://github.com/user-attachments/assets/16f0b7ac-0c86-4aac-909d-6fddca634b0e)
+
+- Vie "Rekisteröidy" sivulle
+- Lisätään kentät ja klikataan rekisteröidy -nappia
+  - Ongelma napin kanssa. Se klippaa ruudun ulkopuolelle
+  - Ei estä etenemistä
+
+![image](https://github.com/user-attachments/assets/68e361ef-1c0b-4938-8aef-7104fde2c3d8)
+
+- Nappia painettua saadaan ilmoitus onnistuneesta rekisteröitymisestä
+- Testataan juuri luotuja tunnuksia
+- OK, toimii!
+
+
+### Testi 2: Ostoslistan lisäys
+
+- Navigoidaan Ostoslista -sivulle
+- Lista on tyhjä, sillä tavaraa ei ole lisätty vielä ja sovellus kertoo "Ei tuotteita"
+
+![image](https://github.com/user-attachments/assets/4e134e23-674d-4ce7-bdd1-e88d1bdf86b0)
+
+- Lisätään tuote ja tallennetaan
+
+![image](https://github.com/user-attachments/assets/2701d976-60dc-412d-91ec-9cf4c76b356d)
+
+- Lisätään toinen tuote "Maito, 2 L", tallennetaan ja merkitään banaanit kerätyksi napauttamalla riviä
+
+![image](https://github.com/user-attachments/assets/a092e7c9-3f9e-479e-929e-5b356c1476e3)
+
+- Testataan vielä poisto
+
+![image](https://github.com/user-attachments/assets/63d4485c-4319-469e-b524-45656b9e57bb)
+
+- OK, toimii
+
+
+### Testi 3: Reseptin luominen
+
+- Luodaan uusi resepti
+- Lisätään ainesosia
+- Tallennetaan resepti
+- Resepti näkyy kokoelmassa
+- Sovellus kaatuu, kun avaan tallennetun reseptin
+  - Sitä ei voi myöskään suoraan tuosta poistaa
+
+![image](https://github.com/user-attachments/assets/0aa1693b-9933-43a2-8425-3112d2ac921b)
+
+
+
+
 ---
 
 ## 8. Asennusohjeet 
