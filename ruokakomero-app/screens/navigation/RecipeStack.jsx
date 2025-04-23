@@ -6,7 +6,7 @@ export default function RecipeStack() {
     const Stack = createNativeStackNavigator();
     return (
       <Stack.Navigator>
-        <Stack.Screen name="Löydä resepti" component={UserInputForm} options={{ headerShown: false }} />
+        <Stack.Screen name="Luo resepti" component={UserInputForm} options={{ headerShown: false }} />
         <Stack.Screen name="ShowRecipes" component={ShowRecipes} options={{ headerShown: false }} />
       </Stack.Navigator>
     );

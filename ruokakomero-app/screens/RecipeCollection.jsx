@@ -1,86 +1,70 @@
-// RecipesCollection.jsx
-import React, { useState, useEffect } from "react";
-import { View, FlatList, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import React, { useState, useEffect, useCallback } from "react";
+import { View, FlatList, Alert, ActivityIndicator } from "react-native";
+import { ref, push, onValue, remove, get, set } from "firebase/database";
+import { database } from "../configuration/firebaseConfig";
+import useCurrentUser from "../configuration/useCurrentUser";
 import TextThemed from "../components/TextThemed";
-import RecipeCard from "../components/recipes/RecipeCard";
 import CreateCollectionModal from "../components/recipes/CreateCollectionModal";
 import AddRecipeModal from "../components/recipes/AddRecipeModal";
 import CollectionItem from "../components/recipes/CollectionItem";
-import { database } from "../configuration/firebaseConfig";
-import { ref, push, onValue, remove, update, get } from "firebase/database";
-import styles from "../styles/recipesStyles";
-import componentStyles from "../styles/componentStyles";
-import textStyles from "../styles/textStyles";
 import IconButton from "../components/IconButton";
-import useCurrentUser from "../configuration/useCurrentUser";
+import styles from "../styles/recipesStyles";
 
 export default function RecipesCollection({ recipes = [] }) {
   const { userId, loading: authLoading } = useCurrentUser();
+  const [collections, setCollections] = useState([]);
+  const [recipeDetails, setRecipeDetails] = useState({});
+  const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
   const [collectionName, setCollectionName] = useState("");
   const [selectedRecipesForNewCollection, setSelectedRecipesForNewCollection] =
     useState([]);
-  const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
-  const [collectionToEdit, setCollectionToEdit] = useState(null);
-  const [editedCollectionName, setEditedCollectionName] = useState("");
   const [isAddRecipeModalVisible, setIsAddRecipeModalVisible] = useState(false);
   const [selectedCollectionId, setSelectedCollectionId] = useState(null);
-  const [collections, setCollections] = useState([]);
-  const [recipeDetails, setRecipeDetails] = useState({});
   const [menuVisible, setMenuVisible] = useState(null);
 
-
   useEffect(() => {
-    const collRef = ref(database, `users/${userId}/recipes/recipeCollections/`);
-    const unsubscribe = onValue(collRef, async (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const loadedCollections = Object.keys(data).map((key) => ({
-          id: key,
-          ...data[key],
-          recipes: data[key].recipes || [],
-        }));
-        setCollections(loadedCollections);
-        await fetchRecipeDetails(loadedCollections);
-      } else {
-        setCollections([]);
-      }
-    });
-    return () => unsubscribe();
-  }, []);
-
-  const availableRecipesForCollection = () => {
-    const current = collections.find((c) => c.id === selectedCollectionId);
-    if (current) {
-      return recipes.filter((r) => !(current.recipes || []).includes(r.id));
-    }
-    return recipes;
-  };
-
-
-  const fetchRecipeDetails = async (collectionsData) => {
     if (!userId) return;
 
-    let details = { ...recipeDetails };
-    for (const coll of collectionsData) {
-      for (const recipeId of coll.recipes) {
-        if (!details[recipeId]) {
-          const rRef = ref(database, `users/${userId}/recipes/${recipeId}`);
-          const snapshot = await get(rRef);
-          if (snapshot.exists()) {
-            details[recipeId] = snapshot.val();
+    const collRef = ref(database, `users/${userId}/recipeCollections`);
+    const unsubscribe = onValue(collRef, async (snap) => {
+      const data = snap.val() || {};
+      const loaded = Object.entries(data).map(([id, val]) => ({
+        id,
+        name: val.name,
+        recipes: val.recipes || [],
+      }));
+      setCollections(loaded);
+      await fetchRecipeDetails(loaded);
+    });
+
+    return () => unsubscribe();
+  }, [userId]);
+
+  const fetchRecipeDetails = useCallback(
+    async (collectionsData) => {
+      if (!userId) return;
+      const cache = { ...recipeDetails };
+
+      for (const { recipes: recIds } of collectionsData) {
+        for (const rid of recIds) {
+          if (!cache[rid]) {
+            const snap = await get(
+              ref(database, `users/${userId}/recipes/${rid}`)
+            );
+            if (snap.exists()) cache[rid] = snap.val();
           }
         }
       }
-    }
-    setRecipeDetails(details);
-  };
+      setRecipeDetails(cache);
+    },
+    [userId, recipeDetails]
+  );
 
   if (authLoading) {
     return (
       <View style={styles.containerCentered}>
         <ActivityIndicator size="large" />
-        <TextThemed>Ladataan reseptejä…</TextThemed>
+        <TextThemed>Ladataan kokoelmia…</TextThemed>
       </View>
     );
   }
@@ -90,22 +74,15 @@ export default function RecipesCollection({ recipes = [] }) {
       Alert.alert("Virhe", "Anna kokoelmalle nimi!");
       return;
     }
-    try {
-      const newCollRef = push(ref(database, `users/${userId}/recipes/recipeCollections/`));
-      const newKey = newCollRef.key;
-      const newCollection = {
-        id: newKey,
-        name: collectionName,
-        recipes: selectedRecipesForNewCollection,
-      };
-      await update(ref(database, `users/${userId}/recipes/recipeCollections/${newKey}`), newCollection);
-      setCollectionName("");
-      setSelectedRecipesForNewCollection([]);
-      setIsCreateModalVisible(false);
-    } catch (error) {
-      console.error("Error creating collection:", error);
-      Alert.alert("Virhe", "Kokoelman luonti epäonnistui!");
-    }
+    const basePath = `users/${userId}/recipeCollections`;
+    const newRef = push(ref(database, basePath));
+    const id = newRef.key;
+    const coll = { id, name: collectionName, recipes: selectedRecipesForNewCollection };
+
+    await update(ref(database, `${basePath}/${id}`), coll);
+    setCollectionName("");
+    setSelectedRecipesForNewCollection([]);
+    setIsCreateModalVisible(false);
   };
 
   const addRecipeToCollection = async (recipeId) => {
@@ -113,109 +90,60 @@ export default function RecipesCollection({ recipes = [] }) {
       Alert.alert("Virhe", "Valitse kokoelma ensin!");
       return;
     }
-    try {
-      const collRef = ref(
-        database,
-        `recipeCollections/${selectedCollectionId}`
-      );
-      const snapshot = await get(collRef);
-      if (snapshot.exists()) {
-        const coll = snapshot.val();
-        const updatedRecipes = coll.recipes
-          ? [...coll.recipes, recipeId]
-          : [recipeId];
-        await update(collRef, { recipes: updatedRecipes });
-        setIsAddRecipeModalVisible(false);
-      }
-    } catch (error) {
-      console.error("Error adding recipe:", error);
-    }
+    const path = `users/${userId}/recipeCollections/${selectedCollectionId}`;
+    const snap = await get(ref(database, path));
+    if (!snap.exists()) return;
+
+    const existing = snap.val().recipes || [];
+    const updated = [...existing, recipeId];
+    await set(ref(database, `${path}/recipes`), updated);
+
+    setCollections((prev) =>
+      prev.map((c) =>
+        c.id === selectedCollectionId ? { ...c, recipes: updated } : c
+      )
+    );
+
+    await fetchRecipeDetails([{ recipes: [recipeId] }]);
+    setIsAddRecipeModalVisible(false);
   };
 
   const removeRecipeFromCollection = async (collectionId, recipeId) => {
-    try {
-      const collRef = ref(database, `users/${userId}/recipes/recipeCollections/${collectionId}`);
-      const snapshot = await get(collRef);
-      if (snapshot.exists()) {
-        const coll = snapshot.val();
-        const updatedRecipes = (coll.recipes || []).filter(
-          (id) => id !== recipeId
-        );
-        await update(collRef, { recipes: updatedRecipes });
-        setRecipeDetails((prev) => {
-          const copy = { ...prev };
-          delete copy[recipeId];
-          return copy;
-        });
-      }
-    } catch (error) {
-      console.error("Error removing recipe:", error);
-    }
-  };
+    const path = `users/${userId}/recipeCollections/${collectionId}`;
+    const snap = await get(ref(database, path));
+    if (!snap.exists()) return;
 
-  const deleteCollection = async (collectionId) => {
-    try {
-      await remove(ref(database, `users/${userId}/recipes/recipeCollections/${collectionId}`));
-    } catch (error) {
-      console.error("Error deleting collection:", error);
-    }
-  };
+    const existing = snap.val().recipes || [];
+    const updated = existing.filter((id) => id !== recipeId);
 
-  const openAddRecipeModal = (collectionId) => {
-    setSelectedCollectionId(collectionId);
-    setIsAddRecipeModalVisible(true);
-  };
+    await set(ref(database, `${path}/recipes`), updated);
 
-  const confirmClose = () => {
-    Alert.alert(
-      "Varoitus",
-      "Haluatko poistaa kokoelman?",
-      [
-        { text: "Peruuta", style: "cancel" },
-        {
-          text: "Kyllä",
-          style: "destructive",
-          onPress: () => deleteCollection(collectionToEdit.id),
-        },
-      ], { cancelable: true }
-
+    setCollections((prev) =>
+      prev.map((c) =>
+        c.id === collectionId ? { ...c, recipes: updated } : c
+      )
     );
 
-  }
-
-  const updateCollection = async () => {
-    if (!collectionToEdit || !editedCollectionName.trim()) {
-      Alert.alert("Virhe", "Anna kokoelman nimi!");
-      return;
-    }
-    try {
-      const collRef = ref(database, `users/${userId}/recipes/recipeCollections/${collectionToEdit.id}`);
-      await update(collRef, { name: editedCollectionName });
-      setIsEditCollectionModalVisible(false);
-      setCollectionToEdit(null);
-      setEditedCollectionName("");
-    } catch (error) {
-      console.error("Error updating collection:", error);
-      Alert.alert("Virhe", "Kokoelman päivitys epäonnistui!");
-    }
+    setRecipeDetails((prev) => {
+      const copy = { ...prev };
+      delete copy[recipeId];
+      return copy;
+    });
   };
 
-  const toggleMenu = (collectionId) => {
-    setMenuVisible((prev) => (prev === collectionId ? null : collectionId));
+  const deleteCollection = async (id) => {
+    await remove(ref(database, `users/${userId}/recipeCollections/${id}`));
   };
 
-  const toggleRecipeSelection = (recipeId) => {
-    const isSelected = selectedRecipesForNewCollection.includes(recipeId);
-    if (isSelected) {
-      setSelectedRecipesForNewCollection((prev) =>
-        prev.filter((id) => id !== recipeId)
-      );
-    } else {
-      setSelectedRecipesForNewCollection((prev) => [...prev, recipeId]);
-    }
+  const toggleMenu = (id) => setMenuVisible((m) => (m === id ? null : id));
+
+  const availableRecipesForCollection = () => {
+    const coll = collections.find((c) => c.id === selectedCollectionId);
+    return coll
+      ? recipes.filter((r) => !coll.recipes.includes(r.id))
+      : recipes;
   };
 
- 
   return (
     <View style={styles.container}>
       <View style={styles.circleButtonContainer}>
@@ -231,14 +159,15 @@ export default function RecipesCollection({ recipes = [] }) {
         setCollectionName={setCollectionName}
         recipes={recipes}
         selectedRecipes={selectedRecipesForNewCollection}
-        toggleRecipeSelection={toggleRecipeSelection}
+        toggleRecipeSelection={(rid) =>
+          setSelectedRecipesForNewCollection((prev) =>
+            prev.includes(rid) ? prev.filter((x) => x !== rid) : [...prev, rid]
+          )
+        }
         onCreate={createCollection}
-        onClose={() => {
-          setIsCreateModalVisible(false);
-          setCollectionName("");
-          setSelectedRecipesForNewCollection([]);
-        }}
+        onClose={() => setIsCreateModalVisible(false)}
       />
+
       <FlatList
         data={collections}
         keyExtractor={(item) => item.id}
@@ -246,18 +175,18 @@ export default function RecipesCollection({ recipes = [] }) {
           <CollectionItem
             collection={item}
             recipeDetails={recipeDetails}
-            onToggleMenu={toggleMenu}
+            onToggleMenu={() => toggleMenu(item.id)}
             isMenuVisible={menuVisible === item.id}
-            onEdit={(coll) => {
-              setCollectionToEdit(coll);
-              setEditedCollectionName(coll.name);
+            onDelete={() => deleteCollection(item.id)}
+            onRemoveRecipe={(rid) => removeRecipeFromCollection(item.id, rid)}
+            onOpenAddRecipe={() => {
+              setSelectedCollectionId(item.id);
+              setIsAddRecipeModalVisible(true);
             }}
-            onDelete={deleteCollection}
-            onRemoveRecipe={removeRecipeFromCollection}
-            onOpenAddRecipe={(collId) => openAddRecipeModal(collId)}
           />
         )}
       />
+
       <AddRecipeModal
         visible={isAddRecipeModalVisible}
         availableRecipes={availableRecipesForCollection()}
