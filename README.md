@@ -279,8 +279,8 @@ Firebase palauttaa kirjautumisen jälkeen automaattisesti ID-tokenin, jota käyt
 - Lisätään ainesosia
 - Tallennetaan resepti
 - Resepti näkyy kokoelmassa
-  - Sitä ei voi kuitenkaan suoraan tuosta poistaa
-- OK, toimii.
+- Sen voi poistaa pyyhkäisemällä vasemmalle paljastaen poisto painikkeen.
+- OK, toimii1
 
 
 ---
