@@ -6,29 +6,28 @@ Ruokakomero-sovellus on mobiilisovellus, joka auttaa käyttäjiä seuraamaan ruo
 
 ## Sisällysluettelo
 
-1. [Johdanto](#johdanto)  🟡
-2. [Järjestelmän määrittely](#järjestelmän-määrittely) 🟡
+1. [Johdanto](#Johdanto) 
+2. [Järjestelmän määrittely](#järjestelmän-määrittely)
    - [Käyttäjäryhmät](#käyttäjäryhmät) 
    - [Käyttötapaukset ja käyttäjätarinat](#käyttötapaukset-ja-käyttäjätarinat) 
-3. [Asennusohjeet](#asennusohjeet) 🟡
-3. [Käyttöliittymä](#käyttöliittymä)  🔴
+3. [Asennusohjeet](#asennusohjeet) 
+4. [Käyttöliittymä](#käyttöliittymä) 
    - [Käyttöliittymäkaavio](#käyttöliittymäkaavio)
    - [Käyttöliittymän näkymät](#käyttöliittymän-näkymät)
-4. [Tietokanta](#tietokanta) 🔴
+5. [Tietokanta](#tietokanta) 
    - [Tietokantakaavio](#tietokantakaavio)
    - [Tietohakemisto](#tietohakemisto)
-5. [REST API dokumentaatio](#rest-api-dokumentaatio) 🔴
+6. [REST API dokumentaatio](#rest-api-dokumentaatio) 
    - [Myyntitapahtumien API-dokumentaatio](#myyntitapahtumien-api-dokumentaatio)
    - [Ruokien (Items) API-pyynnöt](#ruokien-items-api-pyynnöt)
    - [Ruokakunnan API-pyynnöt](#ruokakunnan-api-pyynnöt)
-6. [Autentikointi](#autentikointi) 🔴
-7. [Testaus](#testaus)  🔴
-9. [Projektisuunnitelma](#projektisuunnitelma) 🟡
-11. [Kehitystiimi ja lisenssi](#kehitystiimi-ja-lisenssi) 🟡
+7. [AI toiminnallisuuden tekninen kuvaus](#ai-toiminnallisuus)
+8. [Autentikointi](#käyttäjän-autentikointi) 
+9. [Käyttöoikeudet](#käyttöoikeudet)
+10. [Testaus](#testaus) 
+11. [CI/CD ja julkaisu](#julkaisu)  
+12. [Kehitystiimi](#kehitystiimi) 
 
-🟢 Tehty - ei tarvitse enää muokata
-🟡 Luonnos - ei vielä valmis
-🔴 Pelkkä otsikko ja template -teksti
 
 ---
 
@@ -94,23 +93,33 @@ expofont
 ## 3. Asennusohjeet 
 
 ### Esivaatimukset
-1. Asenna [Node.js](https://nodejs.org/).
-2. Asenna Expo CLI:
+
+1. Kopioi repository Githubista
+    ```
+    git clone https://github.com/Ruokakomero/Ruokakomero-App.git
+    ```
+2. Asenna [Node.js](https://nodejs.org/).
+3. Asenna Expo CLI:
    ```bash
    npm install -g expo-cli
 
-3. Asenna React Native riippuvuudet:
+4. Asenna React Native riippuvuudet:
     ```bash
     npm install
 
-4. Asenna Firebase:
+5. Asenna Firebase:
 
    ```bash
    npx expo install @react-native-firebase/app
    ```
     ---
+6. Sovelluksen käynnistäminen
+    ```
+    npx expo start -c
+    ```
 
-## 3. Käyttöliittymä
+
+## 4. Käyttöliittymä
 
 ### Käyttöliittymäkaavio
 - Visuaaliset kaaviot löytyvät Figmasta tai [UI-suunnitelmadokumentista](linkki).
@@ -124,7 +133,7 @@ expofont
 
 ---
 
-## 4. Tietokanta
+## 5. Tietokanta
 
 Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunniteltu tukemaan sovelluksen toiminnallisuuksia, kuten ostostlistojen tekemistä sekä reseptiehdotuksia.
 
@@ -195,31 +204,109 @@ Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunnitel
 ### Tietokantakaavio ()
 [Tietokantakaavio] (https://github.com/Ruokakomero/Ruokakomero-App/blob/develop/Media/Tietokantataulukko.pdf)
 
+---
 
+## REST API -dokumentaatio (Firebase Realtime Database + Authentication)
+
+### Autentikointi
+
+- Sovellus käyttää Firebase Authenticationia käyttäjän tunnistamiseen.
+- Firebase palauttaa ID-tokenin kirjautumisen yhteydessä, jota voidaan käyttää REST-pyyntöjen valtuuttamiseen.
+- Firebase SDK huolehtii autentikoinnista sovelluksen sisällä.
 
 ---
 
-## 5. REST API dokumentaatio ()
+## 📁 API-endpointit (Firebase polkuina)
 
-Kaikki pyynnöt ovat käyttäjäkohtaisia ja edellyttävät, että käyttäjä on kirjautunut Firebase Authenticationin kautta. Jokainen käyttäjän data sijaitsee polussa
+### 🍽 Reseptit (Recipes)
+
+| Metodi | Polku | Kuvaus |
+|--------|-------|--------|
+| GET    | `/users/{userId}/recipes` | Palauttaa kaikki käyttäjän reseptit |
+| POST   | `/users/{userId}/recipes` | Luo uusi resepti |
+| PATCH  | `/users/{userId}/recipes/{recipeId}` | Päivittää olemassa olevan reseptin |
+| DELETE | `/users/{userId}/recipes/{recipeId}` | Poistaa reseptin |
+
+**Esimerkki POST-datasta:**
+```json
+{
+  "name": "Pasta",
+  "ingredients": [
+    { "name": "makaroni", "quantity": "200", "unit": "g" }
+  ],
+  "instructions": ["Keitä makaroni."],
+  "image": ""
+}
 ```
-/users/{userId}/
-```
-
-### Ruokien API-pyynnöt
-- CRUD-operaatiot.
-
-GET ostoslista
-POST lisää tuote
-PATCH muokkaa tuotetta
-DELETE poista tuote
-
-
-
 
 ---
 
-## 6. Käyttäjän autentikointi 
+### 🛍 Ostoslista (Shopping List)
+
+| Metodi | Polku | Kuvaus |
+|--------|-------|--------|
+| GET    | `/users/{userId}/Ostoslista` | Palauttaa ostoslistan |
+| POST   | `/users/{userId}/Ostoslista` | Lisää uuden tuotteen |
+| PATCH  | `/users/{userId}/Ostoslista/{itemId}` | Päivittää tuotteen |
+| DELETE | `/users/{userId}/Ostoslista/{itemId}` | Poistaa tuotteen |
+
+**Esimerkki POST-datasta:**
+```json
+{
+  "title": "Maito",
+  "amount": "2 L",
+  "picked": false
+}
+```
+
+---
+
+### 📚 Reseptikokoelmat (Recipe Collections)
+
+| Metodi | Polku | Kuvaus |
+|--------|-------|--------|
+| GET    | `/users/{userId}/recipeCollections` | Palauttaa kaikki kokoelmat |
+| POST   | `/users/{userId}/recipeCollections` | Luo uusi kokoelma |
+| PATCH  | `/users/{userId}/recipeCollections/{collectionId}` | Lisää resepti kokoelmaan |
+| DELETE | `/users/{userId}/recipeCollections/{collectionId}` | Poistaa kokoelman |
+
+**Esimerkki POST-datasta:**
+```json
+{
+  "name": "Leivonnaiset",
+  "recipes": ["recipe123", "recipe456"]
+}
+```
+
+---
+
+### 🤖 AI-reseptit (OpenAI)
+
+| Funktio | Kuvaus |
+|---------|--------|
+| `getRecipe(query)` | Hakee suomenkielisen reseptin käyttäjän syötteen perusteella OpenAI:n GPT-mallilla |
+
+**Esimerkki:**
+```js
+const recipe = await getRecipe("Proteiinit: kana, Hiilihydraatit: riisi, Annoskoko: 2");
+```
+
+---
+
+## 📝 Huomioitavaa
+
+- Firebase ei käytä perinteisiä REST URL:eja, mutta yllä kuvatut polut vastaavat dokumentin rakenteita Firebase SDK:ssa.
+- Kaikki kirjoitusoperaatiot (`POST`, `PATCH`, `DELETE`) vaativat kirjautuneen käyttäjän tunnistamisen Firebase Authenticationin kautta.
+- Firebase-tietokanta käyttää JSON-rakennetta ja on reaaliaikainen.
+
+---
+
+
+## 7. AI toiminnallisuuden tekninen kuvaus
+
+---
+
+## 8. Käyttäjän autentikointi 
 
 **Teknologia:**
 
@@ -241,10 +328,12 @@ Jos kirjautuminen onnistuu, result.success === true.
 Firebase palauttaa kirjautumisen jälkeen automaattisesti ID-tokenin, jota käytetään kaikissa REST-pyynnöissä.
 
 
+## 9. Käyttöoikeudet
+
 
 ---
 
-## 7. Testaus 
+## 10. Testaus 
 
 ### Testausalueet
 - **Database Access Layer:**
@@ -297,17 +386,21 @@ Firebase palauttaa kirjautumisen jälkeen automaattisesti ID-tokenin, jota käyt
 
 
 ---
+## 11. CI/CD ja julkaisu
+
+---
 
 
-## 11. Sovelluksen ovat toteuttaneet 
+## 12. Kehitystiimi
 
-- **Jonna Rinne**
-- **Lauri Hynninen**
-- **Jouni Kaitasalo**
-- **Arttu Aarnio**
-- **Rowina San Juan**
-- **Henri Kulmala**
-<!-- TEKNOLOGIAT JA TYÖKALUT-->
+**Jonna Rinne** <br>
+**Lauri Hynninen** <br>
+**Jouni Kaitasalo** <br>
+**Arttu Aarnio** <br>
+**Rowina San Juan** <br>
+**Henri Kulmala** <br>
+
+<!-- LOGOT JA URLIT -->
 [typescript-logo]: https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white
 [typescript-url]: https://www.typescriptlang.org/
 [react-native-logo]: https://img.shields.io/badge/react_native-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB
