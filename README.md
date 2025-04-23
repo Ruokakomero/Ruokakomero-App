@@ -240,7 +240,7 @@ Firebase palauttaa kirjautumisen jälkeen automaattisesti ID-tokenin, jota käyt
 - **Frontend:** React Native Testing Library.
 
 
-### Testi 1: Rekisteröityminen
+### Testi 1: Rekisteröityminen (Android)
 
 - Sovellus aukeaa sisäänkirjautumissivulle
 - "Eikö sinulla ole tiliä.." klikataan
@@ -251,7 +251,7 @@ Firebase palauttaa kirjautumisen jälkeen automaattisesti ID-tokenin, jota käyt
 - OK, toimii!
 
 
-### Testi 2: Ostoslistan lisäys
+### Testi 2: Ostoslistan lisäys (Android)
 
 - Navigoidaan Ostoslista -sivulle
 - Lista on tyhjä, sillä tavaraa ei ole lisätty vielä ja sovellus kertoo "Ei tuotteita"
@@ -273,7 +273,7 @@ Firebase palauttaa kirjautumisen jälkeen automaattisesti ID-tokenin, jota käyt
 - OK, toimii
 
 
-### Testi 3: Reseptin luominen
+### Testi 3: Reseptin luominen (Android)
 
 - Luodaan uusi resepti
 - Lisätään ainesosia
