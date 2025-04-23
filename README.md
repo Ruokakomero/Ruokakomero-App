@@ -244,18 +244,8 @@ Firebase palauttaa kirjautumisen jälkeen automaattisesti ID-tokenin, jota käyt
 
 - Sovellus aukeaa sisäänkirjautumissivulle
 - "Eikö sinulla ole tiliä.." klikataan
-  - Ongelma napin kanssa, se klippaa ruudun ulkopuolelle
-  - Ei estä etenemistä
-
-![image](https://github.com/user-attachments/assets/16f0b7ac-0c86-4aac-909d-6fddca634b0e)
-
 - Vie "Rekisteröidy" sivulle
 - Lisätään kentät ja klikataan rekisteröidy -nappia
-  - Ongelma napin kanssa. Se klippaa ruudun ulkopuolelle
-  - Ei estä etenemistä
-
-![image](https://github.com/user-attachments/assets/68e361ef-1c0b-4938-8aef-7104fde2c3d8)
-
 - Nappia painettua saadaan ilmoitus onnistuneesta rekisteröitymisestä
 - Testataan juuri luotuja tunnuksia
 - OK, toimii!
@@ -289,12 +279,7 @@ Firebase palauttaa kirjautumisen jälkeen automaattisesti ID-tokenin, jota käyt
 - Lisätään ainesosia
 - Tallennetaan resepti
 - Resepti näkyy kokoelmassa
-- Sovellus kaatuu, kun avaan tallennetun reseptin
-  - Sitä ei voi myöskään suoraan tuosta poistaa
-
-![image](https://github.com/user-attachments/assets/0aa1693b-9933-43a2-8425-3112d2ac921b)
-
-
+  - Sitä ei voi kuitenkaan suoraan tuosta poistaa
 
 
 ---
