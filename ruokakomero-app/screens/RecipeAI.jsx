@@ -8,6 +8,7 @@ export async function getRecipe(query) {
 
 {
   "name": "Ruokalajin nimi",
+  "servingSize": "int",
   "ingredients": [
     { "name": "Ainesosan nimi, jos valkosipuli niin valkosipulinkynsi", "quantity": "määrä", "unit": "yksikkö lyhenteinä" }
   ],

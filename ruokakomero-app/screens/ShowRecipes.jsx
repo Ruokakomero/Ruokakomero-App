@@ -5,6 +5,7 @@ import { getRecipe } from "./RecipeAI";
 import { ref, push, update, set } from "firebase/database";
 import { database } from "../configuration/firebaseConfig";
 import useCurrentUser from "../configuration/useCurrentUser";
+import { useNavigation } from "@react-navigation/native";
 
 // Refaktoroidut komponentit
 import GeneratedRecipeView from "../components/showrecipes/GeneratedRecipeView";
@@ -36,6 +37,7 @@ const ShowRecipes = ({ route }) => {
   const [recipe, setRecipe] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+   const navigation = useNavigation();
 
   // Funktio reseptin hakemiseen
   const fetchRecipe = async () => {
@@ -90,6 +92,7 @@ const ShowRecipes = ({ route }) => {
       const sanitized  = removeControlChars(newRecipe);
       await set(ref(database, `users/${userId}/recipes/${newRef.key}`), sanitized);
       Alert.alert("Resepti tallennettu onnistuneesti!");
+      navigation.navigate("Luo resepti"); //navigoi tallennettaessa takaisin UserInputFormiin
     } catch (error) {
       Alert.alert("Virhe tallennettaessa", error.message);
     } finally {
