@@ -58,7 +58,7 @@ Kun käyttäjä valitsee reseptin, sovellus luo siitä automaattisesti ostoslist
 ---
 
 ## Käytetyt teknologiat
-[![TypeScript][typescript-logo]][typescript-url]
+[![JavaScript][javascript-logo]][javascript-url]
 [![React Native][react-native-logo]][react-native-url]
 [![GitHub][github-logo]][github-url]
 [![Expo Go][expo-logo]][expo-url]
@@ -401,14 +401,12 @@ Firebase palauttaa kirjautumisen jälkeen automaattisesti ID-tokenin, jota käyt
 **Henri Kulmala** <br>
 
 <!-- LOGOT JA URLIT -->
-[typescript-logo]: https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white
-[typescript-url]: https://www.typescriptlang.org/
+[javascript-logo]: https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=000&style=for-the-badge
+[javascript-url]: https://www.javascript.com/
 [react-native-logo]: https://img.shields.io/badge/react_native-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB
 [react-native-url]: https://reactnative.dev/
 [github-logo]: https://img.shields.io/badge/GitHub-%23121011.svg?logo=github&logoColor=white&style=for-the-badge
 [github-url]: https://github.com/
-[docker-logo]: https://img.shields.io/badge/docker-257bd6?style=for-the-badge&logo=docker&logoColor=white
-[docker-url]: https://www.docker.com/
 [expo-logo]: https://img.shields.io/badge/Expo-000020?style=for-the-badge&logo=expo&logoColor=fff
 [expo-url]: https://expo.dev/go
 [android-studio-logo]: https://img.shields.io/badge/android%20studio-346ac1?style=for-the-badge&logo=android%20studio&logoColor=white
