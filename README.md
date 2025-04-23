@@ -145,9 +145,7 @@ Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunnitel
 #### Document Schema:
 ```json
 {
-  "userId": "user123",
-  "name": "Example User",
-  "email": "example@email.com",
+ 
 }
 ```
 
@@ -155,16 +153,7 @@ Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunnitel
 #### Document Schema:
 ```json
 {
-  "recipeId": "recipe123",
-  "name": "Pancakes",
-  "ingredients": [
-    { "name": "Flour", "unit": "kilograms", ... },
-    { "name": "Milk", "unit": "liters", ... }
-  ],
-  "instructions": [
-    "Mix ingredients.",
-    "Cook on medium heat."
-  ],
+
 }
 ```
 
@@ -172,11 +161,7 @@ Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunnitel
 #### Document Schema:
 ```json
 {
-  "listId": "list123",
-  "items": [
-    { "name": "Milk", "quantity": 2, "unit": "liters" },
-    { "name": "Flour", "quantity": 1, "unit": "kilograms" }
-  ]
+ 
 }
 ```
 
@@ -184,10 +169,7 @@ Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunnitel
 #### Document Schema:
 ```json
 {
-  "interactionId": "interaction123",
-  "userId": "user123",
-  "query": "What can I cook with items from our pantry?",
-  "response": "You can make pancakes!",
+  
 }
 ```
 
@@ -230,12 +212,7 @@ Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunnitel
 **Esimerkki POST-datasta:**
 ```json
 {
-  "name": "Pasta",
-  "ingredients": [
-    { "name": "makaroni", "quantity": "200", "unit": "g" }
-  ],
-  "instructions": ["Keitä makaroni."],
-  "image": ""
+ 
 }
 ```
 
@@ -253,9 +230,7 @@ Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunnitel
 **Esimerkki POST-datasta:**
 ```json
 {
-  "title": "Maito",
-  "amount": "2 L",
-  "picked": false
+ 
 }
 ```
 
@@ -273,8 +248,7 @@ Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunnitel
 **Esimerkki POST-datasta:**
 ```json
 {
-  "name": "Leivonnaiset",
-  "recipes": ["recipe123", "recipe456"]
+
 }
 ```
 
