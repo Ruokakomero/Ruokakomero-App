@@ -23,9 +23,7 @@ Ruokakomero-sovellus on mobiilisovellus, joka auttaa käyttäjiä seuraamaan ruo
    - [Ruokakunnan API-pyynnöt](#ruokakunnan-api-pyynnöt)
 6. [Autentikointi](#autentikointi) 🔴
 7. [Testaus](#testaus)  🔴
-
 9. [Projektisuunnitelma](#projektisuunnitelma) 🟡
-10. [Käyttäjätarinat](#käyttäjätarinat) 🟡
 11. [Kehitystiimi ja lisenssi](#kehitystiimi-ja-lisenssi) 🟡
 
 🟢 Tehty - ei tarvitse enää muokata
@@ -51,7 +49,8 @@ Kun käyttäjä valitsee reseptin, sovellus luo siitä automaattisesti ostoslist
 - **Yksittäiset käyttäjät:** Sovelluksen käyttäminen henkilökohtaiseen tarpeeseen.
 
 ### Käyttötapaukset ja käyttäjätarinat
-- Käyttäjätarinat löytyvät [täältä](#käyttäjätarinat).
+[Käyttäjätarinat ja niiden hyväksymiskriteerit](https://haagahelia.sharepoint.com/:w:/t/Ruokakomero-app/EXVuzQbDBO1DtNnOEmNZY0wBUATwizgeybNp6XLnpgdUHA?e=8r5j4c)
+
 
 ### Prosessikaavio ###
 [Prosessikaavio](https://github.com/Ruokakomero/Ruokakomero-App/blob/develop/Media/Ruokakomero%20-%20prosessikaavio.pdf)
@@ -299,15 +298,6 @@ Firebase palauttaa kirjautumisen jälkeen automaattisesti ID-tokenin, jota käyt
 
 
 ---
-
-
-
-
-
-## 10. Käyttäjätarinat
-
-
-[Käyttäjätarinat ja niiden hyväksymiskriteerit](https://haagahelia.sharepoint.com/:w:/t/Ruokakomero-app/EXVuzQbDBO1DtNnOEmNZY0wBUATwizgeybNp6XLnpgdUHA?e=8r5j4c)
 
 
 ## 11. Sovelluksen ovat toteuttaneet 
