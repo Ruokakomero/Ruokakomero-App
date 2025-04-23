@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { View, FlatList, Alert, ActivityIndicator } from "react-native";
-import { ref, push, onValue, remove, get, set } from "firebase/database";
+import { ref, push, onValue, remove, get, set, update } from "firebase/database";
 import { database } from "../configuration/firebaseConfig";
 import useCurrentUser from "../configuration/useCurrentUser";
 import TextThemed from "../components/TextThemed";
@@ -178,7 +178,7 @@ export default function RecipesCollection({ recipes = [] }) {
             onToggleMenu={() => toggleMenu(item.id)}
             isMenuVisible={menuVisible === item.id}
             onDelete={() => deleteCollection(item.id)}
-            onRemoveRecipe={(rid) => removeRecipeFromCollection(item.id, rid)}
+            onRemoveRecipe={removeRecipeFromCollection}
             onOpenAddRecipe={() => {
               setSelectedCollectionId(item.id);
               setIsAddRecipeModalVisible(true);
