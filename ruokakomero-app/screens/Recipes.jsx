@@ -7,27 +7,32 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  Text,
+  ActivityIndicator,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { ref, push, onValue, remove, update } from "firebase/database";
+import { getDatabase } from "firebase/database";
+import useCurrentUser from "../configuration/useCurrentUser";
 import TextThemed from "../components/TextThemed";
 import RecipeCard from "../components/recipes/RecipeCard";
 import RecipeForm from "../components/recipes/RecipeForm";
 import RecipeEditForm from "../components/recipes/RecipeEditForm";
 import RecipeDetailModal from "../components/recipes/RecipeDetailModal";
 import RecipeCollection from "./RecipeCollection";
-import { database } from "../configuration/firebaseConfig";
-import { ref, push, onValue, remove, update } from "firebase/database";
-import styles from "../styles/recipesStyles";
-import componentStyles from "../styles/componentStyles";
 import TabComponent from "../components/TabComponent";
 import InputFieldComponent from "../components/InputFieldComponent";
 import IconButton from "../components/IconButton";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getAuth, deleteUser, signOut, updatePassword } from "firebase/auth";
-import {fetchUserData} from "./Profile";
+import styles from "../styles/recipesStyles";
 
-// Alustavat tilat ja funktiot
 export default function Recipes() {
+  const database = getDatabase();
+  const { userId, loading: authLoading } = useCurrentUser();
+
+  const [savedRecipes, setSavedRecipes] = useState([]);
+  const [isAddModalVisible, setIsAddModalVisible] = useState(false);
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [isRecipeDetailVisible, setIsRecipeDetailVisible] = useState(false);
+  const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [recipe, setRecipe] = useState({
     id: "",
     name: "",
@@ -40,64 +45,60 @@ export default function Recipes() {
   const [ingredientQuantity, setIngredientQuantity] = useState(0);
   const [ingredientUnit, setIngredientUnit] = useState("kg");
   const [instructionStep, setInstructionStep] = useState("");
-  const [savedRecipes, setSavedRecipes] = useState([]);
-  const [isAddModalVisible, setIsAddModalVisible] = useState(false);
-  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
-  const [isRecipeDetailVisible, setIsRecipeDetailVisible] = useState(false);
-  const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("reseptit");
   const [originalRecipe, setOriginalRecipe] = useState(null);
-  const [user, setUser] = useState(null);
 
-  // Firebase-haun asetus
+ 
   useEffect(() => {
-    const recipeRef = ref(database, "recipes/");
-    onValue(recipeRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const loadedRecipes = Object.keys(data).map((key) => ({
-          id: key,
-          ...data[key],
-        }));
-        setSavedRecipes(loadedRecipes);
+    if (!userId) return;
 
-      } else {
-        setSavedRecipes([]);
-
-      }
+    const recipesRef = ref(database, `users/${userId}/recipes`);
+    const unsubscribe = onValue(recipesRef, (snapshot) => {
+      const data = snapshot.val() || {};
+      const loaded = Object.entries(data).map(([key, val]) => ({
+        id: key,
+        ...val,
+      }));
+      setSavedRecipes(loaded);
     });
-  }, []);
+
+   
+    return () => unsubscribe();
+  }, [database, userId]);
+
+  if (authLoading) {
+    return (
+      <View style={styles.containerCentered}>
+        <ActivityIndicator size="large" />
+        <TextThemed>Ladataan reseptejä…</TextThemed>
+      </View>
+    );
+  }
+
+ 
+  
 
 
-
-
-  // Palauttaa lomakkeen alkutilanteeseen
+  
   const resetForm = () => {
-    setRecipe({
-      id: "",
-      name: "",
-      ingredients: [],
-      instructions: [],
-      image: "",
-    });
+    setRecipe({ id: "", name: "", ingredients: [], instructions: [], image: "" });
     setIngredientName("");
     setIngredientQuantity(0);
     setInstructionStep("");
     setCurrentStep(1);
   };
 
-  // Lisää ainesosan reseptiin
   const handleAddIngredient = () => {
     if (!ingredientName || ingredientQuantity <= 0) {
-      alert("Täytä kaikki ainesosan kentät!");
+      Alert.alert("Täytä kaikki ainesosan kentät!");
       return;
     }
-    setRecipe((prevRecipe) => ({
-      ...prevRecipe,
+    setRecipe((prev) => ({
+      ...prev,
       ingredients: [
-        ...prevRecipe.ingredients,
+        ...prev.ingredients,
         {
           name: ingredientName,
           quantity: ingredientQuantity.toString(),
@@ -109,94 +110,77 @@ export default function Recipes() {
     setIngredientQuantity(0);
   };
 
-  // Lisää ohjeen reseptiin
   const handleAddInstruction = () => {
     if (!instructionStep) {
-      alert("Lisää ohje!");
+      Alert.alert("Lisää ohje!");
       return;
     }
-    setRecipe((prevRecipe) => ({
-      ...prevRecipe,
-      instructions: [...prevRecipe.instructions, instructionStep],
+    setRecipe((prev) => ({
+      ...prev,
+      instructions: [...prev.instructions, instructionStep],
     }));
     setInstructionStep("");
   };
 
-  // Tallentaa reseptin Firebaseen
   const handleAddRecipe = async () => {
-    
     if (!recipe.name || recipe.ingredients.length === 0) {
-      alert("Lisää reseptin nimi ja vähintään yksi ainesosa!");
+      Alert.alert("Lisää reseptin nimi ja vähintään yksi ainesosa!");
       return;
     }
     try {
-      const newRecipeRef = push(ref(database, "recipes/"));
-      const newRecipeKey = newRecipeRef.key;
-      const newRecipe = { ...recipe, id: newRecipeKey };
-
-      await update(ref(database, `recipes/${newRecipeKey}`), newRecipe);
+      const newRef = push(ref(database, `users/${userId}/recipes`));
+      await update(ref(database, `users/${userId}/recipes/${newRef.key}`), {
+        ...recipe,
+        id: newRef.key,
+      });
       resetForm();
       setIsAddModalVisible(false);
-    } catch (error) {
-      alert(error.message);
+    } catch (err) {
+      Alert.alert("Virhe tallennettaessa", err.message);
     }
   };
 
-  // Poistaa reseptin Firebaseestä
   const handleDeleteRecipe = (id) => {
     Alert.alert(
       "Vahvista poisto",
       "Haluatko varmasti poistaa tämän reseptin?",
       [
-        {
-          text: "Peruuta",
-          style: "cancel",
-        },
+        { text: "Peruuta", style: "cancel" },
         {
           text: "Poista",
           style: "destructive",
           onPress: async () => {
             try {
-              await remove(ref(database, `recipes/${id}`));
-              setSavedRecipes((prev) => prev.filter((rec) => rec.id !== id));
-              // Suljetaan reseptin modal, jos se on auki
+              await remove(ref(database, `users/${userId}/recipes/${id}`));
+              setSavedRecipes((prev) => prev.filter((r) => r.id !== id));
               setIsRecipeDetailVisible(false);
-            } catch (error) {
-              Alert.alert("Virhe", error.message);
+            } catch (err) {
+              Alert.alert("Virhe", err.message);
             }
           },
         },
-      ],
-      { cancelable: true }
+      ]
     );
   };
 
-  // Muokkaa reseptiä Firebaseen
   const handleEditRecipe = async () => {
     if (!recipe.id) {
-      alert("Reseptiä ei voi muokata ilman ID:tä!");
+      Alert.alert("Reseptiä ei voi muokata ilman ID:tä!");
       return;
     }
     try {
-      const updatedRecipe = {
-        ...recipe,
-        ingredients: recipe.ingredients ? recipe.ingredients : [],
-        instructions: recipe.instructions ? recipe.instructions : [],
-      };
-
-      await update(ref(database, `recipes/${recipe.id}`), updatedRecipe);
+      await update(ref(database, `users/${userId}/recipes/${recipe.id}`), recipe);
       setSavedRecipes((prev) =>
-        prev.map((rec) => (rec.id === recipe.id ? updatedRecipe : rec))
+        prev.map((r) => (r.id === recipe.id ? recipe : r))
       );
       resetForm();
       setIsEditModalVisible(false);
-      alert("Resepti päivitettiin onnistuneesti!");
-    } catch (error) {
-      alert("Muokkaus epäonnistui!");
+      Alert.alert("Resepti päivitettiin onnistuneesti!");
+    } catch (err) {
+      Alert.alert("Muokkaus epäonnistui", err.message);
     }
   };
 
-  // Tarkistaa, onko muutoksia tehty muokkausmodalissa
   const confirmClose = () => {
     if (JSON.stringify(recipe) !== JSON.stringify(originalRecipe)) {
       Alert.alert(
@@ -212,8 +196,7 @@ export default function Recipes() {
               resetForm();
             },
           },
-        ],
-        { cancelable: true }
+        ]
       );
     } else {
       setIsEditModalVisible(false);
@@ -221,14 +204,12 @@ export default function Recipes() {
     }
   };
 
-  // Avaa muokkausmodalin täyttämällä alkuperäisillä tiedoilla
-  const openEditModal = (selected) => {
-    setOriginalRecipe({ ...selected });
-    setRecipe(selected);
+  const openEditModal = (item) => {
+    setOriginalRecipe({ ...item });
+    setRecipe(item);
     setIsEditModalVisible(true);
   };
 
-  // Yksikköasetukset sliderille ja pickerille
   const unitSettings = {
     kg: { min: 0, max: 5, step: 0.1 },
     g: { min: 0, max: 1000, step: 50 },
@@ -237,8 +218,6 @@ export default function Recipes() {
     kpl: { min: 0, max: 20, step: 1 },
   };
 
-
-  
   return (
     <View style={styles.container}>
       <TabComponent
@@ -255,16 +234,8 @@ export default function Recipes() {
       {activeTab === "reseptit" ? (
         <>
           <View style={styles.circleButtonContainer}>
-            <IconButton
-              onPress={() => {
-                setIsAddModalVisible(true);
-                resetForm();
-              }}
-            />
-            <IconButton
-              onPress={() => setIsSearchActive((prev) => !prev)}
-              iconType="search"
-            />
+            <IconButton onPress={() => { setIsAddModalVisible(true); resetForm(); }} />
+            <IconButton onPress={() => setIsSearchActive((p) => !p)} iconType="search" />
           </View>
 
           {isSearchActive && (
@@ -278,8 +249,8 @@ export default function Recipes() {
           <TextThemed style={styles.header}>Tallennetut Reseptit</TextThemed>
 
           <FlatList
-            data={savedRecipes.filter((rec) =>
-              rec.name.toLowerCase().includes(searchQuery.toLowerCase())
+            data={savedRecipes.filter((r) =>
+              r.name.toLowerCase().includes(searchQuery.toLowerCase())
             )}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
@@ -287,8 +258,8 @@ export default function Recipes() {
                 onDelete={handleDeleteRecipe}
                 recipe={item}
                 onPress={() => {
-                  setRecipe(item);
                   setSelectedRecipe(item);
+                  setRecipe(item);
                   setIsRecipeDetailVisible(true);
                 }}
               />
@@ -338,10 +309,7 @@ export default function Recipes() {
             visible={isRecipeDetailVisible}
             recipe={selectedRecipe}
             onClose={() => setIsRecipeDetailVisible(false)}
-            onEdit={() => {
-              setIsRecipeDetailVisible(false);
-              openEditModal(selectedRecipe);
-            }}
+            onEdit={() => openEditModal(selectedRecipe)}
           />
         </>
       ) : (

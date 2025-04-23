@@ -16,7 +16,7 @@ const dietOptions = {
   vegan: "Vegaani",
 };
 
-export default function DietSelector({ userDiet, toggleDiet, ...props }) {
+export default function DietSelector({ userDiet = {}, toggleDiet, ...props }) {
   return (
     <View style={componentStyles.section}>
     <View style={componentStyles.dietSelectorWrapper}>

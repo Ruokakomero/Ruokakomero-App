@@ -3,7 +3,7 @@ import React from "react";
 import { ActivityIndicator } from "react-native";
 
 const RecipeLoadingIndicator = () => {
-  return <ActivityIndicator size="large" color="#4CAF50" />;
+  return <ActivityIndicator size="large" color="#389C9A" />;
 };
 
 export default RecipeLoadingIndicator;

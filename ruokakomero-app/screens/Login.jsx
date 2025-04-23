@@ -15,6 +15,7 @@ import screensStyles from "../styles/screensStyles";
 import textStyles from "../styles/textStyles";
 import componentStyles from "../styles/componentStyles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 
 export default function Login({ navigation, handleLogin, route }) {
   const [email, setEmail] = useState("");
@@ -22,6 +23,21 @@ export default function Login({ navigation, handleLogin, route }) {
   const [loading, setLoading] = useState(false);
 
   const { profileName } = route.params || {};
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      Alert.alert("Syötä sähköpostiosoite ensin");
+      return;
+    }
+  
+    try {
+      const auth = getAuth();
+      await sendPasswordResetEmail(auth, email);
+      Alert.alert("Onnistui", "Palautuslinkki lähetetty sähköpostiin.");
+    } catch (error) {
+      Alert.alert("Virhe", error.message);
+    }
+  };
 
   const processLogin = async () => {
     if (!email || !password) {
@@ -97,6 +113,13 @@ export default function Login({ navigation, handleLogin, route }) {
               onPress={processLogin}
               disabled={loading}
             />
+            <ButtonComponent
+                content="Unohtuiko salasana?"
+                type="text"
+                textStyle="light"
+                onPress={handleForgotPassword}
+                
+              />
 
             <View style={componentStyles.textContainer}>
               <TextThemed style={textStyles.bodyLargeLight}>
