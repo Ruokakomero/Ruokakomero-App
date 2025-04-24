@@ -34,9 +34,11 @@ export default StyleSheet.create({
   },
   modalContentRecipe: {
     width: "90%",
-    padding: 20,
+    height: "75%",
+    padding: 24,
     marginTop: 50,
-    borderRadius: 10,
+    marginBottom: 50,
+    borderRadius: 16,
     backgroundColor: "#fff",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2, }
@@ -140,6 +142,31 @@ export default StyleSheet.create({
   emptyText: {
     marginTop: 20,
     fontSize: 16,
+    textAlign: "center",
+  },
+
+  servingsContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 8,
+    justifyContent: "space-between",
+  },
+  stepper: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 12,
+    backgroundColor: MainTheme.colors.dark20,
+    borderRadius: 8,
+  },
+  stepperButton: {
+    fontSize: 24,
+    paddingHorizontal: 12,
+    color: MainTheme.colors.highlightBlue,
+  },
+  stepperValue: {
+    fontSize: 18,
+    marginHorizontal: 8,
+    minWidth: 32,
     textAlign: "center",
   },
 
@@ -271,7 +298,7 @@ export default StyleSheet.create({
     borderTopWidth: 2,
     borderTopColor: MainTheme.colors.dark20,
     paddingVertical: 8,
-    paddingHorizontal: 48,
+    paddingHorizontal: 16,
     justifyContent: "space-between"
 
   },
