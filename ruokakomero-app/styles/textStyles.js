@@ -133,6 +133,13 @@ const textStyles = StyleSheet.create({
     fontSize: MainTheme.fontSizes.bodySmall,
     fontFamily: "Manrope-B",
   },
+  ingredientTextName: {
+    paddingVertical: 8,
+    color: MainTheme.colors.text,
+    fontSize: MainTheme.fontSizes.bodySmall,
+    fontFamily: "Manrope-B",
+    width: "40%",
+  },
   recipeTitle: {
     paddingVertical: 16,
     color: MainTheme.colors.text,
