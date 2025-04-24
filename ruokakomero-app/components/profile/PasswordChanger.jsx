@@ -16,10 +16,20 @@ export default function PasswordChanger({
   const [error, setError] = useState("");
 
   const handleSavePress = () => {
+    const specialCharRegex = /[^a-zA-Z0-9]/;
+    const uppercaseRegex = /[A-Z]/;
+    const numberRegex = /[0-9]/;
+  
     if (newPassword !== confirmPassword) {
       setError("Salasanat eivät täsmää");
-    } else if (newPassword.length < 6) {
-      setError("Salasanan tulee olla vähintään 6 merkkiä pitkä");
+    } else if (newPassword.length < 8) {
+      setError("Salasanan tulee olla vähintään 8 merkkiä pitkä");
+    } else if (!specialCharRegex.test(newPassword)) {
+      setError("Salasanan tulee sisältää vähintään yksi erikoismerkki");
+    } else if (!uppercaseRegex.test(newPassword)) {
+      setError("Salasanan tulee sisältää vähintään yksi iso kirjain");
+    } else if (!numberRegex.test(newPassword)) {
+      setError("Salasanan tulee sisältää vähintään yksi numero");
     } else {
       setError("");
       handlePasswordChange();
