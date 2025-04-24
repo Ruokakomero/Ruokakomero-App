@@ -126,15 +126,25 @@ expofont
 
 ### Käyttöliittymän näkymät
 - Kirjautumissivu
-![image]()
+
+<img src="https://github.com/Ruokakomero/Ruokakomero-App/blob/develop/Media/simulator.png?raw=true" width="300" />
+
 - Ruokatoiveiden kysely
-![image]
+
+<img src="https://github.com/Ruokakomero/Ruokakomero-App/blob/develop/Media/IMG_5091.png?raw=true" width="300" />
+
 - Tekoälyn reseptiehdotukset
-![image]
+
+<img src="https://github.com/Ruokakomero/Ruokakomero-App/blob/develop/Media/simulator.png?raw=true" width="300" />
+
 - Reseptilistaus
-![image]
+
+<img src="https://github.com/Ruokakomero/Ruokakomero-App/blob/develop/Media/IMG_5092.png?raw=true" width="300" />
+
 - Profiili
-![image]
+
+<img src="https://github.com/Ruokakomero/Ruokakomero-App/blob/develop/Media/IMG_5094.png?raw=true" width="300" />
+
 
 ---
 
@@ -149,33 +159,53 @@ Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunnitel
 
 #### Document Schema:
 ```json
-{
- 
-}
+
+ {
+   "userId": "user123",
+   "name": "Example User",
+   "email": "example@email.com",
+ }
+
 ```
 
 ### Recipes Collection (`users/<userId>/recipes`)
 #### Document Schema:
 ```json
 {
-
-}
+   "recipeId": "recipe123",
+   "name": "Pancakes",
+   "ingredients": [
+     { "name": "Flour", "unit": "kilograms", ... },
+     { "name": "Milk", "unit": "liters", ... }
+   ],
+   "instructions": [
+     "Mix ingredients.",
+     "Cook on medium heat."
+   ],
+ }
 ```
 
 ### Shopping Lists Collection (`users/<userId>/shoppingLists`)
 #### Document Schema:
 ```json
 {
- 
-}
+   "listId": "list123",
+   "items": [
+     { "name": "Milk", "quantity": 2, "unit": "liters" },
+     { "name": "Flour", "quantity": 1, "unit": "kilograms" }
+   ]
+ }
 ```
 
 ### Chatbot Interactions Collection (`users/<userId>/chatbotInteractions`)
 #### Document Schema:
 ```json
 {
-  
-}
+   "interactionId": "interaction123",
+   "userId": "user123",
+   "query": "What can I cook with items from our pantry?",
+   "response": "You can make pancakes!",
+ }
 ```
 
 </details>
@@ -188,8 +218,8 @@ Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunnitel
 - **chatbot interactions collection**: Chatbotin kanssa käydyt keskustelut ja ehdotukset.
 
 
-### Tietokantakaavio ()
-[Tietokantakaavio] (https://github.com/Ruokakomero/Ruokakomero-App/blob/develop/Media/Tietokantataulukko.pdf)
+### Tietokantakaavio
+[Tietokantakaavio](https://github.com/Ruokakomero/Ruokakomero-App/blob/develop/Media/Tietokantataulukko.pdf)
 
 ---
 
