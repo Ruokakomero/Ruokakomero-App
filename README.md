@@ -200,6 +200,31 @@ Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunnitel
 
 ## 📁 API-endpointit (Firebase polkuina)
 
+### 🍽 Käyttäjät (Recipes)
+| Metodi | Polku | Kuvaus |
+|--------|-------|--------|
+| GET    | `/users/` | Palauttaa kaikki sovelluksen resekäyttäjät |
+| POST   | `/users/`| Luo uuden käyttäjän |
+| PATCH  | `/users/{userId}` | Päivittää olemassa olevan käyttäjän |
+| DELETE | `/users/{userId}/` | Poistaa olemassa olevan käyttäjän |
+
+**Esimerkki GET-datasta:**
+```json
+
+},
+  "F14j26lXkif0tR6K0JRwgLnSziI1": {
+    "diet": {
+      "glutenFree": true,
+      "lactoseFree": false,
+      "vegan": false,
+      "vege": true
+    },
+    "email": "",
+    "firstName": "Maija",
+    "lastName": "Mehiläinen"
+  },
+```
+
 ### 🍽 Reseptit (Recipes)
 
 | Metodi | Polku | Kuvaus |
@@ -209,28 +234,81 @@ Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunnitel
 | PATCH  | `/users/{userId}/recipes/{recipeId}` | Päivittää olemassa olevan reseptin |
 | DELETE | `/users/{userId}/recipes/{recipeId}` | Poistaa reseptin |
 
-**Esimerkki POST-datasta:**
+**Esimerkki GET-datasta:**
 ```json
 {
- 
-}
-```
-
----
-
-### 🛍 Ostoslista (Shopping List)
-
-| Metodi | Polku | Kuvaus |
-|--------|-------|--------|
-| GET    | `/users/{userId}/Ostoslista` | Palauttaa ostoslistan |
-| POST   | `/users/{userId}/Ostoslista` | Lisää uuden tuotteen |
-| PATCH  | `/users/{userId}/Ostoslista/{itemId}` | Päivittää tuotteen |
-| DELETE | `/users/{userId}/Ostoslista/{itemId}` | Poistaa tuotteen |
-
-**Esimerkki POST-datasta:**
-```json
-{
- 
+ {
+  "-OOSG03z4iJm5YDOYITy": {
+    "id": "-OOSG03z4iJm5YDOYITy",
+    "ingredients": [
+      {
+        "name": "Kanafileet",
+        "quantity": "900.00",
+        "unit": "g"
+      },
+      {
+        "name": "Perunat",
+        "quantity": "1200.00",
+        "unit": "g"
+      },
+      {
+        "name": "Sipuli",
+        "quantity": "1.50",
+        "unit": "kpl"
+      },
+      {
+        "name": "Valkosipulinkynsi",
+        "quantity": "3.00",
+        "unit": "kpl"
+      },
+      {
+        "name": "Porkkana",
+        "quantity": "3.00",
+        "unit": "kpl"
+      },
+      {
+        "name": "Kasvisliemikuutio",
+        "quantity": "1.50",
+        "unit": "kpl"
+      },
+      {
+        "name": "Vettä",
+        "quantity": "6.00",
+        "unit": "dl"
+      },
+      {
+        "name": "Suola",
+        "quantity": "1.50",
+        "unit": "tl"
+      },
+      {
+        "name": "Pippuri",
+        "quantity": "1.50",
+        "unit": "tl"
+      },
+      {
+        "name": "Oliiviöljy",
+        "quantity": "3.00",
+        "unit": "rkl"
+      },
+      {
+        "name": "Tuoreita yrttejä (esim. timjami tai rosmariini)",
+        "quantity": "1.50",
+        "unit": "kpl"
+      }
+    ],
+    "instructions": [
+      "Aloita kuorimalla ja pilkkomalla perunat ja porkkanat sopivan kokoisiksi kuutioiksi. Hienonna sipuli ja valkosipulinkynnet.",
+      "Kuumenna oliiviöljy suuressa paistokasarissa keskilämmöllä. Lisää hienonnettu sipuli ja valkosipuli, ja kuullota niitä noin 2–3 minuuttia, kunnes ne ovat pehmeitä.",
+      "Leikkaa kanafileet suikaleiksi ja lisää ne paistokasariin sipulin sekä valkosipulin joukkoon. Paista, kunnes kana on saanut kauniin kullanruskean värin kaikilta puolilta.",
+      "Lisää perunakuutiot ja porkkanat kasariin. Sekoita ainekset hyvin yhteen.",
+      "Murustele kasvisliemikuutio seoksen päälle ja kaada vesi joukkoon. Lisää suola ja pippuri. Sekoita, jotta kaikki ainesosat jakautuvat tasaisesti.",
+      "Peitä kansi ja anna padan kiehua miedolla lämmöllä noin 25–30 minuuttia, kunnes perunat ja porkkanat ovat kypsiä. Tarkista maku ja säädä tarvittaessa suolalla ja pippurilla.",
+      "Ota pata pois lämmöltä ja lisää tuoreita yrttejä koristeluksi ennen tarjoilua. Tarjoile lämpimänä esimerkiksi salaatin kanssa."
+    ],
+    "name": "Laktoositon kana-perunapata",
+    "servingSize": "6"
+  }
 }
 ```
 
@@ -245,10 +323,17 @@ Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunnitel
 | PATCH  | `/users/{userId}/recipeCollections/{collectionId}` | Lisää resepti kokoelmaan |
 | DELETE | `/users/{userId}/recipeCollections/{collectionId}` | Poistaa kokoelman |
 
-**Esimerkki POST-datasta:**
+**Esimerkki GET-datasta:**
 ```json
 {
-
+  "-OOcKmai3NX9Gh-sO51w": {
+    "id": "-OOcKmai3NX9Gh-sO51w",
+    "name": "Testikokoelma",
+    "recipes": [
+      "-OOXuqVyP3UiHz3YHEUa",
+      "-OOYFKqjLvY5CwNkhL1z"
+    ]
+  }
 }
 ```
 
