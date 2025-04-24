@@ -122,7 +122,7 @@ expofont
 ## 4. Käyttöliittymä
 
 ### Käyttöliittymäkaavio
-- Visuaaliset kaaviot löytyvät Figmasta tai [UI-suunnitelmadokumentista](linkki).
+- Visuaaliset kaaviot löytyvät [UI-suunnitelmadokumentista](https://www.figma.com/proto/UjDkmgpcvd6Rm2ateRlwBh/Ruokakomero?node-id=132-68&t=o8EuovuSDjfyiS8W-1).
 
 ### Käyttöliittymän näkymät
 
@@ -200,7 +200,7 @@ Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunnitel
 
 ## 📁 API-endpointit (Firebase polkuina)
 
-### 🍽 Käyttäjät (Recipes)
+###  Käyttäjät (Recipes)
 | Metodi | Polku | Kuvaus |
 |--------|-------|--------|
 | GET    | `/users/` | Palauttaa kaikki sovelluksen resekäyttäjät |
@@ -360,7 +360,6 @@ const recipe = await getRecipe("Proteiinit: kana, Hiilihydraatit: riisi, Annosko
 
 ---
 
-
 ## 7. AI toiminnallisuuden tekninen kuvaus
 
 **Tekoälyn käyttötarkoitus sovelluksessa**
@@ -437,11 +436,7 @@ Jos kirjautuminen onnistuu, result.success === true.
 
 Firebase palauttaa kirjautumisen jälkeen automaattisesti ID-tokenin, jota käytetään kaikissa REST-pyynnöissä.
 
-
-## 9. Käyttöoikeudet
-
-
----
+--- 
 
 ## 10. Testaus 
 
