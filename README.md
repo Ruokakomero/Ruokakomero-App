@@ -127,7 +127,7 @@ expofont
 ### Käyttöliittymän näkymät
 
 - Ruokatoiveiden kysely
-- Chatbotin reseptiehdotukset
+- Tekoälyn reseptiehdotukset
 - Reseptilistaus
 - Profiili
 
@@ -277,6 +277,57 @@ const recipe = await getRecipe("Proteiinit: kana, Hiilihydraatit: riisi, Annosko
 
 
 ## 7. AI toiminnallisuuden tekninen kuvaus
+
+**Tekoälyn käyttötarkoitus sovelluksessa**
+
+Sovellukseen on integroitu tekoälytoiminto, jonka avulla voidaan luoda käyttäjän syötteiden perusteella reseptejä. Käyttäjä voi antaa esimerkiksi proteiini- ja hiilihydraattilähteet, ruokavaliot ja annoskoon ja tekoäly tuottaa näiden tietojen pohjalta valmiin reseptiehdotuksen. Kyseinen ehdotus sisältää ruoan nimen, annoskoon, ainesosat määrineen sekä yksityiskohtaiset valmistusohjeet.
+
+**Käytetty AI-palvelu**
+
+Reseptien generoinnissa käytetään OpenAI:n GPT-4o-mini -mallia, jonka rajapintaan sovellus muodostaa kyselyitä OpenAI:n virallisen `openai` JavaScript-kirjaston avulla.
+
+**API-avain ja konfiguraatio**
+
+API-avain sijoitetaan `.env` tiedostoon, joka sijaitsee projektin juurihakemistossa, josta se haetaan `react-native-dotenv` kirjaston avulla. Esimerkiksi:
+
+```js
+OPENAI_API_KEY=sk-abc123...
+```
+
+**Tekoälyn kutsuminen sovelluksessa**
+
+Tekoälyn toteutus sijaitsee `getRecipe(query)`-funktiossa, joka rakentaa suomenkielisen kehotteen (promptin) käyttäen käyttäjän antamia valintoja ja lähettää sen `RecipeAI`-komponentille. Komponentissa on valmis kysely, johon käyttäjän prompti liitetään ja lähetetään OpenAI:n chat-muotoiselle API:lle. Palvelusta saatu vastaus muunnetaan JSON-objektiksi, joka sisältää seuraavat kentät:
+
+- `name`: reseptin nimi
+
+- `servingSize`: annoskoko
+
+- `ingredients`: lista ainesosista, sisältäen nimen, määrän ja yksikön
+
+- `instructions`: lista valmistusohjeista
+
+Esimerkki funktiokutsusta:
+```js
+const aiRecipe = await getRecipe("Proteiinit: tofu, Hiilihydraatit: peruna, Annoskoko: 2, Ruokavaliot: vegaaninen");
+````
+
+**Tulosten näyttäminen käyttöliittymässä**
+
+Tekoälyn palauttama resepti näytetään `GeneratedRecipeView`-komponentissa, jossa näytetään ruokalajin nimi, annoskoko, ainesosat ja valmistusohjeet. Mikäli reseptiä ei voida hakea tai parsia, käyttöliittymässä näytetään `RecipeErrorMessage`-komponentti virheilmoituksineen ja "Yritä uudelleen" -painikkeineen. Hakuprosessin aikana näytetään `RecipeLoadingIndicator`-komponentti, joka kertoo käyttäjälle latauksen olevan käynnissä.
+
+**Reseptin uudelleen generointi sekä tallentaminen**
+
+Käyttäjällä on mahdollisuus generoida uusi resepti valitsemillaan tiedoilla painamalla "Luo uusi resepti" -painiketta. Mikäli API-kutsu epäonnistuu, näytetään virheilmoitus ja käyttäjälle tarjotaan mahdollisuus yrittää uudelleen. Funktio `regenerateRecipe` huolehtii uuden pyynnön lähettämisestä ja tuloksen päivittämisestä näkymään. Painamalla "Tallenna resepti" -painiketta sovellus käyttää `saveRecipeToDatabase` -funktiota ja tallentaa luodun reseptin tietokantaan.
+
+**API-kutsujen rajoitukset ja kustannukset**
+
+- Token-rajoitukset: GPT-4o-mini tukee maksimissaan 128k tokenin kontekstia, mutta reseptien generointi on rajoitettu 1000 tokeniin.
+
+- Hinnoittelu: GPT-4o-mini on kustannustehokkaampi kuin laajemmat GPT-4-mallit, mikä on yksi syy kyseisen mallin valinnalle. Käytöstä syntyy silti kustannuksia käytetyn token-määrän mukaan. [Tarkka hinnoittelu löytyy OpenAI:n virallisilta verkkosivuilta löytyy ajantasainen hinnoittelumalli.](https://platform.openai.com/docs/pricing/)
+
+**Käyttäjädatan tietosuoja**
+
+Sovellus ei lähetä henkilötietoja OpenAI:n palveluun. Ainoa API:lle välitetty käyttäjätieto on reseptin muodostamiseen liittyvä tekstimuotoinen syöte (proteiinit, hiilihydraatit, ruokavaliot jne.). GDPR:n näkökulmasta varmistetaan, ettei tunnistettavaa henkilötietoa sisällytetä API-kutsuihin, eikä OpenAI:n palauttamaa sisältöä säilytetä ilman käyttäjän erillistä tallennustoimintoa, milloin generoitu resepti tallennetaan tietokantaan.
 
 ---
 
