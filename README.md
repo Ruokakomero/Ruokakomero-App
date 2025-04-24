@@ -125,11 +125,16 @@ expofont
 - Visuaaliset kaaviot löytyvät [UI-suunnitelmadokumentista](https://www.figma.com/proto/UjDkmgpcvd6Rm2ateRlwBh/Ruokakomero?node-id=132-68&t=o8EuovuSDjfyiS8W-1).
 
 ### Käyttöliittymän näkymät
-
+- Kirjautumissivu
+![image]()
 - Ruokatoiveiden kysely
+![image]
 - Tekoälyn reseptiehdotukset
+![image]
 - Reseptilistaus
+![image]
 - Profiili
+![image]
 
 ---
 
