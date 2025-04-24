@@ -1,5 +1,3 @@
-// Tämä komponentti siirrettiin Recipes.jsx:stä refaktoroinnin yhteydessä (Sprintti 4)
-
 import React, { useState, useEffect } from "react";
 import {
   Modal,
@@ -9,15 +7,27 @@ import {
   StyleSheet,
 } from "react-native";
 import TextThemed from "../../components/TextThemed";
-import ButtonComponent from "../../components/ButtonComponent";
 import TabComponent from "../TabComponent";
 import styles from "../../styles/recipesStyles";
 import textStyles from "../../styles/textStyles";
-import componentStyles from "../../styles/componentStyles";
 import recipesStyles from "../../styles/recipesStyles";
 
-const RecipeDetailModal = ({ visible, recipe, onClose,}) => {
+const RecipeDetailModal = ({ visible, recipe, onClose, onChangeServings }) => {
   const [activeTab, setActiveTab] = useState("ainesosat");
+  const [servings, setServings] = useState(1);
+
+  useEffect(() => {
+    const parsed = parseInt(recipe?.servingSize, 10);
+    setServings(!isNaN(parsed) && parsed > 0 ? parsed : 1);
+  }, [recipe?.servingSize]);
+
+  const adjust = (delta) => {
+    const next = servings + delta;
+    if (next > 0) {
+      setServings(next);
+      onChangeServings(next);
+    }
+  };
 
   return (
     <Modal visible={visible} animationType="slide" transparent>
@@ -32,30 +42,51 @@ const RecipeDetailModal = ({ visible, recipe, onClose,}) => {
               closedTab="Ohjeet"
               openTabOnPress={() => setActiveTab("ainesosat")}
               closedTabOnPress={() => setActiveTab("ohjeet")}
-              openedTabType={
-                activeTab === "ainesosat" ? "enabled" : "disabled"
-              }
+              openedTabType={activeTab === "ainesosat" ? "enabled" : "disabled"}
               closedTabType={activeTab === "ohjeet" ? "enabled" : "disabled"}
             />
+
             <TextThemed style={textStyles.recipeTitle}>
               {recipe?.name}
             </TextThemed>
+
             {activeTab === "ainesosat" && (
               <>
+                <View style={recipesStyles.servingsContainer}>
+                  <TextThemed style={textStyles.bodyLargeB}>
+                    Annokset:
+                  </TextThemed>
+                  <View style={recipesStyles.stepper}>
+                    <TouchableOpacity onPress={() => adjust(-1)}>
+                      <TextThemed style={recipesStyles.stepperButton}>
+                        –
+                      </TextThemed>
+                    </TouchableOpacity>
+                    <TextThemed style={recipesStyles.stepperValue}>
+                      {servings}
+                    </TextThemed>
+                    <TouchableOpacity onPress={() => adjust(+1)}>
+                      <TextThemed style={recipesStyles.stepperButton}>
+                        +
+                      </TextThemed>
+                    </TouchableOpacity>
+                  </View>
+                </View>
                 <TextThemed style={textStyles.listHeader}>Ainesosat</TextThemed>
                 {recipe?.ingredients.map((ing, idx) => (
-                  <View style={recipesStyles.ingredientListItem}>
-                    <TextThemed key={idx} style={textStyles.ingredientText}>
-                    {`${ing.quantity} ${ing.unit}`}
+                  <View key={idx} style={recipesStyles.ingredientListItem}>
+                    <TextThemed style={textStyles.ingredientText}>
+                      {`${ing.quantity} ${ing.unit}`}
                     </TextThemed>
-                    <TextThemed key={idx} style={textStyles.ingredientText}>
-                    {`${ing.name}`}
+                    <TextThemed style={textStyles.ingredientTextName}>
+                      {ing.name}
                     </TextThemed>
                   </View>
                   
                 ))}
               </>
             )}
+
             {activeTab === "ohjeet" && (
               <>
                 <TextThemed style={textStyles.listHeader}>Ohjeet</TextThemed>
@@ -66,7 +97,6 @@ const RecipeDetailModal = ({ visible, recipe, onClose,}) => {
                 ))}
               </>
             )}
-           
           </ScrollView>
         </View>
       </View>

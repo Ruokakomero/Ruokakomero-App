@@ -27,6 +27,7 @@ const RecipeForm = ({
   ingredientQuantity,
   setIngredientQuantity,
   ingredientUnit,
+  setIngredientUnit,
   instructionStep,
   setInstructionStep,
   handleAddIngredient,
@@ -35,7 +36,19 @@ const RecipeForm = ({
   resetForm,
   onClose,
   unitSettings,
+  servingSize,
+  setServingSize,
 }) => {
+  const defaultSettings = { min: 0, max: 100, step: 1 };
+  const currentSettings = unitSettings[ingredientUnit] || defaultSettings;
+  const servingSizeSettings = { min: 1, max: 30, step: 1 };
+
+  const handleUnitChange = (newUnit) => {
+    setIngredientUnit(newUnit);
+    const { min, max } = unitSettings[newUnit] || defaultSettings;
+    setIngredientQuantity((prev) => Math.min(max, Math.max(min, prev)));
+  };
+
   return (
     <Modal visible={visible} animationType="slide" transparent>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -61,13 +74,19 @@ const RecipeForm = ({
                         setRecipe({ ...recipe, name: text })
                       }
                     />
-                    <InputFieldComponent
-                      placeholder="Kuvan URL (valinnainen)"
-                      header="Kuvan URL"
-                      value={recipe.image}
-                      onChangeText={(text) =>
-                        setRecipe({ ...recipe, image: text })
-                      }
+                    <TextThemed style={styles.subHeader}>
+                      Annoskoko: {servingSize}
+                    </TextThemed>
+                    <Slider
+                      style={{ width: "100%", height: 40 }}
+                      minimumValue={servingSizeSettings.min}
+                      maximumValue={servingSizeSettings.max}
+                      step={servingSizeSettings.step}
+                      value={servingSize}
+                      onSlidingComplete={(val) => {
+                        setServingSize(val);
+                        setRecipe({ ...recipe, servingSize: val.toString() });
+                      }}
                     />
                   </>
                 )}
@@ -85,16 +104,23 @@ const RecipeForm = ({
                     </TextThemed>
                     <Slider
                       style={{ width: "100%", height: 40 }}
-                      minimumValue={unitSettings[ingredientUnit].min}
-                      maximumValue={unitSettings[ingredientUnit].max}
-                      step={unitSettings[ingredientUnit].step}
+                      minimumValue={currentSettings.min}
+                      maximumValue={currentSettings.max}
+                      step={currentSettings.step}
                       value={ingredientQuantity}
-                      onValueChange={setIngredientQuantity}
+                      onSlidingComplete={(raw) => {
+                        const decimals = (
+                          currentSettings.step.toString().split(".")[1] || ""
+                        ).length;
+                        setIngredientQuantity(
+                          parseFloat(raw.toFixed(decimals))
+                        );
+                      }}
                     />
                     <Picker
                       selectedValue={ingredientUnit}
                       style={styles.input}
-                      onValueChange={(itemValue) => setIngredientUnit(itemValue)}
+                      onValueChange={handleUnitChange}
                     >
                       <Picker.Item label="kg" value="kg" />
                       <Picker.Item label="g" value="g" />
@@ -124,7 +150,6 @@ const RecipeForm = ({
                   </>
                 )}
 
-                {/* Step Navigation Buttons */}
                 <View style={styles.navButtons}>
                   {currentStep > 1 && (
                     <ButtonComponent

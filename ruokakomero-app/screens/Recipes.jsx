@@ -16,7 +16,6 @@ import useCurrentUser from "../configuration/useCurrentUser";
 import TextThemed from "../components/TextThemed";
 import RecipeCard from "../components/recipes/RecipeCard";
 import RecipeForm from "../components/recipes/RecipeForm";
-import RecipeEditForm from "../components/recipes/RecipeEditForm";
 import RecipeDetailModal from "../components/recipes/RecipeDetailModal";
 import RecipeCollection from "./RecipeCollection";
 import TabComponent from "../components/TabComponent";
@@ -30,12 +29,12 @@ export default function Recipes() {
 
   const [savedRecipes, setSavedRecipes] = useState([]);
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
-  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isRecipeDetailVisible, setIsRecipeDetailVisible] = useState(false);
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [recipe, setRecipe] = useState({
     id: "",
     name: "",
+    servingSize: "",
     ingredients: [],
     instructions: [],
     image: "",
@@ -49,8 +48,8 @@ export default function Recipes() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("reseptit");
   const [originalRecipe, setOriginalRecipe] = useState(null);
+  const [servingSize, setServingSize] = useState(1);
 
- 
   useEffect(() => {
     if (!userId) return;
 
@@ -64,7 +63,6 @@ export default function Recipes() {
       setSavedRecipes(loaded);
     });
 
-   
     return () => unsubscribe();
   }, [database, userId]);
 
@@ -77,17 +75,19 @@ export default function Recipes() {
     );
   }
 
- 
-  
-
-
-  
   const resetForm = () => {
-    setRecipe({ id: "", name: "", ingredients: [], instructions: [], image: "" });
+    setRecipe({
+      id: "",
+      name: "",
+      ingredients: [],
+      instructions: [],
+      image: "",
+    });
     setIngredientName("");
     setIngredientQuantity(0);
     setInstructionStep("");
     setCurrentStep(1);
+    setServingSize(1);
   };
 
   const handleAddIngredient = () => {
@@ -132,6 +132,8 @@ export default function Recipes() {
       await update(ref(database, `users/${userId}/recipes/${newRef.key}`), {
         ...recipe,
         id: newRef.key,
+        ...recipe,
+        servingSize: servingSize.toString(),
       });
       resetForm();
       setIsAddModalVisible(false);
@@ -141,6 +143,7 @@ export default function Recipes() {
   };
 
   const handleDeleteRecipe = (id) => {
+    if (!id) return;
     Alert.alert(
       "Vahvista poisto",
       "Haluatko varmasti poistaa tämän reseptin?",
@@ -163,43 +166,54 @@ export default function Recipes() {
     );
   };
 
-  const handleEditRecipe = async () => {
-    if (!recipe.id) {
-      Alert.alert("Reseptiä ei voi muokata ilman ID:tä!");
+  const handleChangeServings = async (newSize) => {
+    if (!selectedRecipe?.id) return;
+    const oldSize = parseInt(selectedRecipe.servingSize, 10);
+    if (isNaN(oldSize) || oldSize <= 0) return;
+
+    if (!Number.isInteger(newSize) || newSize <= 0) {
+      Alert.alert("Annoskoon tulee olla positiivinen kokonaisluku.");
       return;
     }
+    const multiplier = newSize / oldSize;
+
+    const updatedIngredients = selectedRecipe.ingredients.map((ing) => {
+      const qty = parseFloat(ing.quantity) || 0;
+      return {
+        ...ing,
+        quantity: (qty * multiplier).toFixed(2),
+      };
+    });
+    const updated = {
+      ...selectedRecipe,
+      servingSize: newSize.toString(),
+      ingredients: updatedIngredients,
+    };
+
+    setSelectedRecipe(updated);
     try {
-      await update(ref(database, `users/${userId}/recipes/${recipe.id}`), recipe);
-      setSavedRecipes((prev) =>
-        prev.map((r) => (r.id === recipe.id ? recipe : r))
+      await update(
+        ref(database, `users/${userId}/recipes/${selectedRecipe.id}`),
+        updated
       );
-      resetForm();
-      setIsEditModalVisible(false);
-      Alert.alert("Resepti päivitettiin onnistuneesti!");
     } catch (err) {
-      Alert.alert("Muokkaus epäonnistui", err.message);
+      Alert.alert("Tallennus epäonnistui", err.message);
     }
   };
 
   const confirmClose = () => {
     if (JSON.stringify(recipe) !== JSON.stringify(originalRecipe)) {
-      Alert.alert(
-        "Varoitus",
-        "Haluatko poistua tallentamatta muutokset?",
-        [
-          { text: "Peruuta", style: "cancel" },
-          {
-            text: "Sulje tallentamatta",
-            style: "destructive",
-            onPress: () => {
-              setIsEditModalVisible(false);
-              resetForm();
-            },
+      Alert.alert("Varoitus", "Haluatko poistua tallentamatta muutokset?", [
+        { text: "Peruuta", style: "cancel" },
+        {
+          text: "Sulje tallentamatta",
+          style: "destructive",
+          onPress: () => {
+            resetForm();
           },
-        ]
-      );
+        },
+      ]);
     } else {
-      setIsEditModalVisible(false);
       resetForm();
     }
   };
@@ -207,7 +221,6 @@ export default function Recipes() {
   const openEditModal = (item) => {
     setOriginalRecipe({ ...item });
     setRecipe(item);
-    setIsEditModalVisible(true);
   };
 
   const unitSettings = {
@@ -234,8 +247,16 @@ export default function Recipes() {
       {activeTab === "reseptit" ? (
         <>
           <View style={styles.circleButtonContainer}>
-            <IconButton onPress={() => { setIsAddModalVisible(true); resetForm(); }} />
-            <IconButton onPress={() => setIsSearchActive((p) => !p)} iconType="search" />
+            <IconButton
+              onPress={() => {
+                setIsAddModalVisible(true);
+                resetForm();
+              }}
+            />
+            <IconButton
+              onPress={() => setIsSearchActive((p) => !p)}
+              iconType="search"
+            />
           </View>
 
           {isSearchActive && (
@@ -255,7 +276,7 @@ export default function Recipes() {
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <RecipeCard
-                onDelete={handleDeleteRecipe}
+                onDelete={() => handleDeleteRecipe(item.id)}
                 recipe={item}
                 onPress={() => {
                   setSelectedRecipe(item);
@@ -282,6 +303,7 @@ export default function Recipes() {
             ingredientQuantity={ingredientQuantity}
             setIngredientQuantity={setIngredientQuantity}
             ingredientUnit={ingredientUnit}
+            setIngredientUnit={setIngredientUnit}
             instructionStep={instructionStep}
             setInstructionStep={setInstructionStep}
             handleAddIngredient={handleAddIngredient}
@@ -290,19 +312,8 @@ export default function Recipes() {
             resetForm={resetForm}
             onClose={() => setIsAddModalVisible(false)}
             unitSettings={unitSettings}
-          />
-
-          <RecipeEditForm
-            visible={isEditModalVisible}
-            recipe={recipe}
-            setRecipe={setRecipe}
-            ingredientName={ingredientName}
-            setIngredientName={setIngredientName}
-            instructionStep={instructionStep}
-            setInstructionStep={setInstructionStep}
-            handleEditRecipe={handleEditRecipe}
-            confirmClose={confirmClose}
-            onClose={() => setIsEditModalVisible(false)}
+            servingSize={servingSize}
+            setServingSize={setServingSize}
           />
 
           <RecipeDetailModal
@@ -310,6 +321,7 @@ export default function Recipes() {
             recipe={selectedRecipe}
             onClose={() => setIsRecipeDetailVisible(false)}
             onEdit={() => openEditModal(selectedRecipe)}
+            onChangeServings={handleChangeServings}
           />
         </>
       ) : (
