@@ -27,8 +27,7 @@ const ProteinStep = ({
     "Muu",
   ];
 
-  // Tarkista onko käyttäjän ruokavalio kasvipohjainen
-  const isPlantBased = selectedDiets.vegan || selectedDiets.vege;
+  const isPlantBased = selectedDiets.includes("vegan") || selectedDiets.includes("vege");
 
   const filteredProteins = allProteins.filter((protein) => {
     if (isPlantBased) {
