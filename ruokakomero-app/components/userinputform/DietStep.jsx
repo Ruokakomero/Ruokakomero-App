@@ -1,63 +1,50 @@
 // Tämä komponentti siirrettiin UserInputForm.jsx:stä refaktoroinnin yhteydessä (Sprintti 4)
 
 import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View } from "react-native";
+import ButtonComponent from "../ButtonComponent";
+import styles from "../../styles/userInputFormStyles";
+import TextThemed from "../TextThemed";
+import TabComponent from "../TabComponent";
+import textStyles from "../../styles/textStyles";
 
-const DietStep = ({ selectedDiets, setSelectedDiets, handleBack, handleSubmit }) => {
-  const diets = ["Vegaani", "Gluteeniton", "Laktoositon", "Kasvis"];
-
+const DietStep = ({
+  dietOptions,
+  selectedDiets,
+  setSelectedDiets,
+  handleNext,
+}) => {
   return (
-    <View style={{ alignItems: "center" }}>
-      <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 15 }}>Valitse ruokavalio:</Text>
-      {diets.map((diet) => (
-        <TouchableOpacity
-          key={diet}
-          onPress={() => {
-            setSelectedDiets((prev) =>
-              prev.includes(diet) ? prev.filter((d) => d !== diet) : [...prev, diet]
-            );
-          }}
-          style={{
-            backgroundColor: selectedDiets.includes(diet) ? "#4CAF50" : "#f8f8f8",
-            padding: 15,
-            marginVertical: 10,
-            borderRadius: 10,
-            width: "80%",
-            alignItems: "center",
-          }}
-        >
-          <Text style={{ color: selectedDiets.includes(diet) ? "white" : "black" }}>
-            {diet}
-          </Text>
-        </TouchableOpacity>
-      ))}
+    <View style={styles.container}>
+      <View style={styles.stepContainer}>
+        <TextThemed style={textStyles.titleLargeB}>
+          Valitse ruokavalio:
+        </TextThemed>
 
-      <View style={{ flexDirection: "row", justifyContent: "space-between", width: "80%" }}>
-        <TouchableOpacity
-          style={{
-            backgroundColor: "#f8f8f8",
-            padding: 15,
-            borderRadius: 10,
-            width: "45%",
-            alignItems: "center",
-          }}
-          onPress={handleBack}
-        >
-          <Text style={{ fontWeight: "bold", fontSize: 16 }}>Edellinen</Text>
-        </TouchableOpacity>
+        <View style={styles.optionList}>
+          {dietOptions.map((diet) => (
+            <ButtonComponent
+              key={diet}
+              onPress={() => {
+                setSelectedDiets((prev) =>
+                  prev.includes(diet)
+                    ? prev.filter((d) => d !== diet)
+                    : [...prev, diet]
+                );
+              }}
+              type={selectedDiets.includes(diet) ? "enabled" : "disabled"}
+              content={diet}
+            />
+          ))}
+        </View>
+      </View>
 
-        <TouchableOpacity
-          style={{
-            backgroundColor: "#4CAF50",
-            padding: 15,
-            borderRadius: 10,
-            width: "45%",
-            alignItems: "center",
-          }}
-          onPress={handleSubmit}
-        >
-          <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 16 }}>Näytä reseptit</Text>
-        </TouchableOpacity>
+      <View style={styles.footer}>
+        <TabComponent
+          closedTab="seuraava"
+          closedTabOnPress={handleNext}
+          hideLeft="true"
+        />
       </View>
     </View>
   );

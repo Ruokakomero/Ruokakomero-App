@@ -1,7 +1,7 @@
 // Tämä komponentti siirrettiin ShowRecipes.jsx:stä refaktoroinnin yhteydessä (Sprintti 4)
 import React from "react";
 import { View, Text, Button, TouchableOpacity  } from "react-native";
-import styles from "./ShowRecipeStyles";
+import styles from "../../styles/ShowRecipeStyles";
 
 const GeneratedRecipeView = ({ recipe, onSave, onRegenerate, saving }) => {
   return (
