@@ -14,8 +14,8 @@ import ButtonComponent from "../components/ButtonComponent";
 import screensStyles from "../styles/screensStyles";
 import textStyles from "../styles/textStyles";
 import componentStyles from "../styles/componentStyles";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
+import { getDatabase, ref, get, set } from "firebase/database";
 
 export default function Login({ navigation, handleLogin, route }) {
   const [email, setEmail] = useState("");
@@ -29,7 +29,7 @@ export default function Login({ navigation, handleLogin, route }) {
       Alert.alert("Syötä sähköpostiosoite ensin");
       return;
     }
-  
+
     try {
       const auth = getAuth();
       await sendPasswordResetEmail(auth, email);
@@ -50,15 +50,31 @@ export default function Login({ navigation, handleLogin, route }) {
     setLoading(false);
 
     if (result.success) {
-      const isFirstLogin = await AsyncStorage.getItem("firstLoginDone");
+      const auth = getAuth();
+      const database = getDatabase();
+      const user = auth.currentUser;
+
+      let isFirstLogin = false;
+
+      try {
+        const snapshot = await get(ref(database, `users/${user.uid}/firstLoginDone`));
+        if (snapshot.exists()) {
+          isFirstLogin = !snapshot.val(); // false tarkoittaa eka kerta
+        }
+      } catch (error) {
+        console.error("Virhe haettaessa firstLoginDone:", error);
+      }
 
       setEmail("");
       setPassword("");
 
-      if (isFirstLogin !== "true") {
-        await AsyncStorage.setItem("firstLoginDone", "true");
+      if (isFirstLogin) {
+        try {
+        } catch (error) {
+          console.error("Virhe asetettaessa firstLoginDone:", error);
+        }
         console.log("First login, setting tab to Profiili");
-        handleLogin("Profiili"); // Tämä on nyt App.js:stä tuleva funktio
+        handleLogin("Profiili");
       } else {
         console.log("Not first login, setting tab to Etusivu");
         handleLogin("Etusivu");
@@ -114,12 +130,11 @@ export default function Login({ navigation, handleLogin, route }) {
               disabled={loading}
             />
             <ButtonComponent
-                content="Unohtuiko salasana?"
-                type="text"
-                textStyle="light"
-                onPress={handleForgotPassword}
-                
-              />
+              content="Unohtuiko salasana?"
+              type="text"
+              textStyle="light"
+              onPress={handleForgotPassword}
+            />
 
             <View style={componentStyles.textContainer}>
               <TextThemed style={textStyles.bodyLargeLight}>
