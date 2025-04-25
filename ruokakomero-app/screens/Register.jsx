@@ -84,8 +84,8 @@ export default function Register({ navigation }) {
       setPasswordError("");
       Alert.alert("Rekisteröityminen onnistui!");
 
-      // Navigoidaan login-näkymään
-      navigation.navigate("Kirjaudu");
+
+      await auth.signOut();
     } catch (error) {
       setLoading(false);
       Alert.alert("Rekisteröityminen epäonnistui!", error.message);
