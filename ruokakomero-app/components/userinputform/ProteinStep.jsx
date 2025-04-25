@@ -16,6 +16,7 @@ const ProteinStep = ({
   otherProtein,
   setOtherProtein,
   handleNext,
+  handleBack,
   selectedDiets = {},
 }) => {
   const allProteins = [
@@ -72,11 +73,13 @@ const ProteinStep = ({
       )}
 
       <View style={styles.footer}>
-        <TabComponent
-          closedTab="seuraava"
-          closedTabOnPress={handleNext}
-          hideLeft="true"
-        />
+       <TabComponent
+                 openTab="edellinen"
+                 closedTab="seuraava"
+                 openTabOnPress={handleBack}
+                 closedTabOnPress={handleNext}
+                 openedTabType="disabled"
+               />
       </View>
     </View>
   );

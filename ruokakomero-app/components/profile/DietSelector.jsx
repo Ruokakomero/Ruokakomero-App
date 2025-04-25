@@ -9,31 +9,32 @@ import { Button } from "react-native-paper";
 import ButtonComponent from "../ButtonComponent";
 import { ScrollView } from "react-native-gesture-handler";
 
-const dietOptions = {
-  vege: "Kasvisruoka",
-  glutenFree: "Gluteeniton",
-  lactoseFree: "Laktoositon",
-  vegan: "Vegaani",
-};
-
-export default function DietSelector({ userDiet = {}, toggleDiet, ...props }) {
+export default function DietSelector({
+  userDiet = {},
+  toggleDiet,
+  dietOptions = [],
+  ...props
+}) {
   return (
     <View style={componentStyles.section}>
-    <View style={componentStyles.dietSelectorWrapper}>
-      <TextThemed style={textStyles.titleLargeB}>Ruokavalio</TextThemed>
-      <View  style={componentStyles.dietSelectorContainer}>
-        <ScrollView horizontal={true} contentContainerStyle={componentStyles.dietContainer}>
-          {Object.keys(dietOptions).map((dietType) => (
-            <ButtonComponent
-              key={dietType}
-              type={userDiet[dietType] ? "enabled" : "disabled"}
-              onPress={() => toggleDiet(dietType)}
-              content={dietOptions[dietType]}
-            />
-          ))}
-        </ScrollView>
+      <View style={componentStyles.dietSelectorWrapper}>
+        <TextThemed style={textStyles.titleLargeB}>Ruokavalio</TextThemed>
+        <View style={componentStyles.dietSelectorContainer}>
+          <ScrollView
+            horizontal={true}
+            contentContainerStyle={componentStyles.dietContainer}
+          >
+            {dietOptions.map(({ type, label }) => (
+              <ButtonComponent
+                key={type}
+                type={userDiet[type] ? "enabled" : "disabled"}
+                onPress={() => toggleDiet(type)}
+                content={label}
+              />
+            ))}
+          </ScrollView>
+        </View>
       </View>
-    </View>
     </View>
   );
 }

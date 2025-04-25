@@ -15,6 +15,7 @@ import DietStep from "../components/userinputform/DietStep";
 import styles from "../styles/userInputFormStyles";
 
 import useCurrentUser from "../configuration/useCurrentUser";
+import useDietOptions from "../configuration/useDietOptions";
 import { ref, onValue } from "firebase/database";
 import { database } from "../configuration/firebaseConfig";
 
@@ -23,26 +24,24 @@ const UserInputForm = ({ navigation }) => {
   const [selectedProteins, setSelectedProteins] = useState([]);
   const [selectedCarbs, setSelectedCarbs] = useState([]);
   const [servingSize, setServingSize] = useState(2);
-  const [selectedDiets, setSelectedDiets] = useState({});
+  const [selectedDiets, setSelectedDiets] = useState([]);
   const [otherProtein, setOtherProtein] = useState("");
   const [otherCarb, setOtherCarb] = useState("");
-  const [dietOptions, setDietOptions] = useState([]);
+  const masterOptions = useDietOptions();
   const { user, userId, loading: userLoading } = useCurrentUser();
 
-  useEffect(() => {
-    if (userLoading || !userId) return;
+useEffect(() => {
+  if (!userId) return;
+  const dietRef = ref(database, `users/${userId}/diet`);
+  const unsubscribe = onValue(dietRef, (snapshot) => {
+    const dietObj = snapshot.val() || {};
+    setSelectedDiets(
+      Object.keys(dietObj).filter((k) => dietObj[k])
+    );
+  });
+  return () => unsubscribe();
+}, [userId]);
 
-    const dietRef = ref(database, `users/${userId}/diet`);
-    const unsubscribe = onValue(dietRef, (snapshot) => {
-      const dietObj = snapshot.val() || {};
-      setDietOptions(Object.keys(dietObj));
-      setSelectedDiets(
-        Object.keys(dietObj).filter((opt) => dietObj[opt])
-      );
-    });
-
-    return () => unsubscribe();
-  }, [userId, userLoading]);
 
   const handleNext = () => setCurrentStep((prev) => prev + 1);
   const handleBack = () => setCurrentStep((prev) => prev - 1);
@@ -69,7 +68,7 @@ const UserInputForm = ({ navigation }) => {
           <View style={styles.container}>
             {currentStep === 1 && (
               <DietStep
-                dietOptions={dietOptions}
+                dietOptions={masterOptions}
                 selectedDiets={selectedDiets}
                 setSelectedDiets={setSelectedDiets}
                 handleNext={handleNext}
@@ -83,6 +82,7 @@ const UserInputForm = ({ navigation }) => {
                 otherProtein={otherProtein}
                 setOtherProtein={setOtherProtein}
                 handleNext={handleNext}
+                handleBack={handleBack}
                 selectedDiets={selectedDiets}
               />
             )}

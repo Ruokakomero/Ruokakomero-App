@@ -16,15 +16,17 @@ import PasswordChanger from "../components/profile/PasswordChanger";
 import DietSelector from "../components/profile/DietSelector";
 import ProfileActions from "../components/profile/ProfileActions";
 import TextThemed from "../components/TextThemed";
+import useDietOptions from "../configuration/useDietOptions";
 
 import textStyles from "../styles/textStyles";
 import screensStyles from "../styles/screensStyles";
 
 export default function Profile({ handleLogout }) {
+  const dietOptions = useDietOptions();
   const auth = getAuth();
   const database = getDatabase();
   const { user, userId, loading } = useCurrentUser();
-
+  
   const [editableUser, setEditableUser] = useState(null);
   const [newPassword, setNewPassword] = useState("");
 
@@ -42,7 +44,7 @@ export default function Profile({ handleLogout }) {
       <SafeAreaView
         style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
       >
-        <Text>Ladataan käyttäjätietoja…</Text>
+        <TextThemed style={textStyles.bodyLargeB}>Ladataan käyttäjätietoja…</TextThemed>
       </SafeAreaView>
     );
   }
@@ -52,14 +54,18 @@ export default function Profile({ handleLogout }) {
       <SafeAreaView
         style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
       >
-        <Text>Ei kirjautunutta käyttäjää.</Text>
+        <TextThemed style={textStyles.bodyLargeB}>Ei kirjautunutta käyttäjää.</TextThemed>
       </SafeAreaView>
     );
   }
 
   const handleSave = async () => {
     try {
-      await set(ref(database, `users/${userId}`), editableUser);
+      const newDiet = {};
+    dietOptions.forEach(({ type }) => {
+      newDiet[type] = !!editableUser.diet?.[type];
+    });
+      await set(ref(database, `users/${userId}`), { ...editableUser, diet: newDiet });
       Alert.alert("Tiedot tallennettu onnistuneesti!");
     } catch (error) {
       Alert.alert("Virhe tallennuksessa", error.message);
@@ -143,7 +149,7 @@ export default function Profile({ handleLogout }) {
             handlePasswordChange={handlePasswordChange}
           />
 
-          <DietSelector userDiet={editableUser.diet} toggleDiet={toggleDiet} />
+          <DietSelector userDiet={editableUser.diet} toggleDiet={toggleDiet} dietOptions={dietOptions} />
 
           <ProfileActions
             handleSave={handleSave}

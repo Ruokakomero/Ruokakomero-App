@@ -22,18 +22,18 @@ const DietStep = ({
         </TextThemed>
 
         <View style={styles.optionList}>
-          {dietOptions.map((diet) => (
+          {dietOptions.map(({type, label}) => (
             <ButtonComponent
-              key={diet}
+              key={type}
               onPress={() => {
                 setSelectedDiets((prev) =>
-                  prev.includes(diet)
-                    ? prev.filter((d) => d !== diet)
-                    : [...prev, diet]
+                  prev.includes(type)
+                    ? prev.filter((d) => d !== type)
+                    : [...prev, type]
                 );
               }}
-              type={selectedDiets.includes(diet) ? "enabled" : "disabled"}
-              content={diet}
+              type={selectedDiets.includes(type) ? "enabled" : "disabled"}
+              content={label}
             />
           ))}
         </View>

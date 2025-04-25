@@ -1,4 +1,4 @@
-// configuration/useCurrentUser.jsx
+
 
 import { useState, useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
@@ -25,7 +25,6 @@ const useCurrentUser = () => {
       const snap    = await get(userRef);
 
       if (!snap.exists()) {
-        // First time: write a default skeleton
         const initData = {
           ...defaultUserData,
           email: currentUser.email || "",
