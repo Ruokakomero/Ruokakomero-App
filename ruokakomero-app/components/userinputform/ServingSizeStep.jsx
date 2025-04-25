@@ -35,14 +35,15 @@ const ServingSizeStep = ({
           thumbTintColor={MainTheme.colors.highlightBlue}
         />
       </View>
-      
+
         <View
           style={styles.footer}>
           <TabComponent
             openTab="edellinen"
-            closedTab="seuraava"
-            handleOpenTab={handleBack}
-            handleClosedTab={handleNext}
+            closedTab="Luo resepti"
+            openedTabOnPress={handleBack}
+            closedTabOnPress={handleNext}
+            openedTabType="disabled"
           />
         </View>
       
