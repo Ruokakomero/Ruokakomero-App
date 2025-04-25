@@ -1,8 +1,8 @@
 // Tyylitiedosto ShowRecipes-komponentin refaktoroinnin yhteydessä luoduille komponenteille (Sprintti 4)
 import { StyleSheet } from "react-native";
-import MainTheme from "../../styles/MainTheme";
-import componentStyles from "../../styles/componentStyles";
-import textStyles from "../../styles/textStyles";
+import MainTheme from "./MainTheme";
+import componentStyles from "./componentStyles";
+import textStyles from "./textStyles";
 
 const styles = StyleSheet.create({
   container: {

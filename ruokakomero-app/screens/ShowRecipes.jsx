@@ -11,7 +11,7 @@ import { useNavigation } from "@react-navigation/native";
 import GeneratedRecipeView from "../components/showrecipes/GeneratedRecipeView";
 import RecipeLoadingIndicator from "../components/showrecipes/RecipeLoadingIndicator";
 import RecipeErrorMessage from "../components/showrecipes/RecipeErrorMessage";
-import styles from "../components/showrecipes/ShowRecipeStyles";
+import styles from "../styles/ShowRecipeStyles";
 
 
 const removeControlChars = (obj) => {
