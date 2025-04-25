@@ -1,13 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
+import {
+  View,
+  TouchableWithoutFeedback,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from "react-native";
 
 import ProteinStep from "../components/userinputform/ProteinStep";
 import CarbStep from "../components/userinputform/CarbStep";
 import ServingSizeStep from "../components/userinputform/ServingSizeStep";
 import DietStep from "../components/userinputform/DietStep";
+import styles from "../styles/userInputFormStyles";
 
-import { auth, database } from "../configuration/firebaseConfig";
-import { ref, get, child } from "firebase/database";
+import useCurrentUser from "../configuration/useCurrentUser";
+import { ref, onValue } from "firebase/database";
+import { database } from "../configuration/firebaseConfig";
 
 const UserInputForm = ({ navigation }) => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -17,35 +26,23 @@ const UserInputForm = ({ navigation }) => {
   const [selectedDiets, setSelectedDiets] = useState({});
   const [otherProtein, setOtherProtein] = useState("");
   const [otherCarb, setOtherCarb] = useState("");
+  const [dietOptions, setDietOptions] = useState([]);
+  const { user, userId, loading: userLoading } = useCurrentUser();
 
-  // Haetaan kirjautunut käyttäjä
   useEffect(() => {
-    const fetchUserDiet = async () => {
-      const user = auth.currentUser;
+    if (userLoading || !userId) return;
 
-      if (!user) {
-        console.warn("Ei kirjautunutta käyttäjää.");
-        return;
-      }
+    const dietRef = ref(database, `users/${userId}/diet`);
+    const unsubscribe = onValue(dietRef, (snapshot) => {
+      const dietObj = snapshot.val() || {};
+      setDietOptions(Object.keys(dietObj));
+      setSelectedDiets(
+        Object.keys(dietObj).filter((opt) => dietObj[opt])
+      );
+    });
 
-      // Haetaan käyttäjän ruokavalio
-      try {
-        const userRef = ref(database);
-        const snapshot = await get(child(userRef, `users/${user.uid}/diet`));
-
-        if (snapshot.exists()) {
-          const data = snapshot.val();
-          setSelectedDiets(data.diet || {});
-        } else {
-          console.warn("Käyttäjätietoja ei löytynyt.");
-        }
-      } catch (error) {
-        console.error("Virhe haettaessa käyttäjän ruokavaliota:", error);
-      }
-    };
-
-    fetchUserDiet();
-  }, []);
+    return () => unsubscribe();
+  }, [userId, userLoading]);
 
   const handleNext = () => setCurrentStep((prev) => prev + 1);
   const handleBack = () => setCurrentStep((prev) => prev - 1);
@@ -68,9 +65,18 @@ const UserInputForm = ({ navigation }) => {
       keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 80}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}>
-          <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: 20 }}>
+        <ScrollView contentContainerStyle={styles.scrollView}>
+          <View style={styles.container}>
             {currentStep === 1 && (
+              <DietStep
+                dietOptions={dietOptions}
+                selectedDiets={selectedDiets}
+                setSelectedDiets={setSelectedDiets}
+                handleNext={handleNext}
+              />
+            )}
+
+            {currentStep === 2 && (
               <ProteinStep
                 selectedProteins={selectedProteins}
                 setSelectedProteins={setSelectedProteins}
@@ -81,7 +87,7 @@ const UserInputForm = ({ navigation }) => {
               />
             )}
 
-            {currentStep === 2 && (
+            {currentStep === 3 && (
               <CarbStep
                 selectedCarbs={selectedCarbs}
                 setSelectedCarbs={setSelectedCarbs}
@@ -92,11 +98,11 @@ const UserInputForm = ({ navigation }) => {
               />
             )}
 
-            {currentStep === 3 && (
+            {currentStep === 4 && (
               <ServingSizeStep
                 servingSize={servingSize}
                 setServingSize={(value) => setServingSize(Math.round(value))}
-                handleNext={handleNext}
+                handleNext={handleSubmit}
                 handleBack={handleBack}
               />
             )}
@@ -106,69 +112,5 @@ const UserInputForm = ({ navigation }) => {
     </KeyboardAvoidingView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollView: {
-    flexGrow: 1,
-    justifyContent: "center",
-  },
-  inner: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  stepContainer: {
-    width: "100%",
-    alignItems: "center",
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 15,
-    color: "#333",
-  },
-  optionButton: {
-    backgroundColor: "#f8f8f8",
-    padding: 15,
-    marginVertical: 10,
-    borderRadius: 10,
-    width: "80%",
-    alignItems: "center",
-  },
-  selectedOption: {
-    backgroundColor: "#4CAF50",
-  },
-  slider: {
-    width: "80%",
-    marginVertical: 30,
-  },
-  button: {
-    backgroundColor: "#4CAF50",
-    padding: 15,
-    marginTop: 20,
-    borderRadius: 10,
-    width: "80%",
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-  textInput: {
-    height: 40,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingLeft: 10,
-    width: "80%",
-    marginTop: 10,
-  },
-});
 
 export default UserInputForm;

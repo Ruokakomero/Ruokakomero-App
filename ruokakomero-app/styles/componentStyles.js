@@ -120,8 +120,16 @@ const componentStyles = StyleSheet.create({
     flexDirection: "row",
     marginTop: 20,
     justifyContent: "space-between",
-    alignItems: "center",
-    
+  },
+  tabContainerRight: {
+    flexDirection: "row",
+    marginTop: 20,
+    justifyContent: "flex-end",
+  },
+  tabContainerLeft: {
+    flexDirection: "row",
+    marginTop: 20,
+    justifyContent: "flex-start",
   },
 
   // Swipe actions
