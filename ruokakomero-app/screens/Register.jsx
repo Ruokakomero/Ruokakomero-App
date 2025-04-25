@@ -18,7 +18,6 @@ const database = getDatabase();
 export default function Register({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [username, setUsername] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -44,7 +43,7 @@ export default function Register({ navigation }) {
   };
 
   const handleRegister = async () => {
-    if (!email || !password || !username) {
+    if (!email || !password) {
       Alert.alert("Virhe", "Täytä kaikki kentät!");
       return;
     }
@@ -68,7 +67,6 @@ export default function Register({ navigation }) {
 
       // Tallennetaan käyttäjän tiedot tietokantaan
       await set(ref(database, `users/${user.uid}`), {
-        username: username,
         email: email,
         diet: {
           vege: false,
@@ -83,7 +81,6 @@ export default function Register({ navigation }) {
       // Tyhjennetään kentät ja ilmoitetaan käyttäjälle
       setEmail("");
       setPassword("");
-      setUsername("");
       setPasswordError("");
       Alert.alert("Rekisteröityminen onnistui!");
 
@@ -110,14 +107,7 @@ export default function Register({ navigation }) {
             Rekisteröidy
           </TextThemed>
 
-          <InputFieldComponent
-            header="käyttäjätunnus"
-            placeholder="Käyttäjätunnus"
-            value={username}
-            onChangeText={setUsername}
-            editable={!loading}
-            styleType="light"
-          />
+    
           <InputFieldComponent
             header="sähköposti"
             placeholder="Sähköposti"
