@@ -473,6 +473,31 @@ Firebase palauttaa kirjautumisen jälkeen automaattisesti ID-tokenin, jota käyt
 
 --- 
 
+## 9. Käyttäjän rekisteröinti ja ensimmäisen kirjautumisen logiikka
+
+
+### Rekisteröityminen
+  
+ 1. Käyttäjä täyttää sähköpostin ja salasanan rekisteröintilomakkeessa.
+ 2. Rekisteröinnin yhteydessä luodaan uusi käyttäjä Firebase Authenticationiin ja tallennetaan perustiedot Firebase Databaseen.
+ 3. Käyttäjän tietojen yhteyteen tallennetaan myös firstLoginDone: false, joka kertoo että käyttäjä ei ole vielä täyttänyt profiilitietojaan.
+ 4. Rekisteröitymisen jälkeen käyttäjä kirjataan ulos automaattisesti (auth.signOut()), jotta hänen täytyy erikseen kirjautua sisään.
+
+### Kirjautuminen
+  1. Kun käyttäjä kirjautuu sisään, Login-näkymä tarkistaa käyttäjän firstLoginDone-arvon tietokannasta.
+  2. Jos firstLoginDone === false, käyttäjä ohjataan Profiili-välilehdelle (handleLogin("Profiili")).
+  3. Jos firstLoginDone === true, käyttäjä ohjataan suoraan Etusivulle (handleLogin("Etusivu")).
+
+### Navigointi
+  1. handleLogin-funktio asettaa sovelluksen initialTab-tilan joko "Profiili" tai "Etusivu".
+  2. Kun käyttäjä on kirjautuneena (user on olemassa), sovellus näyttää AppStackin, joka antaa initialTab-arvon MainTabs-näkymälle.
+  3. MainTabs-komponentti avaa oikean välilehden (initialRouteName) käyttäjän kirjautumisen mukaan.
+
+### Profiilin täyttäminen
+  1. Profiilisivulla käyttäjä täyttää lisätietonsa.
+  2. Kun tiedot on tallennettu, sovellus päivittää tietokantaan firstLoginDone: true.
+  3. Tämän jälkeen kaikilla tulevilla kirjautumiskerroilla käyttäjä päätyy suoraan Etusivulle.
+
 ## 10. Testaus 
 
 ### Testausalueet
