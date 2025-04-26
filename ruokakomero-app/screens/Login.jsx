@@ -44,45 +44,50 @@ export default function Login({ navigation, handleLogin, route }) {
       Alert.alert("Virhe", "Syötä sähköposti ja salasana");
       return;
     }
-
+  
     setLoading(true);
     const result = await AuthScreen.handleLogin(email, password);
     setLoading(false);
-
+  
     if (result.success) {
       const auth = getAuth();
       const database = getDatabase();
       const user = auth.currentUser;
-
-      let isFirstLogin = false;
-
+  
+      if (!user) {
+        Alert.alert("Virhe", "Kirjautuminen epäonnistui, yritä uudelleen.");
+        return;
+      }
+  
       try {
         const snapshot = await get(ref(database, `users/${user.uid}/firstLoginDone`));
         if (snapshot.exists()) {
-          isFirstLogin = !snapshot.val(); // false tarkoittaa eka kerta
+          const firstLoginDone = snapshot.val();
+          console.log("FirstLoginDone data:", firstLoginDone);
+  
+          setEmail("");
+          setPassword("");
+  
+          if (!firstLoginDone) {
+            console.log("First login, setting tab to Profiili");
+            handleLogin("Profiili");
+          } else {
+            console.log("Not first login, setting tab to Etusivu");
+            handleLogin("Etusivu");
+          }
+        } else {
+          console.log("FirstLoginDone tieto puuttuu, ohjataan profiiliin varmuuden vuoksi.");
+          handleLogin("Profiili");
         }
       } catch (error) {
         console.error("Virhe haettaessa firstLoginDone:", error);
-      }
-
-      setEmail("");
-      setPassword("");
-
-      if (isFirstLogin) {
-        try {
-        } catch (error) {
-          console.error("Virhe asetettaessa firstLoginDone:", error);
-        }
-        console.log("First login, setting tab to Profiili");
-        handleLogin("Profiili");
-      } else {
-        console.log("Not first login, setting tab to Etusivu");
-        handleLogin("Etusivu");
+        Alert.alert("Virhe", "Tietojen hakeminen epäonnistui.");
       }
     } else {
       Alert.alert("Kirjautuminen epäonnistui!", result.error);
     }
   };
+  
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
