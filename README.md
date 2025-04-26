@@ -235,10 +235,10 @@ Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunnitel
 
 ## 📁 API-endpointit (Firebase polkuina)
 
-###  Käyttäjät (Recipes)
+###  Käyttäjät
 | Metodi | Polku | Kuvaus |
 |--------|-------|--------|
-| GET    | `/users/` | Palauttaa kaikki sovelluksen resekäyttäjät |
+| GET    | `/users/` | Palauttaa kaikki sovelluksen käyttäjät |
 | POST   | `/users/`| Luo uuden käyttäjän |
 | PATCH  | `/users/{userId}` | Päivittää olemassa olevan käyttäjän |
 | DELETE | `/users/{userId}/` | Poistaa olemassa olevan käyttäjän |
@@ -265,7 +265,7 @@ Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunnitel
 | Metodi | Polku | Kuvaus |
 |--------|-------|--------|
 | GET    | `/users/{userId}/recipes` | Palauttaa kaikki käyttäjän reseptit |
-| POST   | `/users/{userId}/recipes` | Luo uusi resepti |
+| POST   | `/users/{userId}/recipes` | Luo uuden reseptin |
 | PATCH  | `/users/{userId}/recipes/{recipeId}` | Päivittää olemassa olevan reseptin |
 | DELETE | `/users/{userId}/recipes/{recipeId}` | Poistaa reseptin |
 
@@ -354,8 +354,8 @@ Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunnitel
 | Metodi | Polku | Kuvaus |
 |--------|-------|--------|
 | GET    | `/users/{userId}/recipeCollections` | Palauttaa kaikki kokoelmat |
-| POST   | `/users/{userId}/recipeCollections` | Luo uusi kokoelma |
-| PATCH  | `/users/{userId}/recipeCollections/{collectionId}` | Lisää resepti kokoelmaan |
+| POST   | `/users/{userId}/recipeCollections` | Luo uuden kokoelman |
+| PATCH  | `/users/{userId}/recipeCollections/{collectionId}` | Lisää reseptin kokoelmaan |
 | DELETE | `/users/{userId}/recipeCollections/{collectionId}` | Poistaa kokoelman |
 
 **Esimerkki GET-datasta:**
