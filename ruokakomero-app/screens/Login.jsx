@@ -73,7 +73,7 @@ export default function Login({ navigation, handleLogin, route }) {
             handleLogin("Profiili");
           } else {
             console.log("Not first login, setting tab to Etusivu");
-            handleLogin("Etusivu");
+            handleLogin("Reseptit");
           }
         } else {
           console.log("FirstLoginDone tieto puuttuu, ohjataan profiiliin varmuuden vuoksi.");
