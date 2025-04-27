@@ -18,6 +18,7 @@ import styles from "../styles/userInputFormStyles";
 import useCurrentUser from "../configuration/useCurrentUser";
 import { ref, onValue } from "firebase/database";
 import { database } from "../configuration/firebaseConfig";
+import screensStyles from "../styles/screensStyles";
 
 const UserInputForm = ({ navigation }) => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -91,7 +92,7 @@ const UserInputForm = ({ navigation }) => {
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <ScrollView contentContainerStyle={styles.scrollView}>
-          <View style={styles.container}>
+          <View style={screensStyles.appContainer}>
             {currentStep === 1 && (
               <DietStep
                 dietOptions={dietOptions}

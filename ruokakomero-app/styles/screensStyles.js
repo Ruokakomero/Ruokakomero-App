@@ -9,9 +9,19 @@ const screensStyles = StyleSheet.create({
 
   stackContainer: {
     flex: 1,
-    paddingTop: 64,
+    paddingTop: 0,
     backgroundColor: MainTheme.colors.textLight,
   },
+  
+  appContainer: {
+    flex: 1,
+    paddingTop: 64,
+    paddingHorizontal: 24,
+    backgroundColor: MainTheme.colors.textLight,
+  },
+
+
+
 
   profileContainer: {
     paddingHorizontal: 24,

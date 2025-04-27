@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { database } from '../configuration/firebaseConfig';
 import { ref, push, onValue, remove, update } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
+import screensStyles from '../styles/screensStyles';
 
 export default function ShoppingList() {
   const auth = getAuth();
@@ -139,7 +140,7 @@ export default function ShoppingList() {
   
 
   return (
-    <View style={styles.container}>
+    <View style={screensStyles.appContainer}>
       <Text style={styles.title}>Ostoslista</Text>
       <FlatList
         data={items}

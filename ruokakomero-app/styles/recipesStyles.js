@@ -323,10 +323,5 @@ export default StyleSheet.create({
     padding: 8,
   },
 
-  // General container
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: "#fff",
-  },
+ 
 });

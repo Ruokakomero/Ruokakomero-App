@@ -28,7 +28,7 @@ const ProteinStep = ({
     "Muu",
   ];
 
-  const isPlantBased = selectedDiets.includes("vegan", "") || selectedDiets.includes("vege");
+  const isPlantBased = selectedDiets.includes("vegan") || selectedDiets.includes("vege");
 
   const filteredProteins = allProteins.filter((protein) => {
     if (isPlantBased) {
