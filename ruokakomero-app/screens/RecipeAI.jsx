@@ -17,7 +17,7 @@ export async function getRecipe(query) {
   ]
 }
 
-Käytä mahdollisimman tarkkoja määriä ja selkeitä valmistusohjeita. Älä kuitenkaan lisää valmistusohjeeseen numeroita. Tässä käyttäjän antamat tiedot: "${query}".
+Käytä mahdollisimman tarkkoja määriä ja selkeitä valmistusohjeita. Älä kuitenkaan lisää valmistusohjeeseen numeroita. Tässä käyttäjän antamat tiedot: "${query}", jos käyttäjä valitsee kasviproteiinin tai vege/vegaani ruokavalion ÄLÄ laita reseptiin lihaa.
 `;
 
     try {
