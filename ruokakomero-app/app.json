@@ -26,6 +26,12 @@
     },
     "plugins": [
       "expo-font"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "f322cb3f-78c5-4363-9118-57c6578fcffa"
+      }
+    },
+    "owner": "henrikul"
   }
 }
