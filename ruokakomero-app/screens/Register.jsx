@@ -10,7 +10,7 @@ import InputFieldComponent from "../components/InputFieldComponent";
 import screensStyles from "../styles/screensStyles";
 import ButtonComponent from "../components/ButtonComponent";
 import { LinearGradient } from "expo-linear-gradient";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 const auth = getAuth();
 const database = getDatabase();
@@ -76,7 +76,8 @@ export default function Register({ navigation }) {
       });
 
       // Merkataan että profiilin täyttö on tekemättä (eka login)
-      await AsyncStorage.setItem("firstLoginDone", "false");
+      await set(ref(database, `users/${user.uid}/firstLoginDone`), false);
+ 
 
       // Tyhjennetään kentät ja ilmoitetaan käyttäjälle
       setEmail("");
@@ -86,6 +87,7 @@ export default function Register({ navigation }) {
 
 
       await auth.signOut();
+
     } catch (error) {
       setLoading(false);
       Alert.alert("Rekisteröityminen epäonnistui!", error.message);

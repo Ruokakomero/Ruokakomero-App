@@ -14,7 +14,11 @@ SplashScreen.preventAutoHideAsync();
 export default function App() {
   const { user, loading: authLoading } = useCurrentUser();
   const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [initialTab, setInitialTab] = useState("Reseptit"); // <- Lisää tämä
 
+  const handleLogin = (tabName) => {
+    setInitialTab(tabName);
+  };
 
   useEffect(() => {
     Font.loadAsync({
@@ -27,13 +31,11 @@ export default function App() {
       .catch((err) => console.warn("Font loading error:", err));
   }, []);
 
-
   useEffect(() => {
     if (fontsLoaded && !authLoading) {
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded, authLoading]);
-
 
   if (!fontsLoaded || authLoading) {
     return null;
@@ -43,9 +45,9 @@ export default function App() {
     <GestureHandlerRootView style={screensStyles.stackContainer}>
       <NavigationContainer>
         {user ? (
-          <AppStack />
+          <AppStack initialTab={initialTab} />  
         ) : (
-          <AuthStack />
+          <AuthStack handleLogin={handleLogin} />  
         )}
       </NavigationContainer>
     </GestureHandlerRootView>

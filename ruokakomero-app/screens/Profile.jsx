@@ -60,6 +60,8 @@ export default function Profile({ handleLogout }) {
   const handleSave = async () => {
     try {
       await set(ref(database, `users/${userId}`), editableUser);
+         // kun tiedot on tallennettu, käyttäjän tietoihin aeteteaan firstLogindone = true, jolloin käyttäjä päätuyy jatkossa kirjautuessaan reseptisivulle eikä profiiliin
+    await set(ref(database, `users/${userId}/firstLoginDone`), true);
       Alert.alert("Tiedot tallennettu onnistuneesti!");
     } catch (error) {
       Alert.alert("Virhe tallennuksessa", error.message);
@@ -115,16 +117,15 @@ export default function Profile({ handleLogout }) {
     try {
       await signOut(auth);
       await AsyncStorage.removeItem("isLoggedIn");
-      handleLogout();
     } catch (error) {
       console.log("Virhe", error.message);
     }
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1}}>
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
+        style={{ flex: 1}}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         <ScrollView contentContainerStyle={screensStyles.profileContainer}>

@@ -41,7 +41,7 @@ const ServingSizeStep = ({
           <TabComponent
             openTab="edellinen"
             closedTab="Luo resepti"
-            openedTabOnPress={handleBack}
+            openTabOnPress={handleBack}
             closedTabOnPress={handleNext}
             openedTabType="disabled"
           />

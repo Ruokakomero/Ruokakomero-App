@@ -16,6 +16,7 @@ const ProteinStep = ({
   otherProtein,
   setOtherProtein,
   handleNext,
+  handleBack,
   selectedDiets = {},
 }) => {
   const allProteins = [
@@ -27,8 +28,7 @@ const ProteinStep = ({
     "Muu",
   ];
 
-  // Tarkista onko käyttäjän ruokavalio kasvipohjainen
-  const isPlantBased = selectedDiets.vegan || selectedDiets.vege;
+  const isPlantBased = selectedDiets.includes("vegan") || selectedDiets.includes("vege");
 
   const filteredProteins = allProteins.filter((protein) => {
     if (isPlantBased) {
@@ -75,7 +75,9 @@ const ProteinStep = ({
         <TabComponent
           closedTab="seuraava"
           closedTabOnPress={handleNext}
-          hideLeft="true"
+          openTab="edellinen"
+          openTabOnPress={handleBack}
+          openedTabType="disabled"
         />
       </View>
     </View>

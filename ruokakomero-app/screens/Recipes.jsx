@@ -10,7 +10,7 @@ import {
   Text,
   ActivityIndicator,
 } from "react-native";
-import { ref, push, onValue, remove, update } from "firebase/database";
+import { ref, push, onValue, remove, update, set } from "firebase/database";
 import { getDatabase } from "firebase/database";
 import useCurrentUser from "../configuration/useCurrentUser";
 import TextThemed from "../components/TextThemed";
@@ -22,6 +22,7 @@ import TabComponent from "../components/TabComponent";
 import InputFieldComponent from "../components/InputFieldComponent";
 import IconButton from "../components/IconButton";
 import styles from "../styles/recipesStyles";
+import screensStyles from "../styles/screensStyles";
 
 export default function Recipes() {
   const database = getDatabase();
@@ -37,7 +38,6 @@ export default function Recipes() {
     servingSize: "",
     ingredients: [],
     instructions: [],
-    image: "",
   });
   const [currentStep, setCurrentStep] = useState(1);
   const [ingredientName, setIngredientName] = useState("");
@@ -57,8 +57,8 @@ export default function Recipes() {
     const unsubscribe = onValue(recipesRef, (snapshot) => {
       const data = snapshot.val() || {};
       const loaded = Object.entries(data).map(([key, val]) => ({
-        id: key,
         ...val,
+        id: key,
       }));
       setSavedRecipes(loaded);
     });
@@ -81,7 +81,6 @@ export default function Recipes() {
       name: "",
       ingredients: [],
       instructions: [],
-      image: "",
     });
     setIngredientName("");
     setIngredientQuantity(0);
@@ -128,13 +127,17 @@ export default function Recipes() {
       return;
     }
     try {
-      const newRef = push(ref(database, `users/${userId}/recipes`));
-      await update(ref(database, `users/${userId}/recipes/${newRef.key}`), {
-        ...recipe,
+      const recipesRef = ref(database, `users/${userId}/recipes`);
+      const newRef = push(recipesRef);
+
+      const payload = {
         id: newRef.key,
-        ...recipe,
+        name: recipe.name,
         servingSize: servingSize.toString(),
-      });
+        ingredients: recipe.ingredients,
+        instructions: recipe.instructions,
+      };
+      await set(newRef, payload);
       resetForm();
       setIsAddModalVisible(false);
     } catch (err) {
@@ -201,23 +204,6 @@ export default function Recipes() {
     }
   };
 
-  const confirmClose = () => {
-    if (JSON.stringify(recipe) !== JSON.stringify(originalRecipe)) {
-      Alert.alert("Varoitus", "Haluatko poistua tallentamatta muutokset?", [
-        { text: "Peruuta", style: "cancel" },
-        {
-          text: "Sulje tallentamatta",
-          style: "destructive",
-          onPress: () => {
-            resetForm();
-          },
-        },
-      ]);
-    } else {
-      resetForm();
-    }
-  };
-
   const openEditModal = (item) => {
     setOriginalRecipe({ ...item });
     setRecipe(item);
@@ -232,7 +218,7 @@ export default function Recipes() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={screensStyles.appContainer}>
       <TabComponent
         activeTab={activeTab}
         setActiveTab={setActiveTab}

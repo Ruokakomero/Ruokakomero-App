@@ -14,8 +14,8 @@ import ButtonComponent from "../components/ButtonComponent";
 import screensStyles from "../styles/screensStyles";
 import textStyles from "../styles/textStyles";
 import componentStyles from "../styles/componentStyles";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
+import { getDatabase, ref, get, set } from "firebase/database";
 
 export default function Login({ navigation, handleLogin, route }) {
   const [email, setEmail] = useState("");
@@ -29,7 +29,7 @@ export default function Login({ navigation, handleLogin, route }) {
       Alert.alert("Syötä sähköpostiosoite ensin");
       return;
     }
-  
+
     try {
       const auth = getAuth();
       await sendPasswordResetEmail(auth, email);
@@ -44,29 +44,50 @@ export default function Login({ navigation, handleLogin, route }) {
       Alert.alert("Virhe", "Syötä sähköposti ja salasana");
       return;
     }
-
+  
     setLoading(true);
     const result = await AuthScreen.handleLogin(email, password);
     setLoading(false);
-
+  
     if (result.success) {
-      const isFirstLogin = await AsyncStorage.getItem("firstLoginDone");
-
-      setEmail("");
-      setPassword("");
-
-      if (isFirstLogin !== "true") {
-        await AsyncStorage.setItem("firstLoginDone", "true");
-        console.log("First login, setting tab to Profiili");
-        handleLogin("Profiili"); // Tämä on nyt App.js:stä tuleva funktio
-      } else {
-        console.log("Not first login, setting tab to Etusivu");
-        handleLogin("Etusivu");
+      const auth = getAuth();
+      const database = getDatabase();
+      const user = auth.currentUser;
+  
+      if (!user) {
+        Alert.alert("Virhe", "Kirjautuminen epäonnistui, yritä uudelleen.");
+        return;
+      }
+  
+      try {
+        const snapshot = await get(ref(database, `users/${user.uid}/firstLoginDone`));
+        if (snapshot.exists()) {
+          const firstLoginDone = snapshot.val();
+          console.log("FirstLoginDone data:", firstLoginDone);
+  
+          setEmail("");
+          setPassword("");
+  
+          if (!firstLoginDone) {
+            console.log("First login, setting tab to Profiili");
+            handleLogin("Profiili");
+          } else {
+            console.log("Not first login, setting tab to Etusivu");
+            handleLogin("Etusivu");
+          }
+        } else {
+          console.log("FirstLoginDone tieto puuttuu, ohjataan profiiliin varmuuden vuoksi.");
+          handleLogin("Profiili");
+        }
+      } catch (error) {
+        console.error("Virhe haettaessa firstLoginDone:", error);
+        Alert.alert("Virhe", "Tietojen hakeminen epäonnistui.");
       }
     } else {
       Alert.alert("Kirjautuminen epäonnistui!", result.error);
     }
   };
+  
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -114,12 +135,11 @@ export default function Login({ navigation, handleLogin, route }) {
               disabled={loading}
             />
             <ButtonComponent
-                content="Unohtuiko salasana?"
-                type="text"
-                textStyle="light"
-                onPress={handleForgotPassword}
-                
-              />
+              content="Unohtuiko salasana?"
+              type="text"
+              textStyle="light"
+              onPress={handleForgotPassword}
+            />
 
             <View style={componentStyles.textContainer}>
               <TextThemed style={textStyles.bodyLargeLight}>
