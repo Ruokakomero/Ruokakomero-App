@@ -6,6 +6,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Alert,
 } from "react-native";
 
 import ProteinStep from "../components/userinputform/ProteinStep";
@@ -23,7 +24,7 @@ const UserInputForm = ({ navigation }) => {
   const [selectedProteins, setSelectedProteins] = useState([]);
   const [selectedCarbs, setSelectedCarbs] = useState([]);
   const [servingSize, setServingSize] = useState(2);
-  const [selectedDiets, setSelectedDiets] = useState({});
+  const [selectedDiets, setSelectedDiets] = useState([]);
   const [otherProtein, setOtherProtein] = useState("");
   const [otherCarb, setOtherCarb] = useState("");
   const [dietOptions, setDietOptions] = useState([]);
@@ -35,16 +36,40 @@ const UserInputForm = ({ navigation }) => {
     const dietRef = ref(database, `users/${userId}/diet`);
     const unsubscribe = onValue(dietRef, (snapshot) => {
       const dietObj = snapshot.val() || {};
-      setDietOptions(Object.keys(dietObj));
-      setSelectedDiets(
-        Object.keys(dietObj).filter((opt) => dietObj[opt])
-      );
+      const opts = Object.keys(dietObj);
+      setDietOptions(opts);
+      setSelectedDiets(opts.filter((opt) => dietObj[opt]));
     });
 
     return () => unsubscribe();
   }, [userId, userLoading]);
 
-  const handleNext = () => setCurrentStep((prev) => prev + 1);
+  const handleNext = () => {
+    if (currentStep === 2) {
+      const hasProtein =
+        selectedProteins.length > 0 || otherProtein.trim() !== "";
+      if (!hasProtein) {
+        Alert.alert(
+          "Valitse proteiini",
+          "Valitse vähintään yksi proteiini tai syötä muu proteiini."
+        );
+        return;
+      }
+    }
+
+    if (currentStep === 3) {
+      const hasCarb = selectedCarbs.length > 0 || otherCarb.trim() !== "";
+      if (!hasCarb) {
+        Alert.alert(
+          "Valitse hiilihydraatti",
+          "Valitse vähintään yksi hiilihydraatti tai syötä muu hiilihydraatti."
+        );
+        return;
+      }
+    }
+    setCurrentStep((prev) => prev + 1);
+  };
+
   const handleBack = () => setCurrentStep((prev) => prev - 1);
 
   const handleSubmit = () => {
@@ -83,6 +108,7 @@ const UserInputForm = ({ navigation }) => {
                 otherProtein={otherProtein}
                 setOtherProtein={setOtherProtein}
                 handleNext={handleNext}
+                handleBack={handleBack}
                 selectedDiets={selectedDiets}
               />
             )}
