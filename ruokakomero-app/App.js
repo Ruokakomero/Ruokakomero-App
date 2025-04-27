@@ -14,7 +14,7 @@ SplashScreen.preventAutoHideAsync();
 export default function App() {
   const { user, loading: authLoading } = useCurrentUser();
   const [fontsLoaded, setFontsLoaded] = useState(false);
-  const [initialTab, setInitialTab] = useState("Etusivu"); // <- Lisää tämä
+  const [initialTab, setInitialTab] = useState("Reseptit"); // <- Lisää tämä
 
   const handleLogin = (tabName) => {
     setInitialTab(tabName);

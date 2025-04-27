@@ -1,6 +1,5 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
-import HomePage from "../HomePage";
 import Recipes from "../Recipes";
 import ShoppingList from "../ShoppingList";
 import Profile from "../Profile";
@@ -16,8 +15,7 @@ export default function MainTabs({ handleLogout, initialTab, profileName }) {
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size }) => {
           let iconName;
-          if (route.name === "Etusivu") iconName = "home";
-          else if (route.name === "Reseptit") iconName = "book";
+          if (route.name === "Reseptit") iconName = "book";
           else if (route.name === "Ostoslista") iconName = "cart";
           else if (route.name === "Profiili") iconName = "person";
           else if (route.name === "Löydä resepti") iconName = "search";
@@ -25,7 +23,6 @@ export default function MainTabs({ handleLogout, initialTab, profileName }) {
         },
       })}
     >
-      <Tab.Screen name="Etusivu" component={HomePage} options={{ headerShown: false }} />
       <Tab.Screen
         name="Löydä resepti"
         component={RecipeStack}

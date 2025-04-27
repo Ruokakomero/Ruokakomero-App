@@ -43,7 +43,7 @@ export default function PasswordChanger({
         value={newPassword}
         onChangeText={setNewPassword}
         secureTextEntry
-        styleType="light"
+        styleType="dark"
       />
 
       <InputFieldComponent
@@ -51,7 +51,7 @@ export default function PasswordChanger({
         value={confirmPassword}
         onChangeText={setConfirmPassword}
         secureTextEntry
-        styleType="light"
+        styleType="dark"
       />
 
       {error !== "" && (

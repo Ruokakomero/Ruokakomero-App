@@ -123,9 +123,9 @@ export default function Profile({ handleLogout }) {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1}}>
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
+        style={{ flex: 1}}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         <ScrollView contentContainerStyle={screensStyles.profileContainer}>

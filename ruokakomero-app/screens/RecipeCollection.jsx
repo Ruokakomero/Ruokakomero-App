@@ -9,6 +9,7 @@ import AddRecipeModal from "../components/recipes/AddRecipeModal";
 import CollectionItem from "../components/recipes/CollectionItem";
 import IconButton from "../components/IconButton";
 import styles from "../styles/recipesStyles";
+import screensStyles from "../styles/screensStyles";
 
 export default function RecipesCollection({ recipes = [] }) {
   const { userId, loading: authLoading } = useCurrentUser();
@@ -145,7 +146,7 @@ export default function RecipesCollection({ recipes = [] }) {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={screensStyles.appContainer}>
       <View style={styles.circleButtonContainer}>
         <IconButton
           onPress={() => setIsCreateModalVisible(true)}
