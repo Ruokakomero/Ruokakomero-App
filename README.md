@@ -135,7 +135,7 @@ expofont
 
 - Tekoälyn reseptiehdotukset
 
-<img src="https://github.com/Ruokakomero/Ruokakomero-App/blob/main/Media/IMG_5095?raw=true" width="300" />
+<img src="https://github.com/Ruokakomero/Ruokakomero-App/blob/main/Media/IMG_5095.png?raw=true" width="300" />
 
 - Reseptilistaus
 
