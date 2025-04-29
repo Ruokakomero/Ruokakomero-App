@@ -25,7 +25,7 @@ Ruokakomero-sovellus on mobiilisovellus, joka auttaa käyttäjiä seuraamaan ruo
 8. [Autentikointi](#käyttäjän-autentikointi) 
 9. [Käyttöoikeudet](#käyttöoikeudet)
 10. [Testaus](#testaus) 
-11. [CI/CD ja julkaisu](#julkaisu)  
+11. [Julkaisu](#julkaisu)  
 12. [Kehitystiimi](#kehitystiimi) 
 
 
@@ -35,9 +35,9 @@ Ruokakomero-sovellus on mobiilisovellus, joka auttaa käyttäjiä seuraamaan ruo
 
 Ruokakomero-sovellus on suunniteltu helpottamaan reseptien löytämistä ja ostoslistan luomista käyttäjäystävällisellä ja pelillistetyllä lähestymistavalla. Sen tavoitteena on tarjota yksilöllisiä reseptisuosituksia käyttäjän mieltymysten ja ravitsemuksellisten tarpeiden mukaisesti.
 
-Sovellus ohjaa käyttäjää reseptin valinnassa interaktiivisen käyttöliittymän avulla. Käyttäjä voi valita haluamansa hiilihydraatin, proteiinin ja annoskoon flashcard-tyylisellä valinnalla sekä säätää ruoan ravitsemuspitoisuutta liukusäätimellä. Näiden valintojen perusteella chatbot ehdottaa sopivia reseptejä. Mikäli saatavilla, resepteissä esitetään myös ravintoarvotiedot.
+Sovellus ohjaa käyttäjää reseptin valinnassa interaktiivisen käyttöliittymän avulla. Käyttäjä voi valita haluamansa hiilihydraatin, proteiinin ja annoskoon flashcard-tyylisellä valinnalla sekä säätää ruoan ravitsemuspitoisuutta liukusäätimellä. Näiden valintojen perusteella tekoäly ehdottaa sopivia reseptejä. Mikäli saatavilla, resepteissä esitetään myös ravintoarvotiedot.
 
-Kun käyttäjä valitsee reseptin, sovellus luo siitä automaattisesti ostoslistan. Käyttäjä voi merkitä ostoslistalta jo olemassa olevat ainesosat, jolloin ne poistuvat listalta. (Poistetaanko?: Lisäksi sovellus sisältää reseptien arviointitoiminnon, jonka avulla käyttäjä voi vaikuttaa suosituksiin. Pidetyistä resepteistä muodostuu henkilökohtainen reseptilista, kun taas epämieluisat reseptit suodattuvat pois, eikä chatbot ehdota niitä uudelleen.)
+Kun käyttäjä valitsee reseptin, sovellus luo siitä automaattisesti ostoslistan. Käyttäjä voi merkitä ostoslistalta jo olemassa olevat ainesosat, jolloin ne poistuvat listalta.
 
 ---
 
@@ -135,11 +135,15 @@ expofont
 
 - Tekoälyn reseptiehdotukset
 
-<img src="https://github.com/Ruokakomero/Ruokakomero-App/blob/develop/Media/simulator.png?raw=true" width="300" />
+<img src="https://github.com/Ruokakomero/Ruokakomero-App/blob/develop/Media/IMG_5095?raw=true" width="300" />
 
 - Reseptilistaus
 
 <img src="https://github.com/Ruokakomero/Ruokakomero-App/blob/develop/Media/IMG_5092.png?raw=true" width="300" />
+
+- Ostoslista
+
+<img src="https://github.com/Ruokakomero/Ruokakomero-App/blob/develop/Media/IMG_5093.png?raw=true" width="300" />
 
 - Profiili
 
@@ -150,7 +154,7 @@ expofont
 
 ## 5. Tietokanta
 
-Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunniteltu tukemaan sovelluksen toiminnallisuuksia, kuten ostostlistojen tekemistä sekä reseptiehdotuksia.
+Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunniteltu tukemaan sovelluksen toiminnallisuuksia, kuten ostoslistojen tekemistä sekä reseptiehdotuksia.
 
 <details>
 <summary> Avaa tietokantarakenne </summary>
@@ -197,17 +201,6 @@ Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunnitel
  }
 ```
 
-### Chatbot Interactions Collection (`users/<userId>/chatbotInteractions`)
-#### Document Schema:
-```json
-{
-   "interactionId": "interaction123",
-   "userId": "user123",
-   "query": "What can I cook with items from our pantry?",
-   "response": "You can make pancakes!",
- }
-```
-
 </details>
 
 ## 📌 Kokoelmien kuvaus
@@ -215,7 +208,6 @@ Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunnitel
 - **users collection**: Käyttäjät ja niiden tiedot.
 - **recipes collection**: Käyttäjien reseptit.
 - **shopping lists collection**: Käyttäjien ostoslistat.
-- **chatbot interactions collection**: Chatbotin kanssa käydyt keskustelut ja ehdotukset.
 
 
 ### Tietokantakaavio
@@ -551,7 +543,9 @@ Firebase palauttaa kirjautumisen jälkeen automaattisesti ID-tokenin, jota käyt
 
 
 ---
-## 11. CI/CD ja julkaisu
+## 11. Julkaisu
+
+Sovellus on julkaistu [Expo:ssa.](https://expo.dev/preview/update?message=Ruokakomero%20v1.0.2&updateRuntimeVersion=1.0.0&createdAt=2025-04-27T09%3A12%3A51.041Z&slug=ruokakomero-app&projectId=f322cb3f-78c5-4363-9118-57c6578fcffa&group=7ac81493-934f-446b-86d9-016e9612060b)
 
 ---
 
