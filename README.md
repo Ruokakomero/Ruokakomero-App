@@ -122,7 +122,8 @@ expofont
 ## 4. Käyttöliittymä
 
 ### Käyttöliittymäkaavio
-- Visuaaliset kaaviot löytyvät [UI-suunnitelmadokumentista](https://www.figma.com/proto/UjDkmgpcvd6Rm2ateRlwBh/Ruokakomero?node-id=132-68&t=o8EuovuSDjfyiS8W-1).
+- Visuaaliset kaaviot löytyvät [UI-suunnitelmadokumentista](https://www.figma.com/design/UjDkmgpcvd6Rm2ateRlwBh/Ruokakomero?node-id=132-68).
+- Käyttöliittymän rautalankamalli [Figma](https://www.figma.com/design/UjDkmgpcvd6Rm2ateRlwBh/Ruokakomero?node-id=0-1)
 
 ### Käyttöliittymän näkymät
 - Kirjautumissivu
