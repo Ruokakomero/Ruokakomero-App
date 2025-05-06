@@ -6,7 +6,7 @@ Ruokakomero-sovellus on mobiilisovellus, joka auttaa käyttäjiä seuraamaan ruo
 
 ## Sisällysluettelo
 
-1. [Johdanto](#Johdanto) 
+1. [Johdanto](#johdanto) 
 2. [Järjestelmän määrittely](#järjestelmän-määrittely)
    - [Käyttäjäryhmät](#käyttäjäryhmät) 
    - [Käyttötapaukset ja käyttäjätarinat](#käyttötapaukset-ja-käyttäjätarinat) 
@@ -16,22 +16,20 @@ Ruokakomero-sovellus on mobiilisovellus, joka auttaa käyttäjiä seuraamaan ruo
    - [Käyttöliittymän näkymät](#käyttöliittymän-näkymät)
 5. [Tietokanta](#tietokanta) 
    - [Tietokantakaavio](#tietokantakaavio)
-   - [Tietohakemisto](#tietohakemisto)
-6. [REST API dokumentaatio](#rest-api-dokumentaatio) 
-   - [Myyntitapahtumien API-dokumentaatio](#myyntitapahtumien-api-dokumentaatio)
-   - [Ruokien (Items) API-pyynnöt](#ruokien-items-api-pyynnöt)
-   - [Ruokakunnan API-pyynnöt](#ruokakunnan-api-pyynnöt)
-7. [AI toiminnallisuuden tekninen kuvaus](#ai-toiminnallisuus)
+   - [Kokoelmien kuvaus](#-kokoelmien-kuvaus)
+6. [REST API dokumentaatio](#rest-api--dokumentaatio-firebase-realtime-database--authentication) 
+   - [API-endpointit (Firebase polkuina)](#-api-endpointit-firebase-polkuina)
+7. [AI toiminnallisuuden tekninen kuvaus](#ai-toiminnallisuuden-tekninen-kuvaus)
 8. [Autentikointi](#käyttäjän-autentikointi) 
-9. [Käyttöoikeudet](#käyttöoikeudet)
-10. [Testaus](#testaus) 
-11. [Julkaisu](#julkaisu)  
-12. [Kehitystiimi](#kehitystiimi) 
+9. [Testaus](#testaus) 
+10. [Julkaisu](#julkaisu)  
+11. [Kehitystiimi](#kehitystiimi)
+12. [Lisenssi](#lisenssi)
 
 
 ---
 
-## 1. Johdanto
+# Johdanto
 
 Ruokakomero-sovellus on suunniteltu helpottamaan reseptien löytämistä ja ostoslistan luomista käyttäjäystävällisellä ja pelillistetyllä lähestymistavalla. Sen tavoitteena on tarjota yksilöllisiä reseptisuosituksia käyttäjän mieltymysten ja ravitsemuksellisten tarpeiden mukaisesti.
 
@@ -42,7 +40,7 @@ Kun käyttäjä valitsee reseptin, sovellus luo siitä automaattisesti ostoslist
 ---
 
 
-## 2. Järjestelmän määrittely
+# Järjestelmän määrittely
 
 ### Käyttäjäryhmät
 - **Yksittäiset käyttäjät:** Sovelluksen käyttäminen henkilökohtaiseen tarpeeseen.
@@ -90,7 +88,7 @@ expofont
 </details>
 
 
-## 3. Asennusohjeet 
+# Asennusohjeet 
 
 ### Esivaatimukset
 
@@ -119,7 +117,7 @@ expofont
     ```
 
 
-## 4. Käyttöliittymä
+# Käyttöliittymä
 
 ### Käyttöliittymäkaavio
 - Visuaaliset kaaviot löytyvät [UI-suunnitelmadokumentista](https://www.figma.com/design/UjDkmgpcvd6Rm2ateRlwBh/Ruokakomero?node-id=132-68).
@@ -153,7 +151,7 @@ expofont
 
 ---
 
-## 5. Tietokanta
+# Tietokanta
 
 Tässä on Ruokakomero-sovelluksen Firebase-tietokannan rakenne. Se on suunniteltu tukemaan sovelluksen toiminnallisuuksia, kuten ostoslistojen tekemistä sekä reseptiehdotuksia.
 
@@ -388,7 +386,7 @@ const recipe = await getRecipe("Proteiinit: kana, Hiilihydraatit: riisi, Annosko
 
 ---
 
-## 7. AI toiminnallisuuden tekninen kuvaus
+# AI toiminnallisuuden tekninen kuvaus
 
 **Tekoälyn käyttötarkoitus sovelluksessa**
 
@@ -443,7 +441,7 @@ Sovellus ei lähetä henkilötietoja OpenAI:n palveluun. Ainoa API:lle välitett
 
 ---
 
-## 8. Käyttäjän autentikointi 
+# Käyttäjän autentikointi 
 
 **Teknologia:**
 
@@ -466,7 +464,7 @@ Firebase palauttaa kirjautumisen jälkeen automaattisesti ID-tokenin, jota käyt
 
 --- 
 
-## 9. Käyttäjän rekisteröinti ja ensimmäisen kirjautumisen logiikka
+# Käyttäjän rekisteröinti ja ensimmäisen kirjautumisen logiikka
 
 
 ### Rekisteröityminen
@@ -491,7 +489,7 @@ Firebase palauttaa kirjautumisen jälkeen automaattisesti ID-tokenin, jota käyt
   2. Kun tiedot on tallennettu, sovellus päivittää tietokantaan firstLoginDone: true.
   3. Tämän jälkeen kaikilla tulevilla kirjautumiskerroilla käyttäjä päätyy suoraan Etusivulle.
 
-## 10. Testaus 
+# Testaus 
 
 ### Testausalueet
 - **Database Access Layer:**
@@ -544,14 +542,14 @@ Firebase palauttaa kirjautumisen jälkeen automaattisesti ID-tokenin, jota käyt
 
 
 ---
-## 11. Julkaisu
+# Julkaisu
 
 Sovellus on julkaistu [Expo:ssa.](https://expo.dev/preview/update?message=Ruokakomero%20v1.0.2&updateRuntimeVersion=1.0.0&createdAt=2025-04-27T09%3A12%3A51.041Z&slug=ruokakomero-app&projectId=f322cb3f-78c5-4363-9118-57c6578fcffa&group=7ac81493-934f-446b-86d9-016e9612060b)
 
 ---
 
 
-## 12. Kehitystiimi
+# Kehitystiimi
 
 **Jonna Rinne** <br>
 **Lauri Hynninen** <br>
@@ -581,3 +579,9 @@ Sovellus on julkaistu [Expo:ssa.](https://expo.dev/preview/update?message=Ruokak
 [openai-logo]: https://img.shields.io/badge/OpenAI-412991?logo=openai&logoColor=fff&style=for-the-badge
 [nodejs-url]: https://nodejs.org/en
 [nodejs-logo]: https://img.shields.io/badge/node.js-339933?style=for-the-badge&logo=Node.js&logoColor=white
+
+# Lisenssi
+
+<a  href="https://creativecommons.org/licenses/by/4.0/" style="width: 40" >
+   <img src="https://mirrors.creativecommons.org/presskit/buttons/88x31/png/by.png" style="width: 40" />
+</a>
